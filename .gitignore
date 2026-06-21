@@ -1,0 +1,42 @@
+# System operacyjny
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Edytory / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logi
+*.log
+logs/
+
+# Pliki tymczasowe
+*.tmp
+*.temp
+tmp/
+
+# Zmienne środowiskowe / sekrety
+.env
+.env.local
+*.key
+*.pem
+
+# Node.js (jeśli dojdzie)
+node_modules/
+dist/
+build/
+
+# Python (jeśli dojdzie)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
