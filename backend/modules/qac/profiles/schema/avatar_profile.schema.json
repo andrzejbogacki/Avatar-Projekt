@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "avatar_profile.schema.json",
+  "title": "Profil Awatara — QAC (wersja schematu 1.0.0)",
+  "description": "Czysty JSON — kategoryczny zakaz opisów tekstowych generowanych. Klucz główny: avatar_id (wzorzec Protokołu Suwerenności).",
+  "type": "object",
+  "required": ["naglowek", "dane_surowe", "aktywacje", "mapa_369", "macierz_relacyjna"],
+  "properties": {
+    "naglowek": {
+      "type": "object",
+      "required": ["avatar_id", "adres_rejestru", "wersja_schematu", "status", "wygenerowano"],
+      "properties": {
+        "avatar_id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(_[a-z0-9]+)+$" },
+        "adres_rejestru": { "type": "string" },
+        "status_adresu": { "type": "string", "enum": ["kandydat", "nadany"] },
+        "wersja_schematu": { "type": "string" },
+        "status": { "type": "string", "enum": ["piaskownica", "zamrozony"] },
+        "wygenerowano": { "type": "string", "format": "date-time" }
+      }
+    },
+    "dane_surowe": {
+      "type": "object",
+      "required": ["czas", "obserwator", "forma_swiadoma", "forma_nieswiadoma"],
+      "properties": {
+        "czas": {
+          "type": "object",
+          "required": ["jd_et", "jd_ut", "delta_t_s", "skala"],
+          "properties": {
+            "jd_et": { "type": "number", "description": "Dzień juliański w TT (≈TDB)" },
+            "jd_ut": { "type": "number" },
+            "delta_t_s": { "type": "number", "description": "Poprawka ΔT [s]" },
+            "skala": { "type": "string" }
+          }
+        },
+        "obserwator": {
+          "type": "object",
+          "required": ["dlugosc_geo", "szerokosc_geo", "wysokosc_npm_m"],
+          "properties": {
+            "dlugosc_geo": { "type": "number", "minimum": -180, "maximum": 180 },
+            "szerokosc_geo": { "type": "number", "minimum": -90, "maximum": 90 },
+            "wysokosc_npm_m": { "type": "number" }
+          }
+        },
+        "forma_swiadoma": { "$ref": "#/definicje/forma" },
+        "forma_nieswiadoma": { "$ref": "#/definicje/forma" }
+      }
+    },
+    "aktywacje": {
+      "type": "object",
+      "required": ["forma_swiadoma", "forma_nieswiadoma"],
+      "additionalProperties": { "$ref": "#/definicje/zbior_aktywacji" }
+    },
+    "mapa_369": {
+      "type": "object",
+      "required": [
+        "wektor_czestotliwosci_12d",
+        "czestotliwosc_odniesienia_hz",
+        "pozycja_3",
+        "pozycja_6",
+        "pozycja_9_rezonans",
+        "stemple_srodowiskowe"
+      ],
+      "properties": {
+        "wektor_czestotliwosci_12d": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 12,
+          "maxItems": 12
+        },
+        "czestotliwosc_odniesienia_hz": { "type": "number" },
+        "pozycja_3": { "type": "number" },
+        "pozycja_6": { "type": "number" },
+        "pozycja_9_rezonans": { "type": "number" },
+        "czynnik_modulacji": { "type": "number" },
+        "stemple_srodowiskowe": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definicje/stempel" }
+        }
+      }
+    },
+    "macierz_relacyjna": {
+      "type": "object",
+      "description": "Przygotowana pod kompozyty kwantowe i Phase-Locking między awatarami — pełny schemat: punkt otwarty O4.",
+      "required": ["status", "avatar_id", "wektor_12d"],
+      "properties": {
+        "status": { "type": "string", "enum": ["przygotowana"] },
+        "avatar_id": { "type": "string" },
+        "wektor_12d": { "type": "array", "items": { "type": "number" } },
+        "kompozyty": { "type": "array" }
+      }
+    }
+  },
+  "definicje": {
+    "forma": {
+      "type": "object",
+      "required": ["jd_et", "pozycje"],
+      "properties": {
+        "jd_et": { "type": "number" },
+        "pozycje": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["dlugosc_ekliptyczna_deg", "szerokosc_ekliptyczna_deg", "odleglosc_au"],
+            "properties": {
+              "dlugosc_ekliptyczna_deg": { "type": "number" },
+              "szerokosc_ekliptyczna_deg": { "type": "number" },
+              "odleglosc_au": { "type": "number" },
+              "predkosc_dlugosci_deg_d": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "zbior_aktywacji": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["bramka", "linia", "kolor", "ton", "base"],
+        "properties": {
+          "bramka": { "type": "integer", "minimum": 1, "maximum": 64 },
+          "linia": { "type": "integer", "minimum": 1, "maximum": 6 },
+          "kolor": { "type": "integer", "minimum": 1, "maximum": 6 },
+          "ton": { "type": "integer", "minimum": 1, "maximum": 6 },
+          "base": { "type": "integer", "minimum": 1, "maximum": 5 }
+        }
+      }
+    },
+    "stempel": {
+      "type": "object",
+      "required": ["zrodlo", "timestamp", "status"],
+      "properties": {
+        "zrodlo": { "type": ["string", "null"] },
+        "timestamp": { "type": ["string", "null"] },
+        "status": { "type": "string", "enum": ["live", "cache", "stale"] },
+        "blad": { "type": "string" },
+        "odrzucony_przez": { "type": "string" }
+      }
+    }
+  }
+}

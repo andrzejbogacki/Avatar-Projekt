@@ -1,0 +1,53 @@
+{
+    "projekt": "Projekt Avatar — Architektura Nowej Ziemi",
+    "suweren": "Andrzej Bogacki",
+    "avatar_id": "andrzej_bogacki",
+    "wersja_mapy": "1.0",
+    "status": "piaskownica",
+    "punkt_wejscia_czlowiek": "docs/MAPA_PROJEKTU.md",
+    "zrodla_prawdy": {
+        "semantyka": "glosariusz_v4.json (v5 w toku)",
+        "adresacja": "rejestr.json",
+        "kernel": "kernel_specyfikacja_v1.md",
+        "tozsamosc_i_dostep": "protokol_suwerennosci.json + PS_v1_dokument_zamykajacy.md"
+    },
+    "repo": {
+        "frontend/": "React PWA — impuls interfejsu (3)",
+        "backend/": "Node.js — moduły w backend/modules/",
+        "docs/": "dokumentacja: mapa, architektura, konwencje, moduły, ADR"
+    },
+    "wezly_369": {
+        "3": "telefon (impuls)",
+        "6": "serwer lokalizacji — Mac Mini (forma)",
+        "9": "chmura prywatna (regulacja / synchronizacja)"
+    },
+    "moduly": [
+        {
+            "id": "qac",
+            "nazwa": "Quantum Avatar Core",
+            "adres_rejestr": "modul.qac (kandydat)",
+            "sciezka": "backend/modules/qac/",
+            "dokumentacja": "docs/moduly/qac.md",
+            "status": "piaskownica",
+            "stan_kodu": "zaimplementowany 2026-07-08 (spec v2, sekcje 1-5); testy: 36 pass, 1 skip",
+            "punkt_wejscia": "backend/modules/qac/index.js",
+            "testy": "cd backend && npm test",
+            "zaleznosci_oczekujace": [
+                "pliki efemeryd DE440/441 lub .se1 (ephemeris/README.md) — bez nich kalkulator zwraca jawny błąd",
+                "Redis (opcjonalny — działa fallback in-memory)",
+                "endpoint Rezonansu Schumanna (punkt otwarty O5)"
+            ],
+            "pozycja_369": 3,
+            "submoduly": [
+                {
+                    "id": "qrt",
+                    "nazwa": "Quantum Rectification Tool",
+                    "adres_rejestr": "modul.qac.qrt (kandydat)",
+                    "tryb": "asynchroniczny",
+                    "sciezka": "backend/modules/qac/src/rectification/"
+                }
+            ]
+        }
+    ],
+    "reguła_aktualizacji": "Każda zmiana struktury repo lub modułu wymaga aktualizacji tego pliku oraz docs/moduly/<id>.md w tym samym zatwierdzeniu."
+}
