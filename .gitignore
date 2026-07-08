@@ -1,0 +1,6 @@
+.DS_Store
+node_modules/
+logs/
+# Pliki binarne efemeryd — dostarczane poza repozytorium (zależność zewnętrzna)
+backend/modules/qac/ephemeris/*
+!backend/modules/qac/ephemeris/README.md
