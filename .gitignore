@@ -1,6 +1,14 @@
 .DS_Store
 node_modules/
 logs/
-# Pliki binarne efemeryd — dostarczane poza repozytorium (zależność zewnętrzna)
+
+# Pliki binarne efemeryd — dostarczane/pobierane poza wersjonowaniem (zależność zewnętrzna)
 backend/modules/qac/ephemeris/*
 !backend/modules/qac/ephemeris/README.md
+
+# Lokalna konfiguracja narzędzia (Claude Code) — nie jest treścią projektu
+.claude/settings.local.json
+
+# media/ — odłożone (2026-07-08): zdjęcia + nagrania audio ~84 MB,
+# decyzja o docelowym miejscu przechowywania (repo/LFS/chmura) w toku
+media/
