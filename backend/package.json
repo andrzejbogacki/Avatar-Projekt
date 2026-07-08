@@ -1,0 +1,16 @@
+{
+  "name": "avatar-backend",
+  "version": "0.1.0",
+  "description": "Projekt Avatar — backend Node.js (ADR-001). Moduły domenowe w backend/modules/.",
+  "private": true,
+  "main": "modules/qac/index.js",
+  "scripts": {
+    "test": "node --test 'modules/qac/test/*.test.js'"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "sweph": "^2.10.3-7"
+  }
+}
