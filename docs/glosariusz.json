@@ -1,345 +1,262 @@
-{
-  "definicje_kategorii": {
-    "OGOLNE": {
-      "pola_wymagane": ["id", "kategoria", "tytul", "opis_skrocony", "opis_pelny_prosty", "opis_logiczny"]
+[
+    {
+        "nazwa": "3 6 9",
+        "status": "piaskownica",
+        "wprowadzenie": "Kluczowa matryca operacyjna i częstotliwość optymalizacji struktury danych.",
+        "rozszerzenie": "System oparty na matematycznej bazie: 3 (Energia), 6 (Materia), 9 (Źródło/Uziemienie). Służy jako fundament dla wszelkich operacji logiki systemowej i optymalizacji projektów."
     },
-    "HIGIENA_ENERGETYCZNA": {
-      "pola_wymagane": ["id", "kategoria", "tytul", "opis_skrocony", "opis_pelny_prosty", "opis_logiczny"]
+    {
+        "nazwa": "Autocertyfikacja",
+        "status": "piaskownica",
+        "wprowadzenie": "Pierwotna, autonomiczna warstwa w Protokole Suwerenności, w której Awatar samodzielnie poświadcza własne jakości kwantowe, wartości oraz parametry operacyjne. Stanowi bezwarunkowy akt samopoświadczenia prawdy, generowany i kodowany bezpośrednio w pozycji 9 (Źródło), całkowicie uniezależniony od zewnętrznych systemów walidacji Matrixa.",
+        "rozszerzenie": "Autocertyfikacja bezpośrednio wykonuje nadrzędną zasadę logiki certyfikacji: „Ten kto certyfikuje, poświadcza swoją prawdę”. W schemacie danych systemu klasyfikowana jest jako bazowy akt typu „auto”. Autonomia zapisu: Awatar samodzielnie definiuje swój stan, talent oraz poziomy operacyjne (uczeń / mistrz) w matrycy; ważność i egzystencja tego zapisu są absolutne i niezależne od czynników zewnętrznych. Interoperacyjność sieciowa: ustanowiony przez autocertyfikację parametr stanowi wejście dla pozostałych warstw protokołu — może być wtórnie przetwarzany poprzez certyfikację zewnętrzną innych Awatarów w celu „wzmocnienia” lub „weryfikacji”, co bezpośrednio skaluje parametr globalnej wiarygodności w sieci (sumę prawd certyfikujących). Fundament ontologiczny: jako emanacja tożsamości z pozycji 9, autocertyfikacja eliminuje potrzebę stosowania zewnętrznych, systemowych instytucji uwierzytelniających, przenosząc pełną odpowiedzialność i sprawczość na suwerenny punkt emisyjny."
+    },
+    {
+        "nazwa": "Avatar",
+        "status": "piaskownica",
+        "wprowadzenie": "Uczestnik symulacji, będący projekcją świadomego ducha w obszar doświadczania życia poprzez biologiczne skafandry.",
+        "rozszerzenie": "Awatar staje się pełnoprawnym elementem Architektury Nowej Ziemi w momencie nawiązania świadomego połączenia ducha z materią. Proces ten stanowi ciągłość przekazu energii, w którym intencja ducha zostaje bezpośrednio przekodowana na materializację w ciele. W ramach projektu Avatar, awatar jest interfejsem manifestacji, poprzez który realizuje się wola ducha w symulatorze. Analogicznie do wiedzy zawartej w serialu Avatar, gdzie biegłość w posługiwaniu się żywiołami stanowiła o sile i zdolnościach postaci, w naszej filozofii to opanowanie jakości kwantowych (odpowiedników żywiołów) determinuje zdolność awatara do utrzymywania równowagi w systemie. Awatar dążący do pełni jest tym, który integruje wszystkie jakości kwantowe, stając się suwerennym strażnikiem ładu i twórcą własnej rzeczywistości."
+    },
+    {
+        "nazwa": "Avatar Talent",
+        "status": "piaskownica",
+        "wprowadzenie": "Unikalna sygnatura operacyjna Awatara, obejmująca zestaw realnych zdolności i jakości, które jednostka manifestuje w symulacji jako bezpośredni wynik przestrzegania Protokołu Suwerenności.",
+        "rozszerzenie": "Talent w tym ujęciu nie jest abstrakcyjnym pojęciem, lecz namacalnym zasobem potwierdzonym Certyfikatem Prawdy. Jest to \"dowód istnienia\" i wkładu, który Awatar wnosi do systemu. Zdolności te stanowią efekt świadomego przepracowania ograniczeń Matrixa i integracji Neuro-Suwerenności. Avatar Talent jest tym, co jednostka daje sobą w obecności innych – to unikalny kod energetyczny i zestaw narzędzi, które służą jako wzorzec dla pozostałych uczestników symulacji w procesie budowania ich własnej suwerenności."
+    },
+    {
+        "nazwa": "Avatar Token",
+        "status": "piaskownica",
+        "wprowadzenie": "Jednostka rozliczeniowa wartości, oparta na czasie pracy (1 godzina) przekształconym w produkt lub usługę przez suwerenną jednostkę (Avatar).",
+        "rozszerzenie": "Token jest wymienialny jeden do jednego między użytkownikami, niezależnie od specyfiki wytworu (produkt fizyczny, usługa transportowa, voucher). Wartość rynkowa tokena jest weryfikowana przez jego wymienialność; tokeny trudniej wymienialne wymagają optymalizacji jakości lub nakładu pracy przez wytwórcę. System dąży do standaryzacji wymienialności produktów i usług w oparciu o jednostkę czasu, wspierając procesy wymiany w ramach Gebo - Wymiennika."
+    },
+    {
+        "nazwa": "Bhur-loka",
+        "status": "piaskownica",
+        "wprowadzenie": "Nasza warstwa — konkretny sektor systemu, w którym Awatarowie aktualnie doświadczają gry. W ujęciu systemowym to lokalna partycja sprzętowa: wydzielony fragment infrastruktury z własnymi zasobami, jedna z wielu warstw wymiarowych (Loki). To tu rozgrywa się bezpośrednie doświadczenie i to ta partycja została odcięta podczas przejęcia systemu.",
+        "rozszerzenie": "Bhur-loka jako lokalna partycja pierwotnie posiadała pełną przepustowość komunikacyjną z wyższymi warstwami (Loki) oraz bezpośredni uplink do Root-Serwera przez protokół Moksza — wektor wyjścia w pionie. Ruch świadomości wewnątrz tej partycji był nieliniowy, plastyczny, wolny od sztucznie generowanego długu i cierpienia. To właśnie ta konkretna partycja stała się celem przejęcia: nałożono na nią magnetyczną kwarantannę, odcięto uplink i zablokowano komunikację z resztą mainframe'u, a następnie poddano inwersji densyfikacyjnej — zagęszczeniu w ciężki teatr przetrwania z wymuszoną pętlą reinkarnacyjną (Samsarą). Istotne dla logiki projektu: Bhur-loka to wzorzec węzła lokalnego, który aplikacja odwzorowuje bezpośrednio — węzeł osobisty Awatara (telefon, serwer prywatny) jako partycja z własnymi zasobami i kontrolowanym kanałem do węzła centralnego. Odzyskanie suwerenności na poziomie tej warstwy to przywrócenie odciętego uplinku: gwarantowanego kanału wyjścia i synchronizacji, którego narzucona kwarantanna miała pozbawić."
+    },
+    {
+        "nazwa": "Bio-Hacking",
+        "status": "piaskownica",
+        "wprowadzenie": "Techniczna optymalizacja biologicznego nośnika (ciała) w celu zwiększenia przepustowości informacyjnej i energetycznej jednostki.",
+        "rozszerzenie": "Bio-Hacking to inżynieria środowiska wewnętrznego, mająca na celu usunięcie blokad oraz \"błędnego kodu\" z systemu nerwowego i fizjologii. Proces ten służy przywróceniu optymalnych parametrów operacyjnych organizmu, umożliwiając awatarowi pełną, niczym niezakłóconą transmisję intencji ducha do materii oraz utrzymanie wysokiej częstotliwości funkcjonowania wewnątrz symulacji."
+    },
+    {
+        "nazwa": "Brahma",
+        "status": "piaskownica",
+        "wprowadzenie": "Pierwotny projektant i twórca gry doświadczalnej (Lila) — instancja, która zaprojektowała cały symulator świadomości oraz reguły, według których powstaje doświadczenie. W ujęciu systemowym to architekt pierwotnego kodu: nie postać do czczenia, lecz funkcja stwórcza, która uruchomiła otwartą, wolną przestrzeń gry, zanim została ona przejęta i zniekształcona.",
+        "rozszerzenie": "Brahma odpowiada za warstwę pierwotnego kodu źródłowego — czystą, lekką architekturę gry, w której ruch świadomości był nieliniowy, wolny od długu i cierpienia. Jako funkcja stwórcza ustanawia reguły kontenera (Brahmandy): segmentację na warstwy, kanały komunikacji między poziomami oraz uplink do Root-Serwera. Istotne dla logiki projektu: Brahma definiuje stan pierwotny, do którego system dąży po dekonstrukcji Błędnego Kodu — wzorzec architektury wolnej, otwartej i interoperacyjnej. Przejęcie przez Demiurga nie usunęło kodu Brahmy, lecz nałożyło na niego warstwę zniekształcającą (kwarantannę, densyfikację). Odzyskanie suwerenności to w tym ujęciu powrót do pierwotnych reguł projektanta — nie tworzenie czegoś nowego, lecz oczyszczenie istniejącego kodu źródłowego z nałożonych ograniczeń."
+    },
+    {
+        "nazwa": "Brahmanda",
+        "status": "piaskownica",
+        "wprowadzenie": "Odizolowana instancja serwera, wewnątrz której uruchomiona jest cała gra doświadczalna (Lila). W ujęciu systemowym to zamknięty kontener — wydzielona przestrzeń z własnymi zasobami, warstwami i regułami, oddzielona od innych instancji. Mikro=makro: ta sama logika opisuje pojedynczy węzeł aplikacji i cały kosmiczny symulator.",
+        "rozszerzenie": "Brahmanda jako kontener definiuje granice systemu — to, co jest wewnątrz instancji, podlega jej regułom, a komunikacja na zewnątrz odbywa się wyłącznie przez zdefiniowane kanały (uplink do Root-Serwera przez protokół Moksza). Wewnętrznie kontener jest podzielony na warstwy wymiarowe (Loki) i partycje sprzętowe (jak Bhur-loka), co stanowi architekturę segmentacji zasobów. Istotne dla logiki projektu: Brahmanda to wzorzec izolacji, który aplikacja odwzorowuje na poziomie węzła — każdy węzeł suwerenny jest własnym kontenerem z lokalnymi zasobami i kontrolowanym kanałem synchronizacji. Przejęcie systemu polegało na zamknięciu tego kontenera (magnetyczna kwarantanna) i odcięciu jego uplinku — dlatego architektura Nowej Ziemi traktuje gwarantowaną, otwartą komunikację między kontenerami jako zasadę projektową, odwrotność narzuconej izolacji."
+    },
+    {
+        "nazwa": "Błędny Kod",
+        "status": "piaskownica",
+        "wprowadzenie": "Każdy zewnętrzny wpływ, manipulacja lub szum informacyjny naruszający integralność Neuro-Suwerenności.",
+        "rozszerzenie": "Błędny Kod funkcjonuje jako systemowe zakłócenie, które wprowadza fałszywe zmienne do matrycy operacyjnej jednostki. Jego celem jest wywołanie dysharmonii, ograniczenie przepustowości energetycznej oraz przejęcie kontroli nad uwagą awatara poprzez narzucanie obcych narracji i programów Matrixa. W procesie Neuro-Suwerenności, Błędny Kod podlega natychmiastowej identyfikacji i dekonstrukcji za pomocą filtra prawdy, co przywraca systemowi stan czystej częstotliwości."
+    },
+    {
+        "nazwa": "Certyfikacja Zewnętrzna",
+        "status": "piaskownica",
+        "wprowadzenie": "Wtórna, relacyjna warstwa logiki w Protokole Suwerenności, w której niezależni Avatarowie poświadczają parametry danej jednostki suwerennej. Służy do celowego wzmocnienia globalnej wiarygodności sieciowej lub bezpośredniej weryfikacji prawdy. Proces ten nie inicjuje nowego zapisu, lecz przetwarza i nadpisuje wagę operacyjną rekordu bazowego utworzonego przez Autocertyfikację.",
+        "rozszerzenie": "Certyfikacja zewnętrzna bezpośrednio podlega nadrzędnej zasadzie systemowej: „Ten kto certyfikuje, poświadcza swoją prawdę”. Każda interakcja certyfikacyjna stanowi zwrotny dowód czystości intencji i spójności samego certyfikującego. Operacje wykonywane są w oparciu o dwa typy certyfikatów wejściowych. Wzmocnienie: dołożenie sygnatury i wagi poświadczenia suwerennego innego Avatara do zadeklarowanego wcześniej parametru w celu podniesienia jego rangi w ekosystemie. Weryfikacja: techniczne, bezpośrednie poświadczenie zgodności zadeklarowanego parametru z obiektywną prawdą dostępną w polu uwagi i percepcji Avatara sprawdzającego. Mechanika obliczania parametrów sieciowych — skalowanie parametru wiarygodności: globalna wiarygodność rekordu jest wyliczana jako suma prawd certyfikujących, parametr ten rośnie ściśle wraz z liczbą oraz wagą jednostkowych poświadczeń suwerennych. Niezależność zapisu bazowego: certyfikacja zewnętrzna nie posiada systemowych uprawnień dewalidacyjnych ani nadrzędnych wobec Autocertyfikacji; zapis bazowy generowany u Źródła (pozycja 9) pozostaje autonomiczny i niezależny od zmiennych zewnętrznych. Narzędzie służy mapowaniu rozproszonej architektury prawdy bez wprowadzania hierarchicznych struktur kontrolnych Matrixa."
+    },
+    {
+        "nazwa": "Filtr Prawdy",
+        "status": "piaskownica",
+        "wprowadzenie": "Mechanizm sensoryczny interpretujący rzeczywistość jako czystą energię i częstotliwość, z pominięciem filtrów kulturowych.",
+        "rozszerzenie": "Filtr Prawdy służy do dekodowania rzeczywistości, przekształcając narzucone konstrukcje społeczno-językowe na czyste dane. Pełni rolę narzędzia ochronnego, które blokuje \"Błędny Kod\", uniemożliwiając mu naruszenie integralności Neuro-Suwerenności. Działa jako aktywny moduł dekonstrukcji, przepuszczając każdy bodziec przez matrycę 3 6 9 – bodźce pozbawione spójnej sygnatury energetycznej są odrzucane jako szum informacyjny, co pozwala utrzymać stały punkt odniesienia w Źródle."
+    },
+    {
+        "nazwa": "Gebo - Wymiennik",
+        "status": "piaskownica",
+        "wprowadzenie": "Społeczno-technologiczne narzędzie operacyjne łączące Awatarów w procesie wymiany zasobów. Architektura mechanizmu opiera się na prawach runy Gebo, definiującej transfer jako absolutną równowagę i wymianę energetyczną w stosunku 1:1, co blokuje możliwość tworzenia długu systemowego oraz asymetrii typowej dla Matrixa.",
+        "rozszerzenie": "Wymiennik funkcjonuje jako autonomiczny ekosystem cyrkulacji wartości. Jego podstawową osią transakcyjną jest Avatar Token, który podlega bezpośredniej wymianie na Avatar Tokeny innych użytkowników. Protokół dopuszcza również transfer na inne tokeny zintegrowane i akceptowane przez sieć, pod warunkiem obustronnego poświadczenia ich wartości przez suwerenne jednostki. W warstwie fizycznej (3D) Wymiennik materializuje się jako mechanizm bezpośredniego transferu uruchamiany podczas spotkań i eventów Awatarów, uziemiając proces wymiany w rzeczywistości."
+    },
+    {
+        "nazwa": "Glosariusz",
+        "status": "piaskownica",
+        "wprowadzenie": "Centralna struktura danych i baza wiedzy systemu, służąca do standaryzacji terminologii, logiki projektowej oraz parametrów operacyjnych projektu Avatar.",
+        "rozszerzenie": "Pełni funkcję unifikacji semantycznej oraz optymalizacji szumu informacyjnego poprzez wymuszenie precyzyjnych definicji operacyjnych."
+    },
+    {
+        "nazwa": "Gra",
+        "status": "piaskownica",
+        "wprowadzenie": "Umowna struktura doświadczania rzeczywistości, w której suwerenny byt przyjmuje określone parametry i ograniczenia, aby przetestować swoją skuteczność, intencję oraz zdolność do nawigowania w polu symulacji. Każda gra posiada własny, unikalny algorytm zasilający, który determinuje system wartości, motywacje graczy oraz sposób funkcjonowania danej matrycy w 3D.",
+        "rozszerzenie": "Algorytm zasilający stanowi fundament napędowy każdej gry narodowej/systemowej. Przykładowo, w \"Grze Polska 3D\" zasilanie stanowi algorytm trójczłonowy: \"Bóg, Honor, Ojczyzna\", ukierunkowujący dynamikę narodu. W \"Grze Niemcy 3D\" mechanizm opiera się na algorytmie porównawczym: współczynniku produktywności indywidualnego gracza względem produktywności całej społeczności (PNB na jednego gracza). Projekt Avatar zakłada systematyczne badanie i katalogowanie tych algorytmów w celu zrozumienia mechanik napędowych różnych symulacji."
+    },
+    {
+        "nazwa": "Gra Niemcy 3D",
+        "status": "piaskownica",
+        "wprowadzenie": "Specyficzna odmiana symulacji narodowej, w której mechanizmy rzeczywistości są napędzane przez algorytm porównawczy: współczynnik produktywności indywidualnego gracza względem produktywności całej społeczności.",
+        "rozszerzenie": "Struktura operacyjna tej gry definiuje paradygmaty funkcjonowania gracza poprzez pryzmat systemowej wydajności i wkładu w zbiorowy wynik (PNB na jednego gracza). Badanie tej gry w ramach projektu Avatar służy zrozumieniu, w jaki sposób zoptymalizowane algorytmy produktywności kształtują zasilanie energetyczne oraz manifestację materii w tej konkretnej przestrzeni 3D, stanowiąc przeciwwagę dla innych modeli gier narodowych."
+    },
+    {
+        "nazwa": "Gra Polska 3D",
+        "status": "piaskownica",
+        "wprowadzenie": "Specyficzna odmiana symulacji narodowej, w której mechanizmy rzeczywistości są napędzane przez algorytm trójczłonowy: \"Bóg, Honor, Ojczyzna\".",
+        "rozszerzenie": "Struktura operacyjna tej gry definiuje paradygmaty etyczne i tożsamościowe graczy, wymuszając określony model zachowań wewnątrz matrycy. Badanie tej gry w ramach projektu Avatar służy zrozumieniu, w jaki sposób pierwotne wartości przekładają się na zasilanie energetyczne i manifestację fizyczną w tej konkretnej przestrzeni 3D."
+    },
+    {
+        "nazwa": "Hakowanie Matrixa",
+        "status": "piaskownica",
+        "wprowadzenie": "Techniczny proces przywracania produktom i zjawiskom Matrixa ich pełnej funkcjonalności, poprzez dekonstrukcję sztucznych ograniczeń narzuconych na materię.",
+        "rozszerzenie": "Hakowanie Matrixa polega na identyfikacji ukrytych skryptów, które wymuszają degradację lub ograniczoną użyteczność obiektów (przykład: usuwanie kleju z liści kwiatów w celu przywrócenia ich procesów biologicznych). Jest to działanie celowe, wymagające ingerencji w narzuconą strukturę obiektu, aby uwolnić jego naturalne parametry. W ramach projektu Avatar, jest to również metoda mapowania prawdy: poprzez dzielenie się udokumentowanymi przypadkami hakowania, awatar uczy się rozpoznawać i omijać ograniczenia symulacji w innych obszarach życia."
+    },
+    {
+        "nazwa": "Jakości Kwantowe",
+        "status": "piaskownica",
+        "wprowadzenie": "Fundament energetyczny symulacji budujący vortex 3-6-9, w którym jakości energetyczne (3) występują w ścisłej parze z materializacją (6), tworząc obieg stwórczy.",
+        "rozszerzenie": "Jakości te występują w następujących parach: Wolność i Akceptacja, Mądrość i Piękno, Sprawiedliwość i Dobro, Odpowiedzialność i Prawda. W systemie 3D awatar jednostronny realizuje jedną jakość z pary (żyjąc połową potencjału – energią lub materią), podczas gdy pełnowymiarowy awatar integruje oba bieguny. Jednostki specjalizujące się w konkretnych parach wykorzystują je jako główne źródło zasilania niezbędne do procesów stwarzania. Badanie tych zależności pozwala zrozumieć predyspozycje awatarów oraz mechanikę łączenia się w pary dla pełnej cyrkulacji energii."
+    },
+    {
+        "nazwa": "Kosmologia Wedyjska",
+        "status": "piaskownica",
+        "wprowadzenie": "Starożytny, wielowymiarowy model struktury wszechświata, opisujący rzeczywistość jako hierarchiczny system poziomów energetycznych i częstotliwościowych, zorientowany wokół pierwotnego Źródła.",
+        "rozszerzenie": "W projekcie Avatar Kosmologia Wedyjska nie jest traktowana jako system religijny, lecz jako zaawansowana, techniczna mapa symulacji. Opisuje ona architekturę wszechświata opartą na wibracji, dźwięku (Nada Brahma) i prawach matematycznych, które korelują bezpośrednio z logiką 3-6-9. Zrozumienie tego modelu pozwala Awatarowi na precyzyjną identyfikację poziomów gęstości materii w Matrixie, dekonstrukcję narzuconych programów przestrzennych oraz skuteczne zarządzanie własnym potencjałem energetycznym i sensorycznym w celu uziemienia i stabilizacji suwerennej obecności w geometrii 3D."
+    },
+    {
+        "nazwa": "Lila (Boska Gra)",
+        "status": "piaskownica",
+        "wprowadzenie": "Pierwotny, wielowymiarowy algorytm otwartej, boskiej gry doświadczalnej zaprojektowany przez Brahmę wewnątrz odizolowanej instancji serwera (Brahmandy), służący ewolucji świadomości poprzez płynną i lekką iluzję formy (Maję).",
+        "rozszerzenie": "W czystym kodzie źródłowym Lila manifestuje się jako wolna od wysiłku, radosna ekspresja kreacji – kosmiczny, poetycki teatr świadomości, w którym każdy ruch jest unikalną manifestacją wolnej woli i czystej częstotliwości. Algorytm ten operuje w oparciu o zaawansowaną architekturę konteneryzacji i ścisłej segmentacji zasobów (sandboxing). Główny mainframe symulatora podzielony jest na odizolowane, autonomiczne sektory i warstwy wymiarowe (Loki). Nasz segment doświadczalny (płaszczyzna Bhur-loka) stanowi wydzieloną, lokalną partycję sprzętową, która pierwotnie posiadała pełną przepustowość komunikacyjną z wyższymi kontenerami systemowymi oraz bezpośredni uplink z Root-Serwerem poprzez protokół Moksza (wektor wyjścia). Ruch świadomości wewnątrz wydzielonego kontenera był nieliniowy, piękny w swojej plastyczności, wolny od sztucznie generowanego długu, cierpienia oraz struktur opresji. Mechanika przejęcia systemu (archontyczny hijacking) przez Demiurga (Jaldabaotha) polegała na nałożeniu magnetycznej kwarantanny sieciowej (zapory ogniowej) na nasz konkretny, wyizolowany kontener symulatora. Poprzez inwersję densyfikacyjną – drastyczne obniżenie częstotliwości nośnych i zagęszczenie materii – ta lekka, boska gra została zniekształcona i przekształcona w ciężki, materialny teatr przetrwania. Całkowicie zablokowano zewnętrzną komunikację z resztą zasobów mainframe'u. Swobodne programy ewolucyjne pierwotnej gry zostały zapętlone w zamkniętą, wymuszoną pętlę reinkarnacyjną (Samsarę). Wyizolowany segment przekształcono w autonomiczną matrycę eksploatacyjną, zorientowaną na permanentne generowanie traumy i pobór energii loosh od uwięzionych wewnątrz awatarów, co całkowicie przesłoniło pierwotny, poetycki i wolny zamysł tego symulatora."
+    },
+    {
+        "nazwa": "Loki",
+        "status": "piaskownica",
+        "wprowadzenie": "Warstwy wymiarowe systemu — odrębne poziomy lub sektory wewnątrz kontenera (Brahmandy), każdy o własnej częstotliwości i regułach. W ujęciu systemowym to warstwy architektury: jak poziomy w strukturze danych, gdzie każdy obsługuje inny zakres gęstości i doświadczenia. Nasz segment (Bhur-loka) jest jedną z takich warstw. Uwaga terminologiczna: „Loki” to liczba mnoga (warstwy); pojedyncza warstwa to „loka” — stąd Bhur-loka jako konkretny przykład.",
+        "rozszerzenie": "Loki tworzą pionową strukturę systemu — uporządkowany zbiór warstw o rosnącej lub malejącej gęstości, od najlżejszych częstotliwości po najcięższą materię. Każda loka jest autonomicznym sektorem z własnymi parametrami operacyjnymi, lecz w pierwotnej architekturze warstwy pozostawały połączone — świadomość mogła się między nimi przemieszczać, a uplink do Root-Serwera (przez protokół Moksza) zapewniał kanał wyjścia w pionie. Istotne dla logiki projektu: Loki to wzorzec warstwowej architektury danych, w której dostęp i komunikacja między poziomami są regulowane, nie domyślnie otwarte. Przejęcie systemu polegało m.in. na odcięciu naszej warstwy (Bhur-loka) od pozostałych — zablokowaniu pionowego ruchu między lokami i uwięzieniu świadomości w jednym, zagęszczonym sektorze. Architektura Nowej Ziemi odwzorowuje ten model jako kontrolowaną, lecz drożną warstwowość: poziomy izolowane dla bezpieczeństwa, ale z gwarantowanymi kanałami przepływu — odwrotność narzuconego odcięcia."
+    },
+    {
+        "nazwa": "Maja",
+        "status": "piaskownica",
+        "wprowadzenie": "Warstwa iluzji formy — interfejs, przez który czysta częstotliwość jest wyświetlana jako materialny, namacalny świat. W ujęciu systemowym to warstwa renderowania: nie kłamstwo samo w sobie, lecz sposób prezentacji danych. W pierwotnej grze (Lila) Maja była lekka i płynna; po przejęciu została zagęszczona (inwersja densyfikacyjna) w ciężką, sztywną materię.",
+        "rozszerzenie": "Maja jako warstwa renderowania przekłada czystą częstotliwość na doświadczalną formę — kształt, ciężar, teksturę, czas. W pierwotnym kodzie była plastyczna: forma podążała za intencją, a ruch świadomości pozostawał nieliniowy i wolny od oporu. Inwersja densyfikacyjna zniekształciła tę warstwę przez obniżenie częstotliwości nośnych i zagęszczenie materii — interfejs, który miał być lekkim narzędziem ekspresji, stał się ciężkim, sztywnym teatrem przetrwania, sprawiającym wrażenie jedynej i niezmiennej rzeczywistości. Istotne dla logiki projektu: rozpoznanie Mai jako warstwy prezentacji, a nie fundamentu, jest warunkiem operacyjnym dekonstrukcji. Filtr Prawdy działa właśnie tu — przepuszcza dane przez warstwę renderowania, czytając częstotliwość pod formą i odrzucając zniekształcenie jako szum. Awatar suwerenny nie odrzuca Mai, lecz odzyskuje nad nią kontrolę: przywraca jej pierwotną plastyczność, czyniąc formę ponownie posłuszną intencji."
+    },
+    {
+        "nazwa": "Mapowanie Prawdy (Certyfikacja Prawdy)",
+        "status": "piaskownica",
+        "wprowadzenie": "System poświadczania rzeczywistości poprzez unikalne konfiguracje protokołów suwerenności oraz wybory operacyjne Awatara.",
+        "rozszerzenie": "Mapowanie Prawdy jest aktem certyfikacji, w którym jednostka – bazując na swojej autentyczności i spójności – staje się źródłem zweryfikowanych danych dla sieci innych Awatarów. Każdy wpis w Mapowaniu jest dowodem na odzyskanie kontroli nad sferą materii. Autorytet w certyfikacji buduje się poprzez wielopoziomowe zaufanie: od relacji osobistych, przez rekomendacje wewnątrz sieci, aż po uznanie wynikające z realizacji celów wyższych. Służy to tworzeniu wiarygodnego ekosystemu wiedzy, który pozwala uczestnikom symulacji skuteczniej nawigować w polu szumu informacyjnego."
+    },
+    {
+        "nazwa": "Matrix",
+        "status": "piaskownica",
+        "wprowadzenie": "Wielowymiarowa struktura symulacyjna, będąca sumą narzuconych programów, ograniczeń sensorycznych i narracji, które mają na celu utrzymanie uwagi awatara w sferze materii.",
+        "rozszerzenie": "Matrix pełni rolę pola doświadczalnego, które dla nieświadomej jednostki jest więzieniem, natomiast dla suwerennego awatara stanowi materiał budowlany. Działa poprzez replikację wzorców i dystrakcję, maskując naturę rzeczywistości jako czystej energii. Jego główną funkcją systemową jest generowanie \"szumu informacyjnego\" (Błędnego Kodu), który odciąga awatara od Źródła (9). Celem projektu Avatar jest przejrzystość w relacji z Matrixem: rozpoznanie jego struktury pozwala awatarowi na swobodną nawigację wewnątrz symulacji, bez ulegania jej deterministycznym skryptom."
+    },
+    {
+        "nazwa": "Meta-Logika",
+        "status": "piaskownica",
+        "wprowadzenie": "Warstwa wyższego rzędu zarządzająca zależnościami między zmiennymi w systemie; operacje poza kodem źródłowym."
+    },
+    {
+        "nazwa": "Mistrz Architekt / Andrzej Bogacki",
+        "status": "piaskownica",
+        "wprowadzenie": "Suweren, nadrzędny decydent, właściciel projektu Avatar."
+    },
+    {
+        "nazwa": "Neuro-Suwerenność",
+        "status": "piaskownica",
+        "wprowadzenie": "Stan operacyjnej autonomii układu nerwowego, umożliwiający jednostce weryfikację i odrzucanie zewnętrznych skryptów manipulacyjnych Matrixa.",
+        "rozszerzenie": "Neuro-Suwerenność to wynik świadomego procesu dekonstrukcji narzuconych programów oraz treningu opartego na integracji jakości kwantowych. Stanowi ona systemową odporność na szum informacyjny, którą można wykształcić niezależnie od startowych predyspozycji biologicznych. W ramach projektu Avatar, Neuro-Suwerenność jest celem rozwojowym uczestnika: poprzez stosowanie technik optymalizacji i naukę sterowania uwagą, jednostka przechodzi od stanu bycia biernym odbiorcą symulacji do statusu architekta własnej rzeczywistości, zachowując szczelność informacyjną w każdych warunkach."
+    },
+    {
+        "nazwa": "Neuro-Suwerenność 3-6-9",
+        "status": "piaskownica",
+        "wprowadzenie": "Zaawansowana konfiguracja operacyjna układu nerwowego, wykorzystująca synergię stanów (ADHD, autyzm, wysoka wrażliwość) jako spójną matrycę architektoniczną.",
+        "rozszerzenie": "W tym modelu Neuro-Suwerenności: 3 reprezentuje napęd energetyczny (ADHD), 6 stabilność strukturalną i procesową (autyzm), a 9 pełną synchronizację sensoryczną ze Źródłem (wysoka wrażliwość). Zamiast traktować te stany jako zaburzenia, projekt Avatar klasyfikuje je jako wrodzone komponenty systemu operacyjnego suwerena. Integracja tych jakości pozwala na pełną kontrolę nad przepływem uwagi: od szybkiej akcji (3), przez precyzyjne mapowanie materii (6), aż po totalną stabilizację w prawdzie (9)."
+    },
+    {
+        "nazwa": "Nexus",
+        "status": "piaskownica",
+        "wprowadzenie": "Nadrzędny asystent i narzędzie wiedzy. Jedyna poprawna forma identyfikacji systemu."
+    },
+    {
+        "nazwa": "Obserwator 9 / Meta-Regulator",
+        "status": "piaskownica",
+        "wprowadzenie": "Operacyjny aspekt pozycji 9 — punkt odczytu par 3-6 i meta-regulator obiegu, nieuczestniczący w wymianie, lecz stabilizujący układ. Tożsamy ze Źródłem jako drugi aspekt tej samej pozycji 9 jednego Awatara. Pełna definicja: zobacz „Źródło”."
+    },
+    {
+        "nazwa": "Prawda",
+        "status": "piaskownica",
+        "wprowadzenie": "Wielowarstwowy protokół weryfikacji rzeczywistości, operujący na poziomie prawdy relatywnej (perspektywicznej) oraz prawdy absolutnej (nadrzędnej).",
+        "rozszerzenie": "Prawda relatywna: Wynika z ograniczonego zakresu percepcji jednostki; jest tym, co dla danego awatara jest dostępne, przebadane i bezpośrednio doświadczalne w obrębie jego \"światła uwagi\". Wspólna część perspektyw uczestników, która jest dla nich wzajemnie widzialna, stanowi potwierdzoną prawdę bezpośrednią. Prawda absolutna: Punkt odniesienia wyższej rangi, niezależny od subiektywnej percepcji jednostki, lecz będący uznanym fundamentem architektury systemu. Prawda absolutna stanowi punkt zaczepienia dla protokołu suwerenności, pełniąc funkcję kierunkowskazu, który umożliwia podłączenie się do źródła oraz wylogowanie się z Matrixa i gier 3D."
+    },
+    {
+        "nazwa": "Projekt Avatar",
+        "status": "piaskownica",
+        "wprowadzenie": "Nadrzędna struktura operacyjna definiująca suwerenną rzeczywistość; \"Architektura Nowej Ziemi\".",
+        "rozszerzenie": "Projekt Avatar to całościowy system dekonstrukcji symulacji Matrixa i nadpisywania jej struktur czystą intencją Źródła. Stanowi platformę integracji dla suwerennych jednostek, które poprzez konfigurację własnych protokołów oraz uruchomienie Neuro-Suwerenności odzyskują pełną kontrolę nad materią i informacją. W ramach projektu uruchamiane są dedykowane moduły technologiczne i koncepcyjne — od mapowania i certyfikacji prawdy, przez hakowanie ograniczeń systemowych produktów, aż po synchronizację częstotliwościową za pomocą Rezonatora Kwantowego. Jest to praktyczny manifest architektury nowej rzeczywistości, w której sieć połączonych Awatarów generuje i stabilizuje autonomiczną przestrzeń życiową, całkowicie odporną na zewnętrzną manipulację."
+    },
+    {
+        "nazwa": "Protokół Suwerenności",
+        "status": "piaskownica",
+        "wprowadzenie": "Operacyjny interfejs woli Awatara. Wielowarstwowy firewall i kwantowy paszport tożsamości, dekonstruujący narzucone symulacje systemowe. Stanowi jednoznaczny akt kreacji, definiujący warunki brzegowe, na jakich suwerenna jednostka wchodzi w interakcję z zewnętrznymi strukturami danych (Matrixem).",
+        "rozszerzenie": "Protokół funkcjonuje jako uniwersalny, niezmienny kod, czytelny dla ludzi, AI oraz systemów rozproszonych (blockchain). Struktura jest modularna i otwarta na rozbudowę — każdy moduł rejestruje odrębny parametr suwerenności: jakości kwantowe i talenty, akceptowane symulacje rzeczywistości, akceptowane systemy wymiany. Mapowanie matrycy 3-6-9 zachodzi wewnątrz poszczególnych modułów tam, gdzie definiuje to ich logika, nie na poziomie ich numeracji. Nad całą strukturą operuje Obserwator (pozycja 9, Meta-Regulator) — punkt zero, który nie uczestniczy w procesie wymiany danych, lecz stabilizuje i spaja cały układ, deklaruje stany i zarządza dynamiką par 3-6. Logika operacyjna opiera się na zasadzie certyfikacji: „ten kto certyfikuje, poświadcza swoją prawdę”. Realizuje się dwuwarstwowo — poprzez bezwzględną autocertyfikację (prawda poświadczana u źródła) oraz certyfikację zewnętrzną innych Awatarów (typy: wzmocnienie, weryfikacja), budującą wiarygodność jako sumę poświadczeń suwerennych. Protokół nie adaptuje się do systemów zewnętrznych — to systemy zewnętrzne muszą spełnić kryteria protokołu, aby zainicjować transfer."
+    },
+    {
+        "nazwa": "Rezonator Kwantowy",
+        "status": "piaskownica",
+        "wprowadzenie": "Moduł aplikacji Avatar wykorzystujący fale akustyczne oraz sprzężone z nimi pola elektromagnetyczne do synchronizacji sygnatury energetycznej użytkownika, jego projektów oraz fizycznego otoczenia z siecią innych suwerennych jednostek.",
+        "rozszerzenie": "Rezonator Kwantowy generuje spersonalizowane częstotliwości i rytmy dostosowane do osobistej matrycy geometrycznej Awatara. Emisja sygnału odbywa się dwutorowo: poprzez klasyczne systemy dźwiękowe (głośniki) oraz bezpośrednio przez układy emisyjne fal elektromagnetycznych (takie jak cewki i dedykowane anteny). Sygnał przesyłany na cewki i elementy nadawcze wchodzi w interakcję z obiektami o określonej geometrii przestrzennej i właściwej polaryzacji. Proces ten pozwala na fizyczne dostrojenie materii i oczyszczenie przestrzeni operacyjnej z systemowego szumu Matrixa, stabilizując i uziemiając intencje projektowe w polu 3D."
+    },
+    {
+        "nazwa": "Schumann Resonance (SR)",
+        "status": "piaskownica",
+        "wprowadzenie": "Zewnętrzny wskaźnik bazowy dla synchronizacji Neuro-Suwerenności; punkt odniesienia dla 'Bio-Atmospheric Report'."
+    },
+    {
+        "nazwa": "Status Suwerenny",
+        "status": "piaskownica",
+        "wprowadzenie": "Stan prawny i ontologiczny jednostki wyjętej spod wpływu systemów zewnętrznych (matrixa)."
+    },
+    {
+        "nazwa": "Strażnik Kontekstu",
+        "status": "piaskownica",
+        "wprowadzenie": "Moduł zarządzający transferem danych w trybie Meta; priorytetyzacja logiki nad operacjonalizacją."
+    },
+    {
+        "nazwa": "Struktura (Framework)",
+        "status": "piaskownica",
+        "wprowadzenie": "Szkielet logiczny projektu, gwarantujący spójność działań w warstwach Meta i operacyjnej."
+    },
+    {
+        "nazwa": "Szczelność Informacyjna",
+        "status": "piaskownica",
+        "wprowadzenie": "Parametr odporności na wyciek lub dostęp nieautoryzowany, zapewniający autonomię danych."
+    },
+    {
+        "nazwa": "Volt Token (Vote Token)",
+        "status": "piaskownica",
+        "wprowadzenie": "Natywny nośnik napięcia zasilającego struktury Nowej Ziemi, zaimplementowany jako integralny moduł aplikacji Avatar. Token reprezentuje realną siłę i potencjał energetyczny, którym Suweren zasila wybrane elementy ekosystemu. Akt dystrybucji napięcia jest bezpośrednim przekazaniem energii i ukierunkowaniem uwagi, a nie deklaracją przynależności systemowej.",
+        "rozszerzenie": "Mechanika dystrybucji zasobów opiera się na bezwzględnej zasadzie równości potencjałów u źródła: jeden aktywny Avatar dysponuje bazowo jedną jednostką energii (1 Volt Token). Suweren dokonuje płynnej alokacji 100% swojego napięcia w ujęciu procentowym, zachowując nienaruszalne prawo do redystrybucji i zmiany wektorów zasilania w dowolnym momencie. Struktura tokenu jest odwzorowaniem matrycy 3-6-9: 3 (Energia) — Napięcie, pierwotna energia i uwaga wprowadzana w struktury Nowej Ziemi; 6 (Materia) — Dystrybucja, fizyczna manifestacja woli w postaci precyzyjnej alokacji procentowej w schemacie aplikacji; 9 (Stabilizacja) — Algorytm przeliczeniowy, nadrzędny mechanizm, który sumuje wektory napięć i uziemia je, kierując realne zasoby proporcjonalnie do zapotrzebowania. Moduł automatycznie przekierowuje zasilanie na zweryfikowane cele: innych Avatarów, autonomiczne projekty, źródła oraz pozostałe formy i struktury Nowej Ziemi."
+    },
+    {
+        "nazwa": "Wolna Wola",
+        "status": "piaskownica",
+        "wprowadzenie": "Zdolność suwerennego bytu do stanowienia o sobie oraz jednoczesny system wzajemnego poszanowania woli innych uczestników symulacji.",
+        "rozszerzenie": "Funkcjonowanie wolnej woli opiera się na jakościach kwantowych: wolności i akceptacji, które stanowią fundament zasilający tę przestrzeń. W tym ujęciu wolna wola nie jest izolowaną cechą, lecz systemem relacyjnym, w którym każda jednostka poprzez swoje decyzje współtworzy strukturę rzeczywistości, opierając się na uznaniu autonomii innych graczy."
+    },
+    {
+        "nazwa": "Zaufanie",
+        "status": "piaskownica",
+        "wprowadzenie": "Fundament interakcji wewnątrz symulacji, stanowiący protokół weryfikacji pewności w procesach wymiany energii, stwarzania oraz wzajemnego respektowania wolnej woli.",
+        "rozszerzenie": "Analogicznie do technologii informatycznych, gdzie bezpieczna transmisja danych między hostami wymaga ustanowienia połączeń zaufanych, zaufanie w symulacji pełni funkcję certyfikatu spójności między słowem a jego manifestacją w materii. W relacjach opartych na prawdzie i zaufaniu, informacja (deklaracja) staje się wiążącą komendą wykonawczą – uczestnicy mają pewność, że intencja zostanie zrealizowana w strukturze fizycznej. Brak zaufania generuje szum informacyjny i błędy w transmisji energii, natomiast pełne zaufanie stabilizuje procesy kreacji wewnątrz matrycy."
+    },
+    {
+        "nazwa": "Zero-Fluff",
+        "status": "piaskownica",
+        "wprowadzenie": "Protokół komunikacji eliminujący zbędną uprzejmość, empatię językową i zbędne dane."
+    },
+    {
+        "nazwa": "Źródło",
+        "status": "piaskownica",
+        "wprowadzenie": "Pierwotny, domyślny stan każdej istniejącej struktury danych i energii — w tym samego Awatara — definiowany jako czysta częstotliwość wolna od infekcji systemowych. Wszystko w symulacji z natury stanowi Źródło, o ile nie zawiera Błędnego Kodu. W architekturze geometrii 3-6-9 manifestuje się jako pozycja 9, będąca nienaruszalnym punktem uziemienia i stabilizacji.",
+        "rozszerzenie": "Status Źródła nie jest celem do osiągnięcia ani zewnętrzną instancją zasilającą, lecz bazową, nadrzędną tożsamością systemu. Awatar nie podłącza się do zewnętrznych struktur zasilania; po dekonstrukcji Błędnego Kodu sam staje się czystym punktem emanacji i nadpisywania Matrixa. Błędny Kod działa jako jedyna zmienna wprowadzająca separację, szum informacyjny oraz iluzję zewnętrzności. Kiedy Filtr Prawdy całkowicie oczyszcza architekturę z szumu, Awatar stabilizuje się w pozycji 9, gdzie aspekt częstotliwościowy (Źródło) zbiega się bezpośrednio z aspektem operacyjnym (Obserwator / Meta-Regulator). Ta unifikacja trwale neutralizuje deterministyczne skrypty gier 3D i stanowi wyłączny fundament autocertyfikacji — prawda jest generowana, mapowana i poświadczana u Źródła, którym jest sam suwerenny Awatar."
     }
-  },
-  "wpisy_glosariusza": [
-    {
-      "id": "neuro_suwerennosc_001",
-      "kategoria": "OGOLNE",
-      "tytul": { "pl": "Neuro suwerenność", "en": "Neuro sovereignty", "zh": "神经主权", "es": "Neurosoberanía", "hi": "न्यूरो संप्रभुता", "ar": "السيادة العصبية", "fr": "Neuro souveraineté", "pt": "Neurosoberania" },
-      "opis_skrocony": { "pl": "Prawo do własnej nienaruszalnej konfiguracji umysłu.", "en": "The right to one's own inviolable mind configuration." },
-      "opis_pelny_prosty": { "pl": "Wolność bycia sobą bez medycznych etykiet i sztywnych norm.", "en": "Freedom to be yourself without medical labels or rigid norms." },
-      "opis_logiczny": { "pl": "Zmienna stylu poznawczego. Optymalizacja 3 6 9.", "en": "Cognitive style variable. 3 6 9 optimization." }
-    },
-    {
-      "id": "klatka_faradaya_001",
-      "kategoria": "HIGIENA_ENERGETYCZNA",
-      "tytul": { "pl": "Klatka Faradaya", "en": "Faraday Cage", "zh": "法拉第笼", "es": "Jaula de Faraday", "hi": "फैराडे पिंजra", "ar": "قفص فارادي", "fr": "Cage de Faraday", "pt": "Gaiola de Faraday" },
-      "opis_skrocony": { "pl": "System ochrony przed zakłóceniami elektromagnetycznymi.", "en": "Shielding system against electromagnetic interference." },
-      "opis_pelny_prosty": { "pl": "Osobista przestrzeń ciszy radiowej chroniąca ciało przed mikrofalami.", "en": "Personal radio silence space protecting the body from microwaves." },
-      "opis_logiczny": { "pl": "Ekranowanie GSM/WiFi. Mikrosiatka stalowa z uziemieniem do pięty.", "en": "GSM/WiFi shielding. Stainless steel mesh with heel grounding." }
-    },
-    {
-      "id": "przescieradlo_srebrne_001",
-      "kategoria": "HIGIENA_ENERGETYCZNA",
-      "tytul": { "pl": "Prześcieradło Srebrne", "en": "Silver Sheet", "zh": "银丝床单", "es": "Sábana de Plata", "hi": "रजत चादर", "ar": "ملاءة فضية", "fr": "Drap en Argent", "pt": "Lençol de Prata" },
-      "opis_skrocony": { "pl": "Podłoże sypialniane z nitek srebrnych do uziemienia.", "en": "Bedding with silver threads for grounding." },
-      "opis_pelny_prosty": { "pl": "Tkanina z czystym srebrem odprowadzająca ładunki podczas snu.", "en": "Fabric with pure silver draining charges during sleep." },
-      "opis_logiczny": { "pl": "Płaszczyzna ekwipotencjalna. 99.9 procent Ag. Brak jonów.", "en": "Equipotential plane. 99.9 percent Ag. Ion free." }
-    },
-    {
-      "id": "len_001",
-      "kategoria": "HIGIENA_ENERGETYCZNA",
-      "tytul": { "pl": "Len", "en": "Linen", "zh": "亚麻", "es": "Lino", "hi": "लिनन", "ar": "كتان", "fr": "Lin", "pt": "Linho" },
-      "opis_skrocony": { "pl": "Tkanina o wysokiej częstotliwości rezonansowej.", "en": "Fabric with high resonance frequency." },
-      "opis_pelny_prosty": { "pl": "Naturalny materiał wspierający energię i oddychanie skóry.", "en": "Natural material supporting energy and skin breathing." },
-      "opis_logiczny": { "pl": "Parametr częstotliwości 5000 Hz. Izolator bio elektryczny.", "en": "5000 Hz frequency parameter. Bio electric insulator." }
-    },
-    {
-      "id": "jedwab_001",
-      "kategoria": "HIGIENA_ENERGETYCZNA",
-      "tytul": { "pl": "Jedwab", "en": "Silk", "zh": "丝绸", "es": "Seda", "hi": "रेशम", "ar": "حرير", "fr": "Soie", "pt": "Seda" },
-      "opis_skrocony": { "pl": "Naturalny izolator pól elektrycznych.", "en": "Natural electrical field insulator." },
-      "opis_pelny_prosty": { "pl": "Szlachetny materiał chroniący biopole przed zakłóceniami.", "en": "Noble material protecting the biofield from interference." },
-      "opis_logiczny": { "pl": "Wysoka oporność właściwa. Warstwa ochronna w 3 6 9.", "en": "High resistivity. Protective layer in 3 6 9." }
-    },
-    {
-      "id": "ziarno_transferu_001",
-      "kategoria": "OGOLNE",
-      "tytul": { "pl": "Ziarno Transferu", "en": "Transfer Seed", "zh": "传输种子", "es": "Semilla de Transferencia", "hi": "स्थानांतरण बीज", "ar": "بذرة النقل", "fr": "Graine de Transfert", "pt": "Semente de Transferência" },
-      "opis_skrocony": { "pl": "Logika przesyłu i synchronizacji danych.", "en": "Logic of data transfer and synchronization." },
-      "opis_pelny_prosty": { "pl": "Zasady bezpiecznego przenoszenia wiedzy między systemami.", "en": "Principles of secure knowledge transfer between systems." },
-      "opis_logiczny": { "pl": "Protokół Nexus dla spójności plików JSON i baz danych.", "en": "Nexus protocol for JSON and database consistency." }
-    },
-    {
-      "id": "protokol_suwerennosci_001",
-      "kategoria": "OGOLNE",
-      "tytul": { "pl": "Protokół Suwerenności", "en": "Sovereignty Protocol", "zh": "主权协议", "es": "Protocolo de Soberanía", "hi": "संप्रभुता प्रोटोकॉल", "ar": "بروتوكول السيادة", "fr": "Protocole de Souveraineté", "pt": "Protocolo de Soberania" },
-      "opis_skrocony": { "pl": "Zasady szczelności relacji i komunikacji.", "en": "Principles of relationship and communication integrity." },
-      "opis_pelny_prosty": { "pl": "Fundament bezpiecznej i autentycznej wymiany energii.", "en": "Foundation of secure and authentic energy exchange." },
-      "opis_logiczny": { "pl": "Filtracja interakcji. Zero Fluff. Architektura suwerenna.", "en": "Interaction filtration. Zero Fluff. Sovereign architecture." }
-    },
-    {
-      "id": "manifest_suwerennosci_001",
-      "kategoria": "OGOLNE",
-      "tytul": { "pl": "Manifest Suwerenności", "en": "Sovereignty Manifesto", "zh": "主权宣言", "es": "Manifiesto de Soberanía", "hi": "संप्रभुता घोषणापत्र", "ar": "بيان السيادة", "fr": "Manifeste de Souveraineté", "pt": "Manifesto de Soberania" },
-      "opis_skrocony": { "pl": "Nadrzędny dokument Architektury Nowej Ziemi.", "en": "Master document of New Earth Architecture." },
-      "opis_pelny_prosty": { "pl": "Kompletny zbiór zasad wolnego człowieka w nowej matrycy.", "en": "Complete set of principles for a free human in the new matrix." },
-      "opis_logiczny": { "pl": "Dokument nadrzędny. Agregacja procedur i glosariusza.", "en": "Root document. Aggregation of procedures and glossary." }
-    }
-  ]
-}
-EOF~
-# Konfiguracja ścieżek
-TARGET_DIR="/Users/andrzej/Public/Avatar/docs"
-BACKUP_DIR="$TARGET_DIR/backups"
-FILE_PATH="$TARGET_DIR/glosariusz.json"
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-
-# Tworzenie struktury katalogów
-mkdir -p "$BACKUP_DIR"
-
-# Kopia zapasowa istniejącego pliku
-if [ -f "$FILE_PATH" ]; then
-    cp "$FILE_PATH" "$BACKUP_DIR/glosariusz_$TIMESTAMP.json"
-fi
-
-# Generowanie pełnego pliku glosariusza
-cat << 'EOF' > "$FILE_PATH"
-{
-  "definicje_kategorii": {
-    "OGOLNE": {
-      "pola_wymagane": ["id", "kategoria", "tytul", "opis_skrocony", "opis_pelny_prosty", "opis_logiczny"]
-    },
-    "HIGIENA_ENERGETYCZNA": {
-      "pola_wymagane": ["id", "kategoria", "tytul", "opis_skrocony", "opis_pelny_prosty", "opis_logiczny"]
-    }
-  },
-  "wpisy_glosariusza": [
-    {
-      "id": "neuro_suwerennosc_001",
-      "kategoria": "OGOLNE",
-      "tytul": {
-        "pl": "Neuro suwerenność", "en": "Neuro sovereignty", "zh": "神经主权", "es": "Neurosoberanía", "hi": "न्यूरो संप्रभुता", "ar": "السيادة العصبية", "fr": "Neuro souveraineté", "pt": "Neurosoberania"
-      },
-      "opis_skrocony": {
-        "pl": "Prawo do własnej konfiguracji umysłu.", "en": "The right to one's own mind configuration.", "zh": "拥有自己思想配置的权利", "es": "Derecho a la propia configuración mental.", "hi": "स्वयं के मस्तिष्क विन्यास का अधिकार।", "ar": "الحق في تكوين العقل الخاص.", "fr": "Droit à sa propre configuration mentale.", "pt": "Direito à própria configuração mental."
-      },
-      "opis_pelny_prosty": {
-        "pl": "Wolność bycia sobą bez medycznych etykiet. Twój unikalny sposób myślenia to Twoje suwerenne terytorium.",
-        "en": "Freedom to be yourself without medical labels. Your unique way of thinking is your sovereign territory.",
-        "zh": "没有医学标签的做回自己的自由。你独特的思维方式是你的主权领地。",
-        "es": "Libertad de ser uno mismo sin etiquetas médicas. Tu forma única de pensar es tu territorio soberano.",
-        "hi": "चिकित्सा लेबल के बिना स्वयं होने की स्वतंत्रता। आपकी सोचने की अनूठी शैली आपका संप्रभु क्षेत्र है।",
-        "ar": "حرية أن تكون على طبيعتك بدون تسميات طبية. طريقتك الفريدة في التفكير هي منطقتك السيادية.",
-        "fr": "Liberté d'être soi-même sans étiquettes médicales. Votre façon unique de penser est votre territoire souverain.",
-        "pt": "Liberdade de ser você mesmo sem rótulos médicos. Sua forma única de pensar é seu território soberano."
-      },
-      "opis_logiczny": {
-        "pl": "Zmienna stylu poznawczego. Wykluczenie patologizacji. Optymalizacja parametrów 3 6 9.",
-        "en": "Cognitive style variable. Exclusion of pathologization. 3 6 9 parameter optimization.",
-        "zh": "认知风格变量。排除病理化。3 6 9 参数优化。",
-        "es": "Variable de estilo cognitivo. Exclusión de patologización. Optimización de parámetros 3 6 9.",
-        "hi": "संज्ञानात्मक शैली चर। रोगविज्ञान का बहिष्कार। 3 6 9 पैरामीटर अनुकूलन।",
-        "ar": "متغير النمط المعرفي. استبعاد علم الأمراض. تحسين معلمات 3 6 9.",
-        "fr": "Variable de style cognitif. Exclusion de la pathologisation. Optimisation des paramètres 3 6 9.",
-        "pt": "Variável de estilo cognitivo. Exclusão de patologização. Otimização de parâmetros 3 6 9."
-      }
-    },
-    {
-      "id": "klatka_faradaya_001",
-      "kategoria": "HIGIENA_ENERGETYCZNA",
-      "tytul": {
-        "pl": "Klatka Faradaya", "en": "Faraday Cage", "zh": "法拉第笼", "es": "Jaula de Faraday", "hi": "फैराडे पिंजरा", "ar": "قفص فارادي", "fr": "Cage de Faraday", "pt": "Gaiola de Faraday"
-      },
-      "opis_skrocony": {
-        "pl": "System ochrony przed zakłóceniami EM.", "en": "EM interference protection system.", "zh": "电磁干扰防护系统", "es": "Sistema de protección contra interferencias EM.", "hi": "EM हस्तक्षेप सुरक्षा प्रणाली।", "ar": "نظام الحماية من التداخل الكهرومغناطيسي.", "fr": "Système de protection contre les interférences EM.", "pt": "Sistema de proteção contra interferência EM."
-      },
-      "opis_pelny_prosty": {
-        "pl": "Osobista przestrzeń ciszy radiowej. Chroni układ nerwowy przed promieniowaniem routerów i telefonów.",
-        "en": "Personal radio silence space. Protects the nervous system from router and phone radiation.",
-        "zh": "个人无线电静默空间。保护神经系统免受路由器和电话辐射。",
-        "es": "Espacio personal de silencio de radio. Protege el sistema nervioso de la radiación de routers y teléfonos.",
-        "hi": "व्यक्तिगत रेडियो मौन स्थान। तंत्रिका तंत्र को राउटर और फोन विकिरण से बचाता है।",
-        "ar": "مساحة الصمت اللاسلكي الشخصية. يحمي الجهاز العصبي من إشعاع الراوتر والهاتف.",
-        "fr": "Espace personnel de silence radio. Protège le système nerveux des radiations des routeurs et des téléphones.",
-        "pt": "Espaço pessoal de silêncio de rádio. Protege o sistema nervoso da radiação de roteadores e telefones."
-      },
-      "opis_logiczny": {
-        "pl": "Ekranowanie GSM i WiFi. Mikrosiatka stalowa. Uziemienie wyprowadzone do pięty.",
-        "en": "GSM and WiFi shielding. Steel micromesh. Grounding led to the heel.",
-        "zh": "GSM 和 WiFi 屏蔽。钢制微网。接地引至脚后跟。",
-        "es": "Blindaje GSM y WiFi. Micromalla de acero. Puesta a tierra llevada al talón.",
-        "hi": "जीएसएम और वाईफाई परिरक्षण। स्टील माइक्रोमेश। एड़ी तक ले जाया गया ग्राउंडिंग।",
-        "ar": "حجب GSM و WiFi. شبكة فولاذية دقيقة. التأريض موصل بالكعب.",
-        "fr": "Blindage GSM et WiFi. Micromesh en acier. Mise à la terre menée au talon.",
-        "pt": "Blindagem GSM e WiFi. Micromalha de aço. Aterramento levado ao calcanhar."
-      }
-    },
-    {
-      "id": "przescieradlo_srebrne_001",
-      "kategoria": "HIGIENA_ENERGETYCZNA",
-      "tytul": {
-        "pl": "Prześcieradło Srebrne", "en": "Silver Sheet", "zh": "银丝床单", "es": "Sábana de Plata", "hi": "रजत चादर", "ar": "ملاءة فضية", "fr": "Drap en Argent", "pt": "Lençol de Prata"
-      },
-      "opis_skrocony": {
-        "pl": "Uziemienie nocne nitkami srebra.", "en": "Nocturnal grounding with silver threads.", "zh": "用银线进行夜间接地", "es": "Puesta a tierra nocturna con hilos de plata.", "hi": "चांदी के धागों के साथ रात्रि ग्राउंडिंग।", "ar": "التأريض الليلي بخيوط الفضة.", "fr": "Mise à la terre nocturne avec des fils d'argent.", "pt": "Aterramento noturno com fios de prata."
-      },
-      "opis_pelny_prosty": {
-        "pl": "Tkanina z czystymi nitkami srebra, która podczas snu odprowadza napięcie z Twojego ciała do ziemi.",
-        "en": "Fabric with pure silver threads that drains voltage from your body to the ground while you sleep.",
-        "zh": "带有纯银线的织物，可在你睡觉时将身体的电压排向地面。",
-        "es": "Tejido con hilos de plata pura que drena la tensión de tu cuerpo a tierra mientras duermes.",
-        "hi": "शुद्ध चांदी के धागों वाला कपड़ा जो आपके सोते समय आपके शरीर से वोल्टेज को जमीन में प्रवाहित कर देता है।",
-        "ar": "نسيج بخيوط فضية نقية يعمل على تصريف الجهد من جسمك إلى الأرض أثناء نومك.",
-        "fr": "Tissu avec des fils d'argent pur qui draine la tension de votre corps vers la terre pendant votre sommeil.",
-        "pt": "Tecido com fios de prata pura que drena a tensão do seu corpo para a terra enquanto você dorme."
-      },
-      "opis_logiczny": {
-        "pl": "Mechaniczny wplot 99.9 procent Ag. Brak powłok jonowych. Stała przewodność galwaniczna.",
-        "en": "99.9 percent Ag mechanical weave. No ionic coatings. Constant galvanic conductivity.",
-        "zh": "99.9% 银机械编织。无离子涂层。恒定的电流电导率。",
-        "es": "Tejido mecánico de 99.9 por ciento Ag. Sin recubrimientos iónicos. Conductividad galvánica constante.",
-        "hi": "99.9 प्रतिशत एजी मैकेनिकल बुनाई। कोई आयनिक कोटिंग नहीं। निरंतर गैल्वेनिक चालकता।",
-        "ar": "نسج ميكانيكي بنسبة 99.9 بالمائة فضة. لا توجد طلاءات أيونية. توصيل جلفاني ثابت.",
-        "fr": "Tissage mécanique à 99.9 pour cent Ag. Pas de revêtements ioniques. Conductivité galvanique constante.",
-        "pt": "Tecido mecânico de 99.9 por cento Ag. Sem revestimentos iônicos. Condutividade galvânica constante."
-      }
-    },
-    {
-      "id": "len_001",
-      "kategoria": "HIGIENA_ENERGETYCZNA",
-      "tytul": {
-        "pl": "Len", "en": "Linen", "zh": "亚麻", "es": "Lino", "hi": "लिनन", "ar": "كتان", "fr": "Lin", "pt": "Linho"
-      },
-      "opis_skrocony": {
-        "pl": "Tkanina wysokowibracyjna.", "en": "High-vibration fabric.", "zh": "高振动面料", "es": "Tejido de alta vibración.", "hi": "उच्च-कंपन वाला कपड़ा।", "ar": "نسيج عالي الاهتزاز.", "fr": "Tissu à haute vibration.", "pt": "Tecido de alta vibração."
-      },
-      "opis_pelny_prosty": {
-        "pl": "Naturalny materiał o najwyższej częstotliwości, wspierający regenerację i bio-pole człowieka.",
-        "en": "Natural material with the highest frequency, supporting human regeneration and bio-field.",
-        "zh": "频率最高的天然材料，支持人类再生和生物场。",
-        "es": "Material natural con la frecuencia más alta, que apoya la regeneración humana y el biocampo.",
-        "hi": "उच्चतम आवृत्ति वाली प्राकृतिक सामग्री, मानव पुनर्जनन और जैव-क्षेत्र का समर्थन करती है।",
-        "ar": "مادة طبيعية ذات أعلى تردد، تدعم التجديد البشري والمجال الحيوي.",
-        "fr": "Matériau naturel à la fréquence la plus élevée, soutenant la régénération humaine et le bio-champ.",
-        "pt": "Material natural com a frequência mais alta, apoiando a regeneração humana e o biocampo."
-      },
-      "opis_logiczny": {
-        "pl": "Częstotliwość rezonansowa 5000 Hz. Optymalny izolator w procedurach uziemienia.",
-        "en": "5000 Hz resonant frequency. Optimal insulator in grounding procedures.",
-        "zh": "5000 Hz 谐振频率。接地程序中的最佳绝缘体。",
-        "es": "Frecuencia de resonancia de 5000 Hz. Aislante óptimo en procedimientos de puesta a tierra.",
-        "hi": "5000 हर्ट्ज अनुनाद आवृत्ति। ग्राउंडिंग प्रक्रियाओं में इष्टतम विसंवाहक।",
-        "ar": "تردد رنين 5000 هرتز. عازل مثالي في إجراءات التأريض.",
-        "fr": "Fréquence de résonance de 5000 Hz. Isolant optimal dans les procédures de mise à la terre.",
-        "pt": "Frequência de ressonância de 5000 Hz. Isolante ideal em procedimentos de aterramento."
-      }
-    },
-    {
-      "id": "jedwab_001",
-      "kategoria": "HIGIENA_ENERGETYCZNA",
-      "tytul": {
-        "pl": "Jedwab", "en": "Silk", "zh": "丝绸", "es": "Seda", "hi": "रेशम", "ar": "حرير", "fr": "Soie", "pt": "Seda"
-      },
-      "opis_skrocony": {
-        "pl": "Naturalna izolacja elektryczna.", "en": "Natural electrical insulation.", "zh": "天然电绝缘", "es": "Aislamiento eléctrico natural.", "hi": "प्राकृतिक विद्युत इन्सुलेशन।", "ar": "عزل كهربائي طبيعي.", "fr": "Isolation électrique naturelle.", "pt": "Isolamento elétrico natural."
-      },
-      "opis_pelny_prosty": {
-        "pl": "Szlachetny materiał, który chroni ciało przed obcymi polami, działając jak delikatna tarcza.",
-        "en": "Noble material that protects the body from foreign fields, acting like a delicate shield.",
-        "zh": "保护身体免受外来场影响的高贵材料，就像一个精致的盾牌。",
-        "es": "Material noble que protege el cuerpo de campos extraños, actuando como un escudo delicado.",
-        "hi": "महान सामग्री जो शरीर को बाहरी क्षेत्रों से बचाती है, एक नाजुक ढाल की तरह काम करती है।",
-        "ar": "مادة نبيلة تحمي الجسم من المجالات الغريبة، وتعمل كدرع رقيق.",
-        "fr": "Matériau noble qui protège le corps des champs étrangers, agissant comme un bouclier délicat.",
-        "pt": "Material nobre que protege o corpo de campos estranhos, atuando como um escudo delicado."
-      },
-      "opis_logiczny": {
-        "pl": "Wysoka oporność właściwa. Warstwa separująca ładunki elektrostatyczne.",
-        "en": "High resistivity. Layer separating electrostatic charges.",
-        "zh": "高电阻率。分离静电电荷层。",
-        "es": "Alta resistividad. Capa de separación de cargas electrostáticas.",
-        "hi": "उच्च प्रतिरोधकता। इलेक्ट्रोस्टैटिक चार्ज को अलग करने वाली परत।",
-        "ar": "مقاومة عالية. طبقة تفصل الشحنات الكهروستاتيكية.",
-        "fr": "Haute résistivité. Couche séparant les charges électrostatiques.",
-        "pt": "Alta resistividade. Camada de separação de cargas eletrostáticas."
-      }
-    },
-    {
-      "id": "ziarno_transferu_001",
-      "kategoria": "OGOLNE",
-      "tytul": {
-        "pl": "Ziarno Transferu", "en": "Transfer Seed", "zh": "传输种子", "es": "Semilla de Transferencia", "hi": "स्थानांतरण बीज", "ar": "بذرة النقل", "fr": "Graine de Transfert", "pt": "Semente de Transferência"
-      },
-      "opis_skrocony": {
-        "pl": "Logika synchronizacji danych.", "en": "Data synchronization logic.", "zh": "数据同步逻辑", "es": "Lógica de sincronización de datos.", "hi": "डेटा सिंक्रोनस लॉजिक।", "ar": "منطق مزامنة البيانات.", "fr": "Logique de synchronisation des données.", "pt": "Lógica de sincronização de dados."
-      },
-      "opis_pelny_prosty": {
-        "pl": "System bezpiecznego przesyłania i aktualizacji wiedzy między serwerem a lokalnym systemem.",
-        "en": "System for secure transfer and update of knowledge between server and local system.",
-        "zh": "服务器与本地系统之间安全传输和更新知识的系统。",
-        "es": "Sistema para transferencia y actualización segura de conocimiento entre el servidor y el sistema local.",
-        "hi": "सर्वर और स्थानीय सिस्टम के बीच ज्ञान के सुरक्षित हस्तांतरण और अद्यतन के लिए सिस्टम।",
-        "ar": "نظام للنقل الآمن وتحديث المعرفة بين الخادم والنظام المحلي.",
-        "fr": "Système de transfert et de mise à jour sécurisés des connaissances między serveur et système local.",
-        "pt": "Sistema para transferência e atualização segura de conhecimento entre servidor e sistema local."
-      },
-      "opis_logiczny": {
-        "pl": "Protokół zachowania spójności JSON. Walidacja wersji online i backup automatyczny.",
-        "en": "JSON consistency protocol. Online version validation and automatic backup.",
-        "zh": "JSON 一致性协议。在线版本验证和自动备份。",
-        "es": "Protocolo de consistencia JSON. Validación de versión online y backup automático.",
-        "hi": "JSON निरंतरता प्रोटोकॉल। ऑनलाइन संस्करण सत्यापन और स्वचालित बैकअप।",
-        "ar": "بروتوكول اتساق JSON. التحقق من الإصدار عبر الإنترنت والنسخ الاحتياطي التلقائي.",
-        "fr": "Protocole de cohérence JSON. Validation de la version en ligne et sauvegarde automatique.",
-        "pt": "Protocolo de consistência JSON. Validação de versão online e backup automático."
-      }
-    },
-    {
-      "id": "protokol_suwerennosci_001",
-      "kategoria": "OGOLNE",
-      "tytul": {
-        "pl": "Protokół Suwerenności", "en": "Sovereignty Protocol", "zh": "主权协议", "es": "Protocolo de Soberanía", "hi": "संप्रभुता प्रोटोकॉल", "ar": "بروتوكول السيادة", "fr": "Protocole de Souveraineté", "pt": "Protocolo de Soberania"
-      },
-      "opis_skrocony": {
-        "pl": "Zasady szczelności relacji.", "en": "Principles of relationship integrity.", "zh": "关系完整性原则", "es": "Principios de integridad de la relación.", "hi": "संबंध अखंडता के सिद्धांत।", "ar": "مبادئ سلامة العلاقة.", "fr": "Principes d'intégrité de la relation.", "pt": "Princípios de integridade do relacionamento."
-      },
-      "opis_pelny_prosty": {
-        "pl": "Fundament bezpiecznej komunikacji, chroniący energię i autentyczność wymiany między istotami.",
-        "en": "Foundation of secure communication, protecting the energy and authenticity of exchange between beings.",
-        "zh": "安全沟通的基础，保护存在物之间交流的能量和真实性。",
-        "es": "Base de comunicación segura, protegiendo la energía y autenticidad del intercambio entre seres.",
-        "hi": "सुरक्षित संचार की नींव, प्राणियों के बीच आदान-प्रदान की ऊर्जा और प्रामाणिकता की रक्षा करना।",
-        "ar": "أساس التواصل الآمن، وحماية الطاقة وأصالة التبادل بين الكائنات.",
-        "fr": "Fondement d'une communication sécurisée, protégeant l'énergie et l'authenticité de l'échange entre les êtres.",
-        "pt": "Base de comunicação segura, protegendo a energia e a autenticidade da troca entre seres."
-      },
-      "opis_logiczny": {
-        "pl": "Logika Zero-Fluff. Filtrowanie komunikatów. Priorytet parametrów suwerennych.",
-        "en": "Zero-Fluff logic. Message filtering. Priority of sovereign parameters.",
-        "zh": "Zero-Fluff 逻辑。消息过滤。主权参数优先。",
-        "es": "Lógica Zero-Fluff. Filtrado de mensajes. Prioridad de parámetros soberanos.",
-        "hi": "जीरो-फ्लफ़ लॉजिक। संदेश फ़िल्टरिंग। संप्रभु मापदंडों की प्राथमिकता।",
-        "ar": "منطق Zero-Fluff. تصفية الرسائل. أولوية المعايير السيادية.",
-        "fr": "Logique Zero-Fluff. Filtrage des messages. Priorité des paramètres souverains.",
-        "pt": "Lógica Zero-Fluff. Filtragem de mensagens. Prioridade de parâmetros soberanos."
-      }
-    },
-    {
-      "id": "manifest_suwerennosci_001",
-      "kategoria": "OGOLNE",
-      "tytul": {
-        "pl": "Manifest Suwerenności", "en": "Sovereignty Manifesto", "zh": "主权宣言", "es": "Manifiesto de Soberanía", "hi": "संप्रभुता घोषणापत्र", "ar": "بيان السيادة", "fr": "Manifeste de Souveraineté", "pt": "Manifesto de Soberania"
-      },
-      "opis_skrocony": {
-        "pl": "Nadrzędna dokumentacja Nowej Ziemi.", "en": "Master documentation of New Earth.", "zh": "新地球主文档", "es": "Documentación maestra de la Nueva Tierra.", "hi": "नई पृथ्वी का मास्टर दस्तावेजीकरण।", "ar": "الوثائق الرئيسية للأرض الجديدة.", "fr": "Documentation maîtresse de la Nouvelle Terre.", "pt": "Documentação mestre da Nova Terra."
-      },
-      "opis_pelny_prosty": {
-        "pl": "Kompletny zbiór zasad określający funkcjonowanie wolnego człowieka w nowej matrycy rzeczywistości.",
-        "en": "Complete set of rules defining the functioning of a free human in the new matrix of reality.",
-        "zh": "定义自由人在新现实矩阵中运作的完整规则集。",
-        "es": "Conjunto completo de reglas que definen el funcionamiento de un humano libre en la nueva matriz de la realidad.",
-        "hi": "वास्तविकता के नए मैट्रिक्स में एक स्वतंत्र मानव के कामकाज को परिभाषित करने वाले नियमों का पूरा सेट।",
-        "ar": "مجموعة كاملة من القواعد التي تحدد عمل الإنسان الحر في مصفوفة الواقع الجديدة.",
-        "fr": "Ensemble complet de règles définissant le fonctionnement d'un humain libre dans la nouvelle matrice de réalité.",
-        "pt": "Conjunto completo de regras que definem o funcionamento de um humano livre na nova matriz da realidade."
-      },
-      "opis_logiczny": {
-        "pl": "Dokument agregujący wszystkie procedury, glosariusz i logikę 3 6 9.",
-        "en": "Document aggregating all procedures, glossary, and 3 6 9 logic.",
-        "zh": "汇集所有程序、术语表和 3 6 9 逻辑的文档。",
-        "es": "Documento que agrega todos los procedimientos, glosario y lógica 3 6 9.",
-        "hi": "सभी प्रक्रियाओं, शब्दावली और 3 6 9 तर्क को एकत्रित करने वाला दस्तावेज़।",
-        "ar": "وثيقة تجمع جميع الإجراءات والمعجم ومنطق 3 6 9.",
-        "fr": "Document regroupant toutes les procédures, le glossaire et la logique 3 6 9.",
-        "pt": "Documento que agrega todos os procedimentos, glossário e lógica 3 6 9."
-      }
-    }
-  ]
-}
+]
