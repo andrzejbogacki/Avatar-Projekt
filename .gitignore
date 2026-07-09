@@ -12,3 +12,9 @@ backend/modules/qac/ephemeris/*
 # media/ — odłożone (2026-07-08): zdjęcia + nagrania audio ~84 MB,
 # decyzja o docelowym miejscu przechowywania (repo/LFS/chmura) w toku
 media/
+
+# Profile wygenerowane przez serwer podglądu — dane robocze, nie treść repo
+backend/modules/qac/profiles/*.json
+
+# Paczki backupu udostępniane do pobrania przez dev_server.js — nie treść repo
+backend/dev_public/pobierz/

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QAC — podgląd deweloperski</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+    :root { --bg: #0a0a0a; --fg: #e0e0e0; --accent: #d4af37; --err: #ff5555; --ok: #6fdc8c; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    h1 { color: var(--accent); font-size: 1.4rem; margin-bottom: 4px; }
+    .uwaga { font-size: 0.8rem; opacity: 0.7; margin-bottom: 24px; }
+    fieldset { border: 1px solid rgba(212,175,55,0.4); border-radius: 8px; margin-bottom: 16px; }
+    legend { color: var(--accent); padding: 0 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    label { display: block; font-size: 0.8rem; margin: 10px 0 4px; opacity: 0.85; }
+    input { width: 100%; box-sizing: border-box; background: #1a1a1a; border: 1px solid #333; color: var(--fg); padding: 8px; border-radius: 6px; font-size: 0.95rem; }
+    input[readonly] { opacity: 0.75; }
+    .rzad { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .szukaj-rzad { display: flex; gap: 8px; align-items: flex-end; }
+    .szukaj-rzad > div { flex: 1; }
+    .btn-mala { padding: 8px 14px; background: #1a1a1a; border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; cursor: pointer; white-space: nowrap; }
+    .btn-mala:disabled { opacity: 0.5; cursor: wait; }
+    #mapa { height: 280px; border-radius: 8px; margin-top: 12px; border: 1px solid #333; }
+    #miejsce-rozpoznane { font-size: 0.78rem; opacity: 0.75; margin-top: 8px; min-height: 1.2em; }
+    #wyniki-miasta { list-style: none; padding: 0; margin: 6px 0 0; max-height: 140px; overflow-y: auto; border-radius: 6px; }
+    #wyniki-miasta li { padding: 8px; background: #1a1a1a; border: 1px solid #333; border-top: none; cursor: pointer; font-size: 0.82rem; }
+    #wyniki-miasta li:first-child { border-top: 1px solid #333; border-radius: 6px 6px 0 0; }
+    #wyniki-miasta li:last-child { border-radius: 0 0 6px 6px; }
+    #wyniki-miasta li:hover { background: #2a2a2a; }
+    button[type=submit] { margin-top: 16px; padding: 10px 24px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    button[type=submit]:disabled { opacity: 0.5; cursor: wait; }
+    #wynik { margin-top: 20px; }
+    .status { font-size: 0.9rem; margin-bottom: 8px; }
+    .status.ok { color: var(--ok); }
+    .status.blad { color: var(--err); }
+    pre { background: #111; border: 1px solid #333; border-radius: 6px; padding: 12px; overflow-x: auto; font-size: 0.8rem; white-space: pre-wrap; word-break: break-word; }
+    .skrot { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 12px; }
+    .karta { background: rgba(255,255,255,0.05); border-left: 3px solid var(--accent); padding: 8px 10px; border-radius: 4px; }
+    .karta b { display: block; font-size: 0.75rem; opacity: 0.7; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <h1>QAC — podgląd deweloperski</h1>
+    <p class="uwaga">Narzędzie robocze do sprawdzenia działania modułu (nie jest częścią kontraktu QAC). Czas urodzenia podawany w UTC.</p>
+
+    <form id="formularz">
+        <fieldset>
+            <legend>Awatar</legend>
+            <label for="avatar_id">avatar_id (wzorzec: snake_case, min. dwa człony)</label>
+            <input id="avatar_id" name="avatar_id" value="test_test" required>
+        </fieldset>
+
+        <fieldset>
+            <legend>Czas urodzenia (UTC)</legend>
+            <label for="czas">Data i godzina urodzenia (UTC)</label>
+            <input id="czas" name="czas" type="datetime-local" step="1" value="1990-06-15T08:30:00" required>
+        </fieldset>
+
+        <fieldset>
+            <legend>Miejsce urodzenia</legend>
+            <label for="miasto">Miasto (wyszukaj, potem doprecyzuj klikając na mapie)</label>
+            <div class="szukaj-rzad">
+                <div><input id="miasto" name="miasto" placeholder="np. Warszawa"></div>
+                <button type="button" class="btn-mala" id="szukaj-btn">Szukaj</button>
+            </div>
+            <ul id="wyniki-miasta"></ul>
+
+            <div id="mapa"></div>
+            <div id="miejsce-rozpoznane"></div>
+
+            <div class="rzad">
+                <div>
+                    <label for="dlugosc">Długość geo [°]</label>
+                    <input id="dlugosc" name="dlugosc" type="number" step="any" value="21.0122" required>
+                </div>
+                <div>
+                    <label for="szerokosc">Szerokość geo [°]</label>
+                    <input id="szerokosc" name="szerokosc" type="number" step="any" value="52.2297" required>
+                </div>
+                <div>
+                    <label for="wysokosc">Wysokość n.p.m. [m]</label>
+                    <input id="wysokosc" name="wysokosc" type="number" step="any" value="113" required>
+                </div>
+            </div>
+        </fieldset>
+
+        <button type="submit" id="wyslij">Generuj profil</button>
+    </form>
+
+    <div id="wynik"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const formularz = document.getElementById('formularz');
+const wynikDiv = document.getElementById('wynik');
+const przycisk = document.getElementById('wyslij');
+const poleDlugosc = document.getElementById('dlugosc');
+const poleSzerokosc = document.getElementById('szerokosc');
+const poleWysokosc = document.getElementById('wysokosc');
+const poleMiasto = document.getElementById('miasto');
+const listaWynikow = document.getElementById('wyniki-miasta');
+const miejsceRozpoznane = document.getElementById('miejsce-rozpoznane');
+const szukajBtn = document.getElementById('szukaj-btn');
+
+// Mapa: domyślny widok — Warszawa; znacznik przeciągalny do precyzyjnego wskazania punktu.
+const mapa = L.map('mapa').setView([Number(poleSzerokosc.value), Number(poleDlugosc.value)], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap',
+    maxZoom: 18,
+}).addTo(mapa);
+const znacznik = L.marker([Number(poleSzerokosc.value), Number(poleDlugosc.value)], { draggable: true }).addTo(mapa);
+
+async function ustawWspolrzedne(lat, lon, przesunMape = true) {
+    poleSzerokosc.value = lat.toFixed(6);
+    poleDlugosc.value = lon.toFixed(6);
+    znacznik.setLatLng([lat, lon]);
+    if (przesunMape) mapa.setView([lat, lon], Math.max(mapa.getZoom(), 10));
+
+    miejsceRozpoznane.textContent = 'Rozpoznaję miejsce…';
+    try {
+        const odp = await fetch(`/api/geokodowanie/odwrotne?dlugosc=${lon}&szerokosc=${lat}`);
+        const dane = await odp.json();
+        miejsceRozpoznane.textContent = dane.nazwa ? `Wybrano: ${dane.nazwa}` : 'Nie udało się rozpoznać nazwy miejsca';
+    } catch {
+        miejsceRozpoznane.textContent = 'Nie udało się rozpoznać nazwy miejsca (brak połączenia)';
+    }
+
+    try {
+        const odp = await fetch(`/api/wysokosc?dlugosc=${lon}&szerokosc=${lat}`);
+        const dane = await odp.json();
+        if (odp.ok && Number.isFinite(dane.wysokosc_npm_m)) {
+            poleWysokosc.value = Math.round(dane.wysokosc_npm_m);
+        }
+    } catch { /* wysokość pozostaje edytowalna ręcznie przy braku danych */ }
+}
+
+znacznik.on('dragend', () => {
+    const { lat, lng } = znacznik.getLatLng();
+    ustawWspolrzedne(lat, lng, false);
+});
+mapa.on('click', (e) => ustawWspolrzedne(e.latlng.lat, e.latlng.lng, false));
+
+async function szukajMiasta() {
+    const zapytanie = poleMiasto.value.trim();
+    if (!zapytanie) return;
+    szukajBtn.disabled = true;
+    listaWynikow.innerHTML = '<li>Szukam…</li>';
+    try {
+        const odp = await fetch(`/api/geokodowanie?miasto=${encodeURIComponent(zapytanie)}`);
+        const dane = await odp.json();
+        if (!odp.ok) throw new Error(dane.blad || 'Błąd geokodowania');
+        if (!dane.wyniki.length) {
+            listaWynikow.innerHTML = '<li>Brak wyników</li>';
+            return;
+        }
+        listaWynikow.innerHTML = '';
+        dane.wyniki.forEach((w) => {
+            const li = document.createElement('li');
+            li.textContent = w.nazwa;
+            li.onclick = () => {
+                ustawWspolrzedne(w.szerokosc_geo, w.dlugosc_geo, true);
+                listaWynikow.innerHTML = '';
+                poleMiasto.value = w.nazwa;
+            };
+            listaWynikow.appendChild(li);
+        });
+    } catch (blad) {
+        listaWynikow.innerHTML = `<li>Błąd: ${blad.message}</li>`;
+    } finally {
+        szukajBtn.disabled = false;
+    }
+}
+szukajBtn.addEventListener('click', szukajMiasta);
+poleMiasto.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); szukajMiasta(); }
+});
+
+function rozbijCzas(wartoscDatetimeLocal) {
+    const [data, godz] = wartoscDatetimeLocal.split('T');
+    const [rok, miesiac, dzien] = data.split('-').map(Number);
+    const [godzina, minuta, sekunda = '0'] = godz.split(':');
+    return { rok, miesiac, dzien, godzina: Number(godzina), minuta: Number(minuta), sekunda: Number(sekunda) };
+}
+
+function karta(etykieta, wartosc) {
+    return `<div class="karta"><b>${etykieta}</b>${wartosc}</div>`;
+}
+
+function renderujSkrot(profil) {
+    const slonce = profil.dane_surowe.forma_swiadoma.pozycje.slonce;
+    const akt = profil.aktywacje.forma_swiadoma.slonce;
+    return `<div class="skrot">
+        ${karta('Długość Słońca', slonce.dlugosc_ekliptyczna_deg.toFixed(4) + '°')}
+        ${karta('Bramka / Linia', akt.bramka + ' / ' + akt.linia)}
+        ${karta('ΔT', profil.dane_surowe.czas.delta_t_s.toFixed(3) + ' s')}
+        ${karta('Rezonans 9', profil.mapa_369.pozycja_9_rezonans.toFixed(4))}
+        ${karta('Czynnik modulacji', profil.mapa_369.czynnik_modulacji.toFixed(4))}
+        ${karta('Zapisano', profil.naglowek.status)}
+    </div>`;
+}
+
+formularz.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    przycisk.disabled = true;
+    wynikDiv.innerHTML = '<p class="status">Obliczam…</p>';
+
+    const dane = {
+        avatar_id: document.getElementById('avatar_id').value,
+        czas_utc: rozbijCzas(document.getElementById('czas').value),
+        obserwator: {
+            dlugosc_geo: Number(poleDlugosc.value),
+            szerokosc_geo: Number(poleSzerokosc.value),
+            wysokosc_npm_m: Number(poleWysokosc.value),
+        },
+    };
+
+    try {
+        const odpowiedz = await fetch('/api/qac/profil', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dane),
+        });
+        const tresc = await odpowiedz.json();
+
+        if (!odpowiedz.ok) {
+            wynikDiv.innerHTML = `<p class="status blad">Odrzucone: ${tresc.blad}</p>`;
+            return;
+        }
+
+        wynikDiv.innerHTML = `
+            <p class="status ok">Profil wygenerowany. Zapisano: ${tresc.zapisano ?? '—'}</p>
+            ${renderujSkrot(tresc.profil)}
+            <pre>${JSON.stringify(tresc.profil, null, 2)}</pre>
+        `;
+    } catch (blad) {
+        wynikDiv.innerHTML = `<p class="status blad">Błąd połączenia: ${blad.message}</p>`;
+    } finally {
+        przycisk.disabled = false;
+    }
+});
+</script>
+</body>
+</html>
