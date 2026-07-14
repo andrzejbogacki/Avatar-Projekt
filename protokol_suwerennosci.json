@@ -1,0 +1,90 @@
+{
+    "_meta": {
+        "opis": "Protokół Suwerenności — wzorzec dokumentu per Avatar (schemat odtworzony z ustaleń, ADR-003)",
+        "wersja_schematu": "ps_v1",
+        "status": "piaskownica",
+        "zamrozenie": "osobną decyzją Suwerena (KONWENCJE §5)"
+    },
+    "avatar_id": "<avatar_id>",
+    "wersja_schematu": "ps_v1",
+    "dane_podstawowe": {
+        "imie": "<imię>",
+        "status_suwerenny": true
+    },
+    "modul_1_jakosci_kwantowe": {
+        "osie": {
+            "wolnosc_akceptacja": {
+                "poziom_3": {
+                    "autocertyfikat": { "status": "brak", "oswiadczenie": null, "data_ts": null, "sygnatura_prawdy": null },
+                    "certyfikaty_zewnetrzne": []
+                },
+                "poziom_6": {
+                    "autocertyfikat": { "status": "brak", "oswiadczenie": null, "data_ts": null, "sygnatura_prawdy": null },
+                    "certyfikaty_zewnetrzne": []
+                }
+            },
+            "madrosc_piekno": {
+                "poziom_3": {
+                    "autocertyfikat": { "status": "brak", "oswiadczenie": null, "data_ts": null, "sygnatura_prawdy": null },
+                    "certyfikaty_zewnetrzne": []
+                },
+                "poziom_6": {
+                    "autocertyfikat": { "status": "brak", "oswiadczenie": null, "data_ts": null, "sygnatura_prawdy": null },
+                    "certyfikaty_zewnetrzne": []
+                }
+            },
+            "sprawiedliwosc_dobro": {
+                "poziom_3": {
+                    "autocertyfikat": { "status": "brak", "oswiadczenie": null, "data_ts": null, "sygnatura_prawdy": null },
+                    "certyfikaty_zewnetrzne": []
+                },
+                "poziom_6": {
+                    "autocertyfikat": { "status": "brak", "oswiadczenie": null, "data_ts": null, "sygnatura_prawdy": null },
+                    "certyfikaty_zewnetrzne": []
+                }
+            },
+            "odpowiedzialnosc_prawda": {
+                "poziom_3": {
+                    "autocertyfikat": { "status": "brak", "oswiadczenie": null, "data_ts": null, "sygnatura_prawdy": null },
+                    "certyfikaty_zewnetrzne": []
+                },
+                "poziom_6": {
+                    "autocertyfikat": { "status": "brak", "oswiadczenie": null, "data_ts": null, "sygnatura_prawdy": null },
+                    "certyfikaty_zewnetrzne": []
+                }
+            }
+        }
+    },
+    "modul_2_symulacje": {
+        "rejestr": []
+    },
+    "modul_3_tokeny": {
+        "rejestr": [],
+        "volt_token": {
+            "alokacja": []
+        }
+    },
+    "modul_4_protokol_relacji": {
+        "strumien_1_dostep_relacyjny": {
+            "macierz_domyslna": {
+                "wolnosc_akceptacja": { "niesklasyfikowany": "brak", "uczen": "brak", "adept": "brak", "mistrz": "brak" },
+                "madrosc_piekno": { "niesklasyfikowany": "brak", "uczen": "brak", "adept": "brak", "mistrz": "brak" },
+                "sprawiedliwosc_dobro": { "niesklasyfikowany": "brak", "uczen": "brak", "adept": "brak", "mistrz": "brak" },
+                "odpowiedzialnosc_prawda": { "niesklasyfikowany": "brak", "uczen": "brak", "adept": "brak", "mistrz": "brak" }
+            },
+            "nadpisania": []
+        },
+        "strumien_2_dostep_do_wiedzy": {
+            "poziomy_obserwatorow": {}
+        },
+        "rejestr_dostepu": [],
+        "zgody_na_kontakt": []
+    },
+    "certyfikacja_startowa": {
+        "status": "certyfikacja_oczekujaca",
+        "zapraszajacy": null,
+        "typ": null,
+        "poziom": null,
+        "ts": null
+    }
+}
