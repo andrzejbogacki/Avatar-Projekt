@@ -7,6 +7,7 @@ const { kwantyzuj } = require('./kwantyzacja');
 const { momentFormyNieswiadomej } = require('./luk_sloneczny');
 const { osieKatowe } = require('./osie');
 const { parsFortunae } = require('./pars_fortunae');
+const { nakszatra } = require('./nakszatry');
 
 function aktywacjeZPozycji(pozycje) {
     const aktywacje = {};
@@ -14,6 +15,16 @@ function aktywacjeZPozycji(pozycje) {
         aktywacje[cialo] = kwantyzuj(p.dlugosc_ekliptyczna_deg);
     }
     return aktywacje;
+}
+
+// Mapa nakszatr (numer, pada) z długości SIDERALNEJ każdego obiektu.
+// Same liczby — nazwy i władcy należą do warstwy znaczeń.
+function nakszatryZPozycji(pozycje) {
+    const nakszatry = {};
+    for (const [cialo, p] of Object.entries(pozycje)) {
+        nakszatry[cialo] = nakszatra(p.sideralna.dlugosc_ekliptyczna_deg);
+    }
+    return nakszatry;
 }
 
 /**
@@ -52,6 +63,7 @@ function obliczDaneSurowe(daneUrodzeniowe) {
             aktywacje: aktywacjeZPozycji(pozycjeSwiadome),
             osie,
             pars_fortunae: pars,
+            nakszatry: nakszatryZPozycji(pozycjeSwiadome),
         },
         forma_nieswiadoma: {
             jd_et: nieswiadome.jd_et,

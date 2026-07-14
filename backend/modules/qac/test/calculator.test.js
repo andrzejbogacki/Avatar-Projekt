@@ -192,3 +192,34 @@ test('pozycje: zodiak sideralny (Lahiri) — pole sideralna, ayanamsa ≈ 23,54�
         }
     }
 });
+
+test('nakszatry: mapa dla wszystkich obiektów formy świadomej, Księżyc → 12/0 (wymaga efemeryd)', (t) => {
+    if (!efemerydyDostepne) {
+        t.skip('POMINIĘTO — pliki efemeryd niedostarczone (ephemeris/README.md)');
+        return;
+    }
+    // Gdańsk, 11.01.1977, 13:12 UTC
+    const wynik = obliczDaneSurowe({
+        czas_utc: { rok: 1977, miesiac: 1, dzien: 11, godzina: 13, minuta: 12, sekunda: 0 },
+        obserwator: { dlugosc_geo: 18.6466, szerokosc_geo: 54.3520, wysokosc_npm_m: 6 },
+    });
+
+    const nak = wynik.forma_swiadoma.nakszatry;
+    assert.ok(nak, 'brak mapy nakszatr w formie świadomej');
+    // TYLKO forma świadoma — forma nieświadoma nie ma nakszatr.
+    assert.equal(wynik.forma_nieswiadoma.nakszatry, undefined, 'nakszatry nie powinny istnieć w formie nieświadomej');
+
+    // Pełne pokrycie: dokładnie te same obiekty co w pozycjach świadomych.
+    assert.deepEqual(
+        Object.keys(nak).sort(),
+        Object.keys(wynik.forma_swiadoma.pozycje).sort()
+    );
+
+    for (const [nazwa, n] of Object.entries(nak)) {
+        assert.ok(Number.isInteger(n.numer) && n.numer >= 0 && n.numer <= 26, `${nazwa}.numer=${n.numer}`);
+        assert.ok(Number.isInteger(n.pada) && n.pada >= 0 && n.pada <= 3, `${nazwa}.pada=${n.pada}`);
+    }
+
+    // Kluczowa asercja: Księżyc sideralnie ≈161,25° → nakszatra 12, pada 0.
+    assert.deepEqual(nak.ksiezyc, { numer: 12, pada: 0 });
+});
