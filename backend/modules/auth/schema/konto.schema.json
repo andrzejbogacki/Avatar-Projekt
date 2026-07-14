@@ -1,0 +1,82 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "avatar://modul.auth/konto.schema.json",
+    "title": "Konto Avatara — moduł Auth (ADR-002)",
+    "type": "object",
+    "required": ["avatar_id", "status", "haslo", "aktywacja", "zaproszenie", "certyfikacja_ps", "utworzono_ts"],
+    "additionalProperties": false,
+    "properties": {
+        "avatar_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{2,63}$",
+            "description": "Klucz główny — wzorzec Protokołu Suwerenności, snake_case bez diakrytyków"
+        },
+        "status": {
+            "enum": ["oczekuje_aktywacji", "aktywne", "zablokowane"]
+        },
+        "haslo": {
+            "description": "null do czasu aktywacji — konto nie posiada hasła nadanego przez osobę trzecią",
+            "oneOf": [
+                { "type": "null" },
+                {
+                    "type": "object",
+                    "required": ["hash", "sol", "parametry_scrypt"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "hash": { "type": "string", "pattern": "^[0-9a-f]+$" },
+                        "sol": { "type": "string", "pattern": "^[0-9a-f]+$" },
+                        "parametry_scrypt": {
+                            "type": "object",
+                            "required": ["KOSZT_N", "ROZMIAR_BLOKU_R", "ROWNOLEGLOSC_P"],
+                            "properties": {
+                                "KOSZT_N": { "type": "integer" },
+                                "ROZMIAR_BLOKU_R": { "type": "integer" },
+                                "ROWNOLEGLOSC_P": { "type": "integer" }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "aktywacja": {
+            "description": "Token jednorazowy — null po zużyciu",
+            "oneOf": [
+                { "type": "null" },
+                {
+                    "type": "object",
+                    "required": ["token", "wygasa_ts"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "token": { "type": "string", "pattern": "^[0-9a-f]+$" },
+                        "wygasa_ts": { "type": "string", "format": "date-time" }
+                    }
+                }
+            ]
+        },
+        "zaproszenie": {
+            "type": "object",
+            "description": "Metadane dwufazowego zaproszenia; zapraszajacy=null wyłącznie dla bootstrapu Suwerena",
+            "required": ["zapraszajacy", "uzasadnienie"],
+            "properties": {
+                "zapraszajacy": { "oneOf": [{ "type": "string" }, { "type": "null" }] },
+                "uzasadnienie": { "type": "string" },
+                "propozycja_ts": { "type": "string", "format": "date-time" },
+                "decyzja": { "enum": ["zatwierdzona"] },
+                "decyzja_ts": { "type": "string", "format": "date-time" },
+                "zatwierdzil": { "type": "string" }
+            }
+        },
+        "certyfikacja_ps": {
+            "type": "object",
+            "description": "Stan pierwszego aktu certyfikacji PS — typ i poziom NIEROZSTRZYGNIĘTE (decyzja Suwerena odroczona, ADR-002)",
+            "required": ["status", "typ", "poziom"],
+            "additionalProperties": false,
+            "properties": {
+                "status": { "enum": ["certyfikacja_oczekujaca", "certyfikowano"] },
+                "typ": { "oneOf": [{ "type": "string" }, { "type": "null" }] },
+                "poziom": { "oneOf": [{ "type": "string" }, { "type": "null" }] }
+            }
+        },
+        "utworzono_ts": { "type": "string", "format": "date-time" }
+    }
+}
