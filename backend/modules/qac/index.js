@@ -97,10 +97,27 @@ async function generujProfil(daneWejsciowe, zaleznosci = {}) {
     return { profil, sciezka };
 }
 
+// Kontraktowy odczyt zapisanego profilu (dla klientów QAC, np. Rezonatora) —
+// bez sięgania do wnętrza modułu. Brak profilu = null (jawny brak).
+async function wczytajProfil(avatar_id, katalog = regulator9.KATALOG_PROFILI) {
+    const fs = require('node:fs/promises');
+    const path = require('node:path');
+    if (!/^[a-z][a-z0-9_]{2,63}$/.test(String(avatar_id))) {
+        throw new Error('Nieprawidłowy avatar_id');
+    }
+    try {
+        return JSON.parse(await fs.readFile(path.join(katalog, `${avatar_id}.json`), 'utf8'));
+    } catch (blad) {
+        if (blad.code === 'ENOENT') return null;
+        throw blad;
+    }
+}
+
 module.exports = {
     konfiguracja,
     inicjalizujBufor,
     generujProfil,
+    wczytajProfil,
     kalkulator,
     regulator9,
     qrt: {

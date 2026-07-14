@@ -126,7 +126,9 @@ test('profil: brak bufora = pusta migawka, stemple bez konfabulacji', async () =
 test('kontrakt modułu: eksportowane wyłącznie jawne kanały', () => {
     assert.deepEqual(
         Object.keys(qac).sort(),
-        ['generujProfil', 'inicjalizujBufor', 'kalkulator', 'konfiguracja', 'qrt', 'regulator9'].sort()
+        // wczytajProfil: odczyt zapisanego profilu dla klientów QAC (Rezonator) — ADR-005
+        ['generujProfil', 'inicjalizujBufor', 'kalkulator', 'konfiguracja', 'qrt', 'regulator9', 'wczytajProfil'].sort()
     );
     assert.equal(typeof qac.qrt.zlecRektyfikacje, 'function');
+    assert.equal(typeof qac.wczytajProfil, 'function');
 });
