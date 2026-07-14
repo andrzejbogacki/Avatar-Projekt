@@ -31,7 +31,7 @@ function aktywacja(bramka) {
 
 const daneSurowe = {
     forma_swiadoma: {
-        pozycje: { pluton: pozycja(217.5, 0.02), wezel_polnocny: pozycja(95.0, -0.05) },
+        pozycje: { pluton: pozycja(217.5, 0.02), wezel_polnocny: pozycja(95.0, -0.05), chiron: pozycja(8.4, 0.03) },
         aktywacje: { slonce: aktywacja(15), ksiezyc: aktywacja(33) },
     },
     forma_nieswiadoma: {
@@ -39,17 +39,21 @@ const daneSurowe = {
     },
 };
 
-test('skladowa3: Pluton + oś Węzłów, jawny status braku progresji', () => {
+test('skladowa3: Pluton + oś Węzłów + Chiron, jawny status braku progresji', () => {
     const s = skladowa3(daneSurowe.forma_swiadoma.pozycje);
-    assert.equal(s.wektory.length, 3);
+    // Pluton, węzeł północny, węzeł południowy (wyprowadzony) + Chiron = 4 wektory bazowe.
+    assert.equal(s.wektory.length, 4);
     const poludniowy = s.wektory.find((w) => w.cialo === 'wezel_poludniowy');
     assert.equal(poludniowy.kat_deg, (95 + 180) % 360);
+    const chiron = s.wektory.find((w) => w.cialo === 'chiron');
+    assert.equal(chiron.kat_deg, 8.4);
     assert.match(s.status_progresji, /brak/);
 });
 
 test('skladowa3: progresje jako wektory pędu', () => {
     const s = skladowa3(daneSurowe.forma_swiadoma.pozycje, { slonce: pozycja(120, 0.98) });
-    assert.equal(s.wektory.length, 4);
+    // 4 wektory bazowe (z Chironem) + 1 progresja = 5.
+    assert.equal(s.wektory.length, 5);
     assert.equal(s.status_progresji, 'uwzglednione');
 });
 

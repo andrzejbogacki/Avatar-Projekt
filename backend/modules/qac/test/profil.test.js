@@ -26,11 +26,13 @@ const silnikSyntetyczny = {
             slonce: pozycja(84.1),
             pluton: pozycja(223.4, 0.01),
             wezel_polnocny: pozycja(310.2, -0.05),
+            chiron: pozycja(8.4, 0.03),
         };
         const pozycjeNieswiadome = {
             slonce: pozycja(356.1),
             pluton: pozycja(222.9, 0.01),
             wezel_polnocny: pozycja(314.8, -0.05),
+            chiron: pozycja(7.9, 0.03),
         };
         const aktywuj = (zbior) =>
             Object.fromEntries(
