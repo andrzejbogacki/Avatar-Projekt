@@ -5,6 +5,8 @@ const { utcNaSkaleCzasowe } = require('./czas');
 const { pozycjeTopocentryczne } = require('./pozycje');
 const { kwantyzuj } = require('./kwantyzacja');
 const { momentFormyNieswiadomej } = require('./luk_sloneczny');
+const { osieKatowe } = require('./osie');
+const { parsFortunae } = require('./pars_fortunae');
 
 function aktywacjeZPozycji(pozycje) {
     const aktywacje = {};
@@ -30,6 +32,17 @@ function obliczDaneSurowe(daneUrodzeniowe) {
     );
     const pozycjeNieswiadome = pozycjeTopocentryczne(nieswiadome.jd_et, obserwator);
 
+    // Osie kątowe i Pars Fortunae tylko dla formy świadomej — zależą od horyzontu
+    // i południka miejsca/chwili urodzenia (jd_ut, nie jd_et). Forma nieświadoma
+    // (−88° łuku słonecznego) jest przesunięciem czasowym pozycji, nie odrębnym
+    // momentem obserwacji, więc osie geograficzne dla niej nie mają sensu.
+    const osie = osieKatowe(czas.jd_ut, obserwator);
+    const pars = parsFortunae({
+        dlugoscSlonca: pozycjeSwiadome.slonce.dlugosc_ekliptyczna_deg,
+        dlugoscKsiezyca: pozycjeSwiadome.ksiezyc.dlugosc_ekliptyczna_deg,
+        ascendent: osie.ascendent.dlugosc_ekliptyczna_deg,
+    });
+
     return {
         czas,
         obserwator,
@@ -37,6 +50,8 @@ function obliczDaneSurowe(daneUrodzeniowe) {
             jd_et: czas.jd_et,
             pozycje: pozycjeSwiadome,
             aktywacje: aktywacjeZPozycji(pozycjeSwiadome),
+            osie,
+            pars_fortunae: pars,
         },
         forma_nieswiadoma: {
             jd_et: nieswiadome.jd_et,

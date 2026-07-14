@@ -121,3 +121,47 @@ test('integracja: pełny przebieg obliczeniowy (wymaga efemeryd)', (t) => {
     assert.ok(Math.abs(roznica - 88) < 0.01, `łuk=${roznica}`);
     assert.ok(wynik.forma_nieswiadoma.jd_et < wynik.forma_swiadoma.jd_et);
 });
+
+test('integracja: osie kątowe + Pars Fortunae w formie świadomej (wymaga efemeryd)', (t) => {
+    if (!efemerydyDostepne) {
+        t.skip('POMINIĘTO — pliki efemeryd niedostarczone (ephemeris/README.md)');
+        return;
+    }
+    // Gdańsk, 11.01.1977, 13:12 UTC
+    const wynik = obliczDaneSurowe({
+        czas_utc: { rok: 1977, miesiac: 1, dzien: 11, godzina: 13, minuta: 12, sekunda: 0 },
+        obserwator: { dlugosc_geo: 18.6466, szerokosc_geo: 54.3520, wysokosc_npm_m: 6 },
+    });
+
+    const fs = wynik.forma_swiadoma;
+    const roznicaKata = (a, b) => { const d = normalizujKat(a - b); return Math.min(d, 360 - d); };
+    const wZakresie = (d) => Number.isFinite(d) && d >= 0 && d < 360;
+
+    // Osie liczone TYLKO dla formy świadomej; forma nieświadoma (−88°) ich nie ma.
+    assert.ok(fs.osie, 'brak osi w formie świadomej');
+    assert.equal(wynik.forma_nieswiadoma.osie, undefined, 'osie nie powinny być liczone dla formy nieświadomej');
+    assert.equal(wynik.forma_nieswiadoma.pars_fortunae, undefined, 'Pars nie powinien być liczony dla formy nieświadomej');
+
+    for (const os of ['ascendent', 'mc', 'descendent', 'ic']) {
+        assert.ok(wZakresie(fs.osie[os].dlugosc_ekliptyczna_deg), `${os}=${fs.osie[os]?.dlugosc_ekliptyczna_deg}`);
+    }
+    // Dsc/IC = opozycje (+180°) Asc/MC — wyprowadzane, nie osobne wywołania.
+    const asc = fs.osie.ascendent.dlugosc_ekliptyczna_deg;
+    const mc = fs.osie.mc.dlugosc_ekliptyczna_deg;
+    assert.ok(roznicaKata(fs.osie.descendent.dlugosc_ekliptyczna_deg, asc + 180) < 1e-9, 'Dsc ≠ Asc+180');
+    assert.ok(roznicaKata(fs.osie.ic.dlugosc_ekliptyczna_deg, mc + 180) < 1e-9, 'IC ≠ MC+180');
+
+    // Pars Fortunae — zgodność z formułą sektowej wg Ascendentu i pozycji świadomych.
+    const pf = fs.pars_fortunae;
+    assert.ok(pf, 'brak Pars Fortunae');
+    assert.ok(['dzienna', 'nocna'].includes(pf.sekta), `sekta=${pf.sekta}`);
+    assert.ok(wZakresie(pf.dlugosc_ekliptyczna_deg), `pars=${pf.dlugosc_ekliptyczna_deg}`);
+
+    const slonce = fs.pozycje.slonce.dlugosc_ekliptyczna_deg;
+    const ksiezyc = fs.pozycje.ksiezyc.dlugosc_ekliptyczna_deg;
+    const oczekiwanyPars = pf.sekta === 'dzienna'
+        ? normalizujKat(asc + ksiezyc - slonce)
+        : normalizujKat(asc + slonce - ksiezyc);
+    assert.ok(roznicaKata(pf.dlugosc_ekliptyczna_deg, oczekiwanyPars) < 1e-9,
+        `pars=${pf.dlugosc_ekliptyczna_deg} oczekiwany=${oczekiwanyPars}`);
+});
