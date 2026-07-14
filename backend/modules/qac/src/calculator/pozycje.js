@@ -33,6 +33,9 @@ function inicjalizuj() {
     if (sciezkaZainicjalizowana) return;
     walidujPlikiEfemeryd();
     sweph.set_ephe_path(astronomia.SCIEZKA_EFEMERYD);
+    // Ayanamsa Lahiri — jednorazowe ustawienie trybu sideralnego dla wywołań
+    // z flagą SEFLG_SIDEREAL (długości mierzone od gwiazdowego punktu odniesienia).
+    sweph.set_sid_mode(sweph.constants.SE_SIDM_LAHIRI, 0, 0);
     if (astronomia.ZRODLO_EFEMERYD === 'jpleph') {
         sweph.set_jpl_file(astronomia.PLIK_JPL);
     }
@@ -49,6 +52,12 @@ function flagiObliczen() {
     return flagaZrodla()
         | sweph.constants.SEFLG_SPEED
         | sweph.constants.SEFLG_TOPOCTR;
+}
+
+// Flagi wariantu sideralnego: te same co tropikalne + SEFLG_SIDEREAL.
+// Ayanamsa wg trybu ustawionego w inicjalizuj() (Lahiri).
+function flagiSideralne() {
+    return flagiObliczen() | sweph.constants.SEFLG_SIDEREAL;
 }
 
 function walidujObserwatora({ dlugosc_geo, szerokosc_geo, wysokosc_npm_m }) {
@@ -87,11 +96,27 @@ function pozycjeTopocentryczne(jd_et, obserwator) {
             );
         }
         const [dlugosc, szerokosc, odleglosc, predkosc_dlugosci] = wynik.data;
+
+        // Wariant sideralny (ayanamsa Lahiri) — osobne wywołanie z SEFLG_SIDEREAL,
+        // ta sama twarda walidacja źródła co tropikalne. Struktura tropikalna nietknięta.
+        const wynikSid = sweph.calc(jd_et, sweph.constants[stala], flagiSideralne());
+        if (wynikSid.flag === sweph.constants.ERR) {
+            throw new Error(`Obliczenie pozycji sideralnej ${nazwa} nieudane: ${wynikSid.error}`);
+        }
+        if (!(wynikSid.flag & flagaZrodla())) {
+            throw new Error(
+                `Źródło efemeryd zdegradowane dla ${nazwa} (sideralna, flaga ${wynikSid.flag}): ${wynikSid.error} — zakaz algorytmów przybliżonych`
+            );
+        }
+
         pozycje[nazwa] = {
             dlugosc_ekliptyczna_deg: dlugosc,
             szerokosc_ekliptyczna_deg: szerokosc,
             odleglosc_au: odleglosc,
             predkosc_dlugosci_deg_d: predkosc_dlugosci,
+            sideralna: {
+                dlugosc_ekliptyczna_deg: wynikSid.data[0],
+            },
         };
     }
     return pozycje;

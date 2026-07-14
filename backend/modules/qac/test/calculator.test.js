@@ -165,3 +165,30 @@ test('integracja: osie kątowe + Pars Fortunae w formie świadomej (wymaga efeme
     assert.ok(roznicaKata(pf.dlugosc_ekliptyczna_deg, oczekiwanyPars) < 1e-9,
         `pars=${pf.dlugosc_ekliptyczna_deg} oczekiwany=${oczekiwanyPars}`);
 });
+
+test('pozycje: zodiak sideralny (Lahiri) — pole sideralna, ayanamsa ≈ 23,54° dla 1977 (wymaga efemeryd)', (t) => {
+    if (!efemerydyDostepne) {
+        t.skip('POMINIĘTO — pliki efemeryd niedostarczone (ephemeris/README.md)');
+        return;
+    }
+    // Gdańsk, 11.01.1977, 13:12 UTC — obie formy liczone wspólną pętlą po CIALA.
+    const wynik = obliczDaneSurowe({
+        czas_utc: { rok: 1977, miesiac: 1, dzien: 11, godzina: 13, minuta: 12, sekunda: 0 },
+        obserwator: { dlugosc_geo: 18.6466, szerokosc_geo: 54.3520, wysokosc_npm_m: 6 },
+    });
+    // get_ayanamsa(jd_et 1977) = 23,536° (Lahiri). Różnica tropikalna−sideralna
+    // to ayanamsa — stała dla wszystkich ciał w danej chwili.
+    const AYANAMSA_LAHIRI_1977 = 23.54;
+
+    for (const forma of ['forma_swiadoma', 'forma_nieswiadoma']) {
+        const pozycje = wynik[forma].pozycje;
+        for (const [nazwa, p] of Object.entries(pozycje)) {
+            assert.ok(p.sideralna, `${forma}.${nazwa}: brak pola sideralna`);
+            assert.ok(Number.isFinite(p.sideralna.dlugosc_ekliptyczna_deg),
+                `${forma}.${nazwa}: sideralna.dlugosc niefinitowa`);
+            const ayanamsa = normalizujKat(p.dlugosc_ekliptyczna_deg - p.sideralna.dlugosc_ekliptyczna_deg);
+            assert.ok(Math.abs(ayanamsa - AYANAMSA_LAHIRI_1977) < 0.1,
+                `${forma}.${nazwa}: tropikalna−sideralna=${ayanamsa.toFixed(4)}° poza ${AYANAMSA_LAHIRI_1977}±0.1`);
+        }
+    }
+});
