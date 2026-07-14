@@ -976,14 +976,50 @@ git commit -m "feat(qac): kontrakty listujAvatary i usunProfil — usuwanie prze
 - Modify: `backend/package.json` (skrypt `dev:tools`)
 
 **Interfaces:**
-- Consumes: `qac.listujAvatary()`, `qac.wczytajProfil()`, `qac.usunProfil()` (Task 4), `dane_wejsciowe` w profilu (Task 3)
+- Consumes: `qac.listujAvatary()`, `qac.wczytajProfil()`, `qac.usunProfil()` (Task 4), `qac.kalkulator.lokalnyNaUtc` (Task 1), `dane_wejsciowe` w profilu (Task 3)
 - Produces:
+  - `GET /api/qac/czas/utc?czas=<RRRR-MM-DDTGG:MM:SS>&strefa=<IANA>` → `{ czas_utc, offset_minuty }` lub 400 `{ blad }` — **bez flagi**, część podstawowego formularza
   - `GET /api/qac/dev/profile` → `{ profile: [{ avatar_id, dane_wejsciowe }] }`
   - `DELETE /api/qac/dev/profil/<avatar_id>` → `{ usuniety, kosz }` lub 404
 
-- [ ] **Step 1: Implement the endpoints**
+- [ ] **Step 1: Implement the UTC preview endpoint**
 
-W `backend/dev_server.js` dopisz **po** bloku `POST /api/qac/profil` (kończy się `return;` ~linia 152):
+Podgląd UTC liczy moduł — algorytm DST istnieje w jednym miejscu. Formularz tylko
+wyświetla odpowiedź, więc widzi dokładnie ten sam wynik i ten sam komunikat błędu,
+który zwróci regulator przy zapisie.
+
+W `backend/dev_server.js` dopisz **po** bloku `POST /api/qac/profil` (kończy się
+`return;` ~linia 152). Ten endpoint **nie jest** za flagą — należy do podstawowego
+formularza, nie do narzędzi deweloperskich:
+
+```js
+    // Podgląd wyliczonego UTC dla formularza. Konwersja żyje wyłącznie w module —
+    // przeglądarka nie powiela algorytmu reguł DST (ADR-009).
+    if (req.method === 'GET' && req.url.startsWith('/api/qac/czas/utc')) {
+        try {
+            const { czas, strefa } = odczytajParametry(req.url);
+            if (!czas || !strefa) throw new Error('Wymagane parametry: czas, strefa');
+            const [data, godz] = String(czas).split('T');
+            if (!data || !godz) throw new Error('Parametr czas: oczekiwano RRRR-MM-DDTGG:MM:SS');
+            const [rok, miesiac, dzien] = data.split('-').map(Number);
+            const [godzina, minuta, sekunda = '0'] = godz.split(':');
+            const wynik = qac.kalkulator.lokalnyNaUtc(
+                { rok, miesiac, dzien, godzina: Number(godzina), minuta: Number(minuta), sekunda: Number(sekunda) },
+                strefa
+            );
+            wyslijJson(res, 200, wynik);
+        } catch (blad) {
+            // Komunikat pochodzi z modułu — użytkownik widzi to samo zdanie,
+            // które zobaczyłby przy odrzuceniu zapisu.
+            wyslijJson(res, 400, { blad: blad.message });
+        }
+        return;
+    }
+```
+
+- [ ] **Step 2: Implement the dev endpoints**
+
+Dopisz zaraz po endpoincie podglądu:
 
 ```js
     // --- Narzędzia deweloperskie (QAC_DEV_TOOLS=1) ---
@@ -1040,7 +1076,23 @@ W `backend/package.json` dodaj skrypt:
   },
 ```
 
-- [ ] **Step 2: Verify the flag is off by default**
+- [ ] **Step 3: Verify the preview endpoint**
+
+```bash
+cd backend && npm run dev &
+sleep 2
+curl -s "http://localhost:3000/api/qac/czas/utc?czas=1990-06-15T08:30:00&strefa=Europe/Warsaw"; echo
+curl -s "http://localhost:3000/api/qac/czas/utc?czas=2026-03-29T02:30:00&strefa=Europe/Warsaw"; echo
+curl -s "http://localhost:3000/api/qac/czas/utc?czas=2026-10-25T02:30:00&strefa=Europe/Warsaw"; echo
+kill %1
+```
+
+Expected:
+1. `{"czas_utc":{"rok":1990,"miesiac":6,"dzien":15,"godzina":6,"minuta":30,"sekunda":0},"offset_minuty":120}`
+2. `{"blad":"Czas lokalny 2026-3-29 2:30 nie istnieje w strefie Europe/Warsaw — przeskok na czas letni."}`
+3. `{"blad":"Czas lokalny 2026-10-25 2:30 jest dwuznaczny w strefie Europe/Warsaw — powrót na czas zimowy; możliwe przesunięcia [min]: 60, 120. Wymagane rozstrzygnięcie."}`
+
+- [ ] **Step 4: Verify the dev flag is off by default**
 
 ```bash
 cd backend && npm run dev &
@@ -1054,7 +1106,7 @@ Expected: dwa razy `404`. Jeśli którykolwiek zwróci `200`, flaga nie odgradza
 
 **Uwaga:** port odczytaj z `dev_server.js` (stała `PORT`), jeśli nie jest to 3000.
 
-- [ ] **Step 3: Verify the flag on**
+- [ ] **Step 5: Verify the dev flag on**
 
 ```bash
 cd backend && npm run dev:tools &
@@ -1065,11 +1117,11 @@ kill %1
 
 Expected: `200` z JSON-em `{"profile":[...]}`. Przy obecnych profilach 1.0.0 lista będzie **pusta** (`{"profile":[]}`) — to poprawne, nie mają `dane_wejsciowe`.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add backend/dev_server.js backend/package.json
-git commit -m "feat(dev): endpointy listy i usuwania profili za flagą QAC_DEV_TOOLS (domyślnie wyłączone)"
+git commit -m "feat(dev): endpoint podglądu UTC oraz listy/usuwania profili za flagą QAC_DEV_TOOLS"
 ```
 
 ---
@@ -1080,8 +1132,12 @@ git commit -m "feat(dev): endpointy listy i usuwania profili za flagą QAC_DEV_T
 - Modify: `backend/dev_public/podglad.html` (fieldset czasu ~57-61, `rozbijCzas` ~183-188, `submit` ~207-220, uwaga ~48)
 
 **Interfaces:**
-- Consumes: kontrakt `generujProfil` (Task 3)
+- Consumes: kontrakt `generujProfil` (Task 3); `GET /api/qac/czas/utc?czas=&strefa=` → `{czas_utc, offset_minuty}` lub 400 `{blad}` (Task 5)
 - Produces: POST `/api/qac/profil` z ciałem `{avatar_id, czas_lokalny, strefa, obserwator, miejsce}`
+
+**Uwaga o kolejności:** ten task zależy od endpointu podglądu z Taska 5, więc
+Task 5 musi być gotowy wcześniej. Przeglądarka nie powiela algorytmu DST — pyta
+o przeliczenie moduł.
 
 - [ ] **Step 1: Replace the time fieldset**
 
@@ -1126,48 +1182,47 @@ for (const strefa of ['Europe/Warsaw', 'UTC', ...Intl.supportedValuesOf('timeZon
 }
 poleStrefa.value = 'Europe/Warsaw';
 
-// Podgląd wyliczonego UTC — użytkownik widzi, co system zrozumiał.
-// Ta sama zasada co w module: godzina nieistniejąca/dwuznaczna nie jest zgadywana.
-function odswiezPodgladUtc() {
-    // rozbijCzas zakłada pełne 'RRRR-MM-DDTGG:MM:SS' — przy pustym polu
-    // destrukturyzacja rzuciłaby TypeError, więc sprawdzamy przed wywołaniem.
+// Podgląd wyliczonego UTC — pyta moduł, nie liczy sam. Dzięki temu algorytm
+// reguł DST istnieje w jednym miejscu, a użytkownik widzi dokładnie ten wynik
+// i ten komunikat błędu, które zwróci regulator przy zapisie (ADR-009).
+let licznikPodgladu = 0;
+
+async function odswiezPodgladUtc() {
     const strefa = poleStrefa.value;
-    if (!poleCzas.value || !poleCzas.value.includes('T') || !strefa) {
+    if (!poleCzas.value || !strefa) {
         podgladUtc.textContent = '';
         return;
     }
-    const cl = rozbijCzas(poleCzas.value);
-    const t0 = Date.UTC(cl.rok, cl.miesiac - 1, cl.dzien, cl.godzina, cl.minuta, cl.sekunda);
-    const offset = (ms) => {
-        const cz = new Intl.DateTimeFormat('en-US', { timeZone: strefa, timeZoneName: 'longOffset' })
-            .formatToParts(new Date(ms)).find((p) => p.type === 'timeZoneName').value;
-        const m = cz.match(/^GMT([+-])(\d{2}):(\d{2})$/);
-        return m ? (m[1] === '-' ? -1 : 1) * (Number(m[2]) * 60 + Number(m[3])) : 0;
-    };
-    const DOBA = 86400000;
-    const kandydaci = [...new Set([t0 - offset(t0 - DOBA) * 60000, t0 - offset(t0 + DOBA) * 60000])]
-        .filter((ms) => {
-            const cz = new Intl.DateTimeFormat('en-CA', {
-                timeZone: strefa, year: 'numeric', month: '2-digit', day: '2-digit',
-                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
-            }).formatToParts(new Date(ms)).filter((p) => p.type !== 'literal');
-            const w = Object.fromEntries(cz.map((p) => [p.type, Number(p.value)]));
-            return w.year === cl.rok && w.month === cl.miesiac && w.day === cl.dzien &&
-                (w.hour === 24 ? 0 : w.hour) === cl.godzina && w.minute === cl.minuta;
-        });
-    if (kandydaci.length === 0) {
-        podgladUtc.textContent = 'Ta godzina nie istnieje w wybranej strefie (przeskok na czas letni) — moduł odrzuci dane.';
-        return;
+    const moj = ++licznikPodgladu;
+    try {
+        const odp = await fetch(
+            `/api/qac/czas/utc?czas=${encodeURIComponent(poleCzas.value)}&strefa=${encodeURIComponent(strefa)}`
+        );
+        const dane = await odp.json();
+        // Odpowiedź na nieaktualne zapytanie (użytkownik zdążył zmienić pole) — pomijamy.
+        if (moj !== licznikPodgladu) return;
+        if (!odp.ok) {
+            podgladUtc.textContent = dane.blad;
+            return;
+        }
+        const u = dane.czas_utc;
+        const dwa = (n) => String(n).padStart(2, '0');
+        podgladUtc.textContent =
+            `Wyliczony czas UTC: ${u.rok}-${dwa(u.miesiac)}-${dwa(u.dzien)} ` +
+            `${dwa(u.godzina)}:${dwa(u.minuta)}:${dwa(u.sekunda)} (przesunięcie ${dane.offset_minuty} min)`;
+    } catch {
+        if (moj !== licznikPodgladu) return;
+        podgladUtc.textContent = 'Nie udało się wyliczyć czasu UTC (brak połączenia z serwerem).';
     }
-    if (kandydaci.length > 1) {
-        podgladUtc.textContent = 'Ta godzina jest dwuznaczna w wybranej strefie (powrót na czas zimowy) — moduł odrzuci dane.';
-        return;
-    }
-    const utc = new Date(kandydaci[0]).toISOString().slice(0, 19).replace('T', ' ');
-    podgladUtc.textContent = `Wyliczony czas UTC: ${utc} (przesunięcie ${offset(kandydaci[0])} min)`;
 }
 
-poleCzas.addEventListener('input', odswiezPodgladUtc);
+let czasomierzPodgladu = null;
+function zaplanujPodglad() {
+    clearTimeout(czasomierzPodgladu);
+    czasomierzPodgladu = setTimeout(odswiezPodgladUtc, 300);
+}
+
+poleCzas.addEventListener('input', zaplanujPodglad);
 poleStrefa.addEventListener('change', odswiezPodgladUtc);
 odswiezPodgladUtc();
 ```
