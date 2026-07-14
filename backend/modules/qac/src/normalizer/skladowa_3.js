@@ -24,8 +24,9 @@ function skladowa3(pozycjeNatalne, progresje = null) {
     const w = normalizacja.WAGI_SKLADOWEJ_3;
     const pluton = pozycjeNatalne.pluton;
     const wezel = pozycjeNatalne.wezel_polnocny;
-    if (!pluton || !wezel) {
-        throw new Error('Składowa 3 wymaga pozycji Plutona i Węzła Północnego');
+    const chiron = pozycjeNatalne.chiron;
+    if (!pluton || !wezel || !chiron) {
+        throw new Error('Składowa 3 wymaga pozycji Plutona, Węzła Północnego i Chirona');
     }
 
     const wektory = [
@@ -37,6 +38,7 @@ function skladowa3(pozycjeNatalne, progresje = null) {
             wezel.predkosc_dlugosci_deg_d,
             w.wezel_poludniowy
         ),
+        wektor('chiron', chiron.dlugosc_ekliptyczna_deg, chiron.predkosc_dlugosci_deg_d, w.chiron),
     ];
 
     let statusProgresji = 'brak — nie przekazano pozycji progresywnych';

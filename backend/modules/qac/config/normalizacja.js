@@ -9,6 +9,8 @@ const WAGI_SKLADOWEJ_3 = Object.freeze({
     pluton: 1,
     wezel_polnocny: 1,
     wezel_poludniowy: 1,
+    // Chiron — wektor Astrologii Ewolucyjnej (decyzja Suwerena). Waga robocza = 1.
+    chiron: 1,
     progresja: 1,
 });
 

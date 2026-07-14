@@ -33,12 +33,25 @@ const CIALA = Object.freeze({
     neptun: 'SE_NEPTUNE',
     pluton: 'SE_PLUTO',
     wezel_polnocny: 'SE_TRUE_NODE',
+    // Chiron — most planet osobistych/pokoleniowych (Astrologia Ewolucyjna).
+    // Wymaga pliku asteroid seas_*.se1 w /ephemeris.
+    chiron: 'SE_CHIRON',
+    // Lilith / Czarny Księżyc — wariant oskulacyjny (rzeczywisty apogeum), decyzja Suwerena.
+    // Punkt matematyczny liczony z efemerydy księżycowej semo_*.se1 (bez pliku asteroid).
+    lilith: 'SE_OSCU_APOG',
 });
 
 // Wymagana precyzja długości ekliptycznej: ułamki sekundy kątowej.
 const PROG_PRECYZJI_ARCSEC = 0.01;
 const ARCSEC_NA_STOPIEN = 3600;
 const SEKUND_NA_DOBE = 86_400;
+
+// System domów przekazywany do sweph.houses_ex2 (kod litery wg biblioteki).
+// 'P' = Placidus — DOMYŚLNY ROBOCZY (wybór docelowy odłożony do etapu pełnych 12 domów).
+const SYSTEM_DOMOW = 'P';
+
+// Osie kątowe: Dsc i IC to opozycje (+180°) Asc i MC — wyprowadzane, nie osobne wywołania.
+const POL_KOLO_DEG = 180;
 
 module.exports = Object.freeze({
     LUK_SLONECZNY_FORMY_NIESWIADOMEJ_DEG,
@@ -47,6 +60,8 @@ module.exports = Object.freeze({
     ZRODLO_EFEMERYD,
     PLIK_JPL,
     CIALA,
+    SYSTEM_DOMOW,
+    POL_KOLO_DEG,
     PROG_PRECYZJI_ARCSEC,
     ARCSEC_NA_STOPIEN,
     SEKUND_NA_DOBE,
