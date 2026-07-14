@@ -1,0 +1,39 @@
+{
+  "wersja": 1,
+  "zbudowano_ts": "2026-07-13T18:04:33.553Z",
+  "dokumenty": [
+    {
+      "id": "strategia_sieci_suwerennych",
+      "tytul": "Strategia Skalowalności i Odporności Sieci Suwerennych",
+      "typ": "strategia",
+      "status": "piaskownica",
+      "wersja_dokumentu": "v1",
+      "format": "markdown",
+      "sciezka": "docs/dokumenty/strategia_sieci_suwerennych.md",
+      "hash_zrodla": "eb166a300ec3377418600879e9404082eaec0805dd28788fdbfd0a61a147c541",
+      "bajty": 24704
+    },
+    {
+      "id": "glosariusz",
+      "tytul": "Glosariusz — semantyka pojęć projektu (v4, 45 rekordów)",
+      "typ": "zrodlo_prawdy",
+      "status": "piaskownica",
+      "wersja_dokumentu": "v4",
+      "format": "json",
+      "sciezka": "docs/glosariusz.json",
+      "hash_zrodla": "6d07ce103006934fb5a261926f87ffc0a7cf67c8931acd1f99136e538d76169b",
+      "bajty": 99431
+    },
+    {
+      "id": "protokol_suwerennosci",
+      "tytul": "Protokół Suwerenności — schemat v1",
+      "typ": "zrodlo_prawdy",
+      "status": "piaskownica",
+      "wersja_dokumentu": "v1",
+      "format": "json",
+      "sciezka": "protokol_suwerennosci.json",
+      "hash_zrodla": "011dee73a9182f96f77593729fd78fbc3e1bb6f2d7337e2c2a0c1a94571b270f",
+      "bajty": 3655
+    }
+  ]
+}
