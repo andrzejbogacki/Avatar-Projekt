@@ -14,7 +14,8 @@
     "repo": {
         "frontend/": "React PWA — impuls interfejsu (3)",
         "backend/": "Node.js — moduły w backend/modules/",
-        "docs/": "dokumentacja: mapa, architektura, konwencje, moduły, ADR"
+        "docs/": "dokumentacja governance: mapa, architektura, konwencje, moduły, ADR",
+        "docs/dokumenty/ (korzeń repo)": "treść projektu: dokumenty kierunkowe + manifest dokumentów (moduł dokumentacja, ADR-007)"
     },
     "wezly_369": {
         "3": "telefon (impuls)",
@@ -22,6 +23,134 @@
         "9": "chmura prywatna (regulacja / synchronizacja)"
     },
     "moduly": [
+        {
+            "id": "auth",
+            "nazwa": "Auth — tożsamość, sesja i rejestracja przez zaproszenie",
+            "adres_rejestr": "modul.auth (kandydat)",
+            "sciezka": "backend/modules/auth/",
+            "dokumentacja": "docs/moduly/auth.md",
+            "status": "piaskownica",
+            "stan_kodu": "zaimplementowany 2026-07-11 (roadmapa Moduł 0, ADR-002); testy: 37 pass",
+            "punkt_wejscia": "backend/modules/auth/index.js",
+            "testy": "cd backend && npm test",
+            "zaleznosci_oczekujace": [
+                "moduł PS — hook certyfikacji przy zaproszeniu (typ/poziom certyfikatu: decyzja Suwerena odroczona; stan jawny certyfikacja_oczekujaca)"
+            ],
+            "zaleznosci_dostarczone": [],
+            "pozycja_369": 3,
+            "submoduly": [
+                {
+                    "id": "zaproszenia",
+                    "nazwa": "Bramka zaproszeń (dwufazowa)",
+                    "adres_rejestr": "modul.auth.zaproszenia (kandydat)",
+                    "tryb": "dwufazowy: propozycja → zatwierdzenie Suwerena → konto",
+                    "sciezka": "backend/modules/auth/src/regulator9/"
+                }
+            ]
+        },
+        {
+            "id": "ps",
+            "nazwa": "PS — Protokół Suwerenności",
+            "adres_rejestr": "modul.ps (kandydat)",
+            "sciezka": "backend/modules/ps/",
+            "dokumentacja": "docs/moduly/ps.md",
+            "status": "piaskownica",
+            "stan_kodu": "zaimplementowany 2026-07-12 (schemat ps_v1 odtworzony, ADR-003); testy: 22 pass",
+            "punkt_wejscia": "backend/modules/ps/index.js",
+            "testy": "cd backend && npm test",
+            "zaleznosci_oczekujace": [
+                "typ/poziom certyfikatu startowego przy zaproszeniu — decyzja Suwerena odroczona (stan jawny certyfikacja_oczekujaca)",
+                "zamrożenie schematu ps_v1 dokumentem zamykającym — decyzja Suwerena"
+            ],
+            "zaleznosci_dostarczone": [
+                "Auth — tożsamość obserwatora (podepnijAuth) + hook certyfikacji (hookPS)"
+            ],
+            "pozycja_369": 3,
+            "submoduly": []
+        },
+        {
+            "id": "wymiennik",
+            "nazwa": "Wymiennik (Gebo) — wymiana tokenów",
+            "adres_rejestr": "modul.wymiennik (kandydat)",
+            "sciezka": "backend/modules/wymiennik/",
+            "dokumentacja": "docs/moduly/wymiennik.md",
+            "status": "piaskownica",
+            "stan_kodu": "zaimplementowany 2026-07-12 (ADR-004); testy: 17 pass",
+            "punkt_wejscia": "backend/modules/wymiennik/index.js",
+            "testy": "cd backend && npm test",
+            "zaleznosci_oczekujace": [
+                "konkretne integracje adapterów zewnętrznych (faza 1: interfejs + atrapa)",
+                "reguła porządkowa transakcji wiszących (model bezterminowy) — decyzja Suwerena"
+            ],
+            "zaleznosci_dostarczone": [
+                "PS — walidacja akceptacji tokenów (podepnijPS)",
+                "Auth — tożsamość stron transakcji (podepnijAuth)"
+            ],
+            "pozycja_369": 3,
+            "submoduly": []
+        },
+        {
+            "id": "rezonator",
+            "nazwa": "Rezonator Kwantowy — stabilizacja Źródeł",
+            "adres_rejestr": "modul.rezonator (kandydat)",
+            "sciezka": "backend/modules/rezonator/",
+            "dokumentacja": "docs/moduly/rezonator.md",
+            "status": "piaskownica (Faza A — warstwa logiczna)",
+            "stan_kodu": "zaimplementowany 2026-07-12 (ADR-005); testy: 15 pass",
+            "punkt_wejscia": "backend/modules/rezonator/index.js",
+            "testy": "cd backend && npm test",
+            "zaleznosci_oczekujace": [
+                "Faza B: instancja Home Assistant + token (klient HA, encje) — osobne zatwierdzenie",
+                "Faza C: mosty DMX/MIDI + automatyka warunkowa — osobne zatwierdzenie"
+            ],
+            "zaleznosci_dostarczone": [
+                "QAC — kontraktowy odczyt profilu (wczytajProfil, dodany 2026-07-12)",
+                "Auth — tożsamość Avatara (podepnijAuth)"
+            ],
+            "pozycja_369": 3,
+            "submoduly": []
+        },
+        {
+            "id": "glosariusz",
+            "nazwa": "Glosariusz — Inteligentny System Uspójniania Zrozumienia",
+            "adres_rejestr": "modul.glosariusz (kandydat)",
+            "sciezka": "backend/modules/glosariusz/",
+            "dokumentacja": "docs/moduly/glosariusz.md",
+            "status": "piaskownica",
+            "stan_kodu": "zaimplementowany 2026-07-12 (ADR-006); testy: 19 pass; indeks: 45 terminów",
+            "punkt_wejscia": "backend/modules/glosariusz/index.js",
+            "testy": "cd backend && npm test",
+            "zaleznosci_oczekujace": [
+                "Morfeusz2 (silnik kanoniczny fleksji) — instalacja odroczona decyzją Suwerena; obecnie generator regułowy (formy przyblizone)",
+                "migracja glosariusz.json v4→v5 — po niej przebudowa indeksu"
+            ],
+            "zaleznosci_dostarczone": [
+                "Auth — opcjonalny (tożsamość propozycji, decyzje Suwerena); rdzeń działa bez Auth"
+            ],
+            "pozycja_369": 3,
+            "submoduly": []
+        },
+        {
+            "id": "dokumentacja",
+            "nazwa": "Dokumentacja — artefakty treściowe projektu (manifest dokumentów)",
+            "adres_rejestr": "modul.dokumentacja (kandydat)",
+            "sciezka": "backend/modules/dokumentacja/",
+            "dokumentacja": "docs/moduly/dokumentacja.md",
+            "status": "piaskownica",
+            "stan_kodu": "zaimplementowany 2026-07-13 (ADR-007, status: propozycja); testy: 9 pass; manifest: 3 dokumenty",
+            "punkt_wejscia": "backend/modules/dokumentacja/index.js",
+            "testy": "cd backend && npm test",
+            "zaleznosci_oczekujace": [
+                "zatwierdzenie ADR-007 przez Suwerena (zapis wykonawczy na polecenie \"Dokumentacja jako moduł\")",
+                "termin 'manifest dokumentów' — zgłoszenie do glosariusza ścieżką dwufazową (terminy słownika strategii już w glosariuszu)"
+            ],
+            "zaleznosci_dostarczone": [
+                "Glosariusz — opcjonalny (oznaczanie terminów w treści; brak = jawny status glosariusz_niepodpiety)",
+                "Auth — opcjonalny (przebudowa manifestu przez HTTP); rdzeń działa bez Auth"
+            ],
+            "pozycja_369": 3,
+            "submoduly": []
+        },
         {
             "id": "qac",
             "nazwa": "Quantum Avatar Core",
