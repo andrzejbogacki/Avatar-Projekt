@@ -63,7 +63,9 @@ test('skladowa6: aktywacje obu form z fazą środka bramki', () => {
         daneSurowe.forma_nieswiadoma.aktywacje
     );
     assert.equal(s.aktywacje.length, 4);
-    assert.equal(katSrodkaBramki(1), konfig.bramki.SZEROKOSC_BRAMKI_DEG / 2);
+    // Pierwsza brama koła rave (indeks 0) ma środek w ½ szerokości bramki od startu.
+    const pierwszaBrama = konfig.bramki.KOLEJNOSC_BRAMEK[0];
+    assert.equal(katSrodkaBramki(pierwszaBrama), konfig.bramki.SZEROKOSC_BRAMKI_DEG / 2);
     assert.throws(() => skladowa6(null, {}), /obu form/);
 });
 

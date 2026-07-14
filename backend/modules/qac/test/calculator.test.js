@@ -36,27 +36,31 @@ test('kwantyzacja: granice bramek i linii', () => {
     assert.equal(szer, 5.625);
     assert.equal(konfig.bramki.SZEROKOSC_LINII_DEG, 0.9375);
 
-    const p0 = kwantyzuj(0);
+    // Granice liczone względem startu koła rave (START_KOLA_DEG = 302°).
+    const start = konfig.bramki.START_KOLA_DEG;
+
+    // Początek koła → pierwsza brama rave (41), wszystkie podpodziały = 1.
+    const p0 = kwantyzuj(start);
     assert.deepEqual(
         [p0.bramka, p0.linia, p0.kolor, p0.ton, p0.base],
-        [1, 1, 1, 1, 1]
+        [41, 1, 1, 1, 1]
     );
 
-    const koniecB1 = kwantyzuj(szer - 1e-9);
-    assert.equal(koniecB1.bramka, 1);
+    const koniecB1 = kwantyzuj(start + szer - 1e-9);
+    assert.equal(koniecB1.bramka, 41);
     assert.equal(koniecB1.linia, 6);
 
-    const startB2 = kwantyzuj(szer);
-    assert.equal(startB2.bramka, 2);
+    const startB2 = kwantyzuj(start + szer);
+    assert.equal(startB2.bramka, 19); // druga brama koła rave
     assert.equal(startB2.linia, 1);
 
-    const ostatnia = kwantyzuj(360 - 1e-9);
-    assert.equal(ostatnia.bramka, 64);
+    const ostatnia = kwantyzuj(start - 1e-9);
+    assert.equal(ostatnia.bramka, 60); // ostatnia brama koła rave (tuż przed startem)
     assert.equal(ostatnia.linia, 6);
 
-    // pełny obrót — normalizacja
-    assert.equal(kwantyzuj(360).bramka, 1);
-    assert.equal(kwantyzuj(-1e-9).bramka, 64);
+    // pełny obrót — normalizacja (start+360 ≡ start)
+    assert.equal(kwantyzuj(start + 360).bramka, 41);
+    assert.equal(kwantyzuj(start - 1e-9).bramka, 60);
 });
 
 test('kwantyzacja: zakresy podpodziałów kolor/ton/base', () => {
@@ -222,4 +226,38 @@ test('nakszatry: mapa dla wszystkich obiektów formy świadomej, Księżyc → 1
 
     // Kluczowa asercja: Księżyc sideralnie ≈161,25° → nakszatra 12, pada 0.
     assert.deepEqual(nak.ksiezyc, { numer: 12, pada: 0 });
+});
+
+test('bramki: KOLEJNOSC_BRAMEK = kanoniczne koło rave (64 bramy, komplet 1–64, start bramą 41)', () => {
+    const kolo = konfig.bramki.KOLEJNOSC_BRAMEK;
+    assert.equal(kolo.length, 64, 'koło musi mieć 64 bramy');
+    assert.equal(new Set(kolo).size, 64, 'duplikaty w kole rave');
+    for (let g = 1; g <= 64; g++) {
+        assert.ok(kolo.includes(g), `brak bramy ${g} w kole rave`);
+    }
+    // Kanoniczny start koła rave: brama 41 na 2° Wodnika = 302° tropikalne.
+    assert.equal(kolo[0], 41, 'koło rave zaczyna się bramą 41');
+    assert.equal(konfig.bramki.START_KOLA_DEG, 302, 'start koła = 302° (2° Wodnika)');
+});
+
+test('kwantyzacja E2E: Słońce natalne (tropikalne) → brama 61 koła rave (wymaga efemeryd)', (t) => {
+    if (!efemerydyDostepne) {
+        t.skip('POMINIĘTO — pliki efemeryd niedostarczone (ephemeris/README.md)');
+        return;
+    }
+    // Gdańsk, 11.01.1977, 13:12 UTC
+    const wynik = obliczDaneSurowe({
+        czas_utc: { rok: 1977, miesiac: 1, dzien: 11, godzina: 13, minuta: 12, sekunda: 0 },
+        obserwator: { dlugosc_geo: 18.6466, szerokosc_geo: 54.3520, wysokosc_npm_m: 6 },
+    });
+    const slonce = wynik.forma_swiadoma.pozycje.slonce;
+
+    // Potwierdzenie kanału: aktywacja = kwantyzacja długości TROPIKALNEJ, nie sideralnej.
+    const bramaTropikalna = kwantyzuj(slonce.dlugosc_ekliptyczna_deg).bramka;
+    const bramaSideralna = kwantyzuj(slonce.sideralna.dlugosc_ekliptyczna_deg).bramka;
+    assert.equal(wynik.forma_swiadoma.aktywacje.slonce.bramka, bramaTropikalna);
+    assert.notEqual(bramaTropikalna, bramaSideralna); // gdyby użyto sideralnej — inna brama
+
+    // Kluczowa asercja: Słońce 291,21° tropikalne → brama 61.
+    assert.equal(wynik.forma_swiadoma.aktywacje.slonce.bramka, 61);
 });
