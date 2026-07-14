@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rezonator — podgląd deweloperski</title>
+<style>
+    :root { --bg: #0a0a0a; --fg: #e0e0e0; --accent: #d4af37; --err: #ff5555; --ok: #6fdc8c; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    h1 { color: var(--accent); font-size: 1.4rem; margin-bottom: 4px; }
+    .uwaga { font-size: 0.8rem; opacity: 0.7; margin-bottom: 24px; }
+    fieldset { border: 1px solid rgba(212,175,55,0.4); border-radius: 8px; margin-bottom: 16px; }
+    legend { color: var(--accent); padding: 0 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    label { display: block; font-size: 0.8rem; margin: 10px 0 4px; opacity: 0.85; }
+    input, select { width: 100%; box-sizing: border-box; background: #1a1a1a; border: 1px solid #333; color: var(--fg); padding: 8px; border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
+    input[type=range] { padding: 0; }
+    .rzad { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .rzad3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) { .rzad, .rzad3 { grid-template-columns: 1fr; } }
+    button { margin-top: 12px; padding: 9px 20px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    button.druga { background: #1a1a1a; border: 1px solid var(--accent); color: var(--accent); font-weight: normal; }
+    button.odmowna { background: #1a1a1a; border: 1px solid var(--err); color: var(--err); font-weight: normal; }
+    .status { font-size: 0.9rem; margin: 8px 0; min-height: 1.2em; }
+    .status.ok { color: var(--ok); }
+    .status.blad { color: var(--err); }
+    .sesja-pasek { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05);
+        border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+    .sesja-pasek b, .sesja-pasek a { color: var(--accent); }
+    pre { background: #111; border: 1px solid #333; border-radius: 6px; padding: 12px; overflow-x: auto; font-size: 0.78rem; white-space: pre-wrap; word-break: break-word; }
+    .wpis { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; padding: 10px 14px; margin-top: 10px; font-size: 0.85rem; }
+    .wpis b { color: var(--accent); }
+    .wpis .mala { opacity: 0.7; font-size: 0.78rem; }
+    .checkbox-rzad { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+    .checkbox-rzad input { width: auto; }
+    .warstwa-wiersz { display: grid; grid-template-columns: 90px 1fr 60px; gap: 8px; align-items: center; font-size: 0.8rem; margin: 4px 0; }
+    .ukryte { display: none; }
+</style>
+<script src="/menu.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+    <nav id="menu-moduly"></nav>
+
+    <h1>Rezonator Kwantowy — podgląd deweloperski (Faza A)</h1>
+    <p class="uwaga">Warstwa logiczna + synteza WebAudio w przeglądarce (narzędzie robocze — docelowa emisja przez Home Assistant w Fazie B). Dźwięk gra na TYM urządzeniu.</p>
+
+    <div class="sesja-pasek">
+        <span id="sesja-opis">Sprawdzam sesję…</span>
+        <a href="/auth.html" id="link-logowania" class="ukryte">Zaloguj w module Auth →</a>
+    </div>
+
+    <div id="panel" class="ukryte">
+    <fieldset>
+        <legend>Nowe Źródło (Avatar / obiekt / misja)</legend>
+        <div class="rzad3">
+            <div><label for="zr-id">zrodlo_id</label><input id="zr-id" placeholder="misja_ogrod"></div>
+            <div><label for="zr-typ">Typ</label><select id="zr-typ"></select></div>
+            <div><label for="zr-t">T [s] (Sync)</label><input id="zr-t" type="number" value="360"></div>
+        </div>
+        <div class="rzad">
+            <div><label for="zr-f">wibracja_f [Hz]</label><input id="zr-f" type="number" step="any" value="136.10"></div>
+            <div><label for="zr-bpm">rytm_bpm</label><input id="zr-bpm" type="number" value="60"></div>
+        </div>
+        <label for="zr-misja">Misja (cel Źródła)</label><input id="zr-misja">
+        <button id="zr-btn">Utwórz Źródło</button>
+        <div class="status" id="zr-status"></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Źródła i sygnatury Sync(t)</legend>
+        <div id="lista-zrodel">—</div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Sesja emisji — wzornik częstotliwości</legend>
+        <label for="em-zrodlo">Źródło</label>
+        <select id="em-zrodlo"></select>
+        <div class="checkbox-rzad"><input type="checkbox" id="sk-solf" checked><span>Solfeggio:</span></div>
+        <select id="sk-solf-hz"></select>
+        <div class="checkbox-rzad"><input type="checkbox" id="sk-plan"><span>Planetarna:</span></div>
+        <select id="sk-plan-cialo"></select>
+        <div class="checkbox-rzad"><input type="checkbox" id="sk-qac"><span>Modulacja QAC (profil zalogowanego Avatara)</span></div>
+        <label for="glosnosc">Głośność główna</label>
+        <input id="glosnosc" type="range" min="0" max="100" value="15">
+        <button id="start-btn">▶ Start sesji (dźwięk!)</button>
+        <div class="status" id="em-status"></div>
+        <div id="wizualizacja"></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Aktywne sesje</legend>
+        <div id="lista-sesji">—</div>
+    </fieldset>
+    </div>
+
+    <fieldset>
+        <legend>Surowa odpowiedź API (ostatnie wywołanie)</legend>
+        <pre id="surowe">—</pre>
+    </fieldset>
+</div>
+
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+
+async function api(metoda, sciezka, cialo) {
+    const odp = await fetch(sciezka, {
+        method: metoda,
+        headers: cialo ? { 'Content-Type': 'application/json' } : undefined,
+        body: cialo ? JSON.stringify(cialo) : undefined,
+        credentials: 'same-origin',
+    });
+    const dane = await odp.json();
+    $('surowe').textContent = JSON.stringify(dane, null, 2);
+    return dane;
+}
+
+function pokazStatus(id, dane, dobre) {
+    const el = $(id);
+    const ok = dobre.includes(dane.status);
+    el.className = 'status ' + (ok ? 'ok' : 'blad');
+    el.textContent = dane.status + (dane.powod ? ': ' + dane.powod : '');
+}
+
+let ja = null;
+let konf = null;
+
+// ── silnik WebAudio: równoległe generatory z niezależną kontrolą f/amplitudy/fazy ──
+let audio = null; // { ctx, master, lfo, oscylatory: [], sesja_id }
+
+function zatrzymajAudio() {
+    if (!audio) return;
+    for (const o of audio.oscylatory) { try { o.stop(); } catch {} }
+    try { audio.lfo.stop(); } catch {}
+    audio.ctx.close();
+    audio = null;
+}
+
+function grajPlan(plan, sesja_id) {
+    zatrzymajAudio();
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const master = ctx.createGain();
+    master.gain.value = Number($('glosnosc').value) / 100;
+    master.connect(ctx.destination);
+
+    // rytm: LFO moduluje wzmocnienie w tempie BPM (nośnik stabilności czasowej)
+    const rytmGain = ctx.createGain();
+    rytmGain.gain.value = 1;
+    rytmGain.connect(master);
+    const lfo = ctx.createOscillator();
+    const lfoZakres = ctx.createGain();
+    lfo.frequency.value = plan.rytm.bpm / 60;
+    lfoZakres.gain.value = 0.25; // głębokość pulsu
+    lfo.connect(lfoZakres);
+    lfoZakres.connect(rytmGain.gain);
+    lfo.start();
+
+    const oscylatory = [];
+    for (const g of plan.warstwy) {
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = g.hz;
+        const wzmocnienie = ctx.createGain();
+        wzmocnienie.gain.value = g.amplituda;
+        osc.connect(wzmocnienie);
+        wzmocnienie.connect(rytmGain);
+        osc.start();
+        oscylatory.push(osc);
+    }
+    audio = { ctx, master, lfo, oscylatory, sesja_id };
+
+    $('wizualizacja').innerHTML = '<div class="wpis"><b>Emisja trwa</b> — ' + plan.warstwy.length
+        + ' generatorów, rytm ' + plan.rytm.bpm + ' BPM, Sync(t)=' + plan.rytm.sync_s.toFixed(0) + ' s / T=' + plan.rytm.T_s + ' s'
+        + plan.warstwy.map((g) => `<div class="warstwa-wiersz"><span>${g.warstwa}</span><span class="mala">${g.skladnik} → ${g.hz.toFixed(2)} Hz (${g.funkcja})</span><span>${g.amplituda}</span></div>`).join('')
+        + '</div>';
+}
+
+$('glosnosc').addEventListener('input', () => {
+    if (audio) audio.master.gain.value = Number($('glosnosc').value) / 100;
+});
+
+async function start() {
+    const sesja = await api('GET', '/api/auth/sesja');
+    const zalogowany = sesja.status === 'aktywna';
+    ja = zalogowany ? sesja.avatar_id : null;
+    $('sesja-opis').innerHTML = zalogowany
+        ? `Zalogowany: <b>${sesja.avatar_id}</b>`
+        : 'Rezonator wymaga zalogowania (przypisanie Rezonatorów per Źródło)';
+    $('link-logowania').classList.toggle('ukryte', zalogowany);
+    $('panel').classList.toggle('ukryte', !zalogowany);
+    if (!zalogowany) return;
+
+    konf = await api('GET', '/api/rezonator/konfiguracja');
+    $('zr-typ').innerHTML = konf.typy_zrodel.map((t) => `<option>${t}</option>`).join('');
+    $('sk-solf-hz').innerHTML = Object.values(konf.solfeggio)
+        .map((hz) => `<option value="${hz}" ${konf.solfeggio_baza.includes(hz) ? 'selected' : ''}>${hz} Hz</option>`).join('');
+    $('sk-plan-cialo').innerHTML = Object.entries(konf.planetarne)
+        .map(([id, w]) => `<option value="${id}">${w.nazwa} — ${w.hz.toFixed(2)} Hz</option>`).join('');
+    await odswiez();
+}
+
+async function odswiez() {
+    const dane = await api('GET', '/api/rezonator/zrodla');
+    const el = $('lista-zrodel');
+    el.innerHTML = '';
+    $('em-zrodlo').innerHTML = '';
+    for (const z of (dane.zrodla || [])) {
+        const div = document.createElement('div');
+        div.className = 'wpis';
+        div.innerHTML = `<b>${z.zrodlo_id}</b> (${z.typ}) — ${z.misja}
+            <div class="mala">wibracja: ${z.wibracja_f} Hz · rytm: ${z.rytm_bpm} BPM · T: ${z.T_s} s · właściciel: ${z.wlasciciel}</div>
+            <div class="mala sygnatura"></div>`;
+        const btn = document.createElement('button');
+        btn.className = 'druga'; btn.textContent = 'Sygnatura Sync(t)';
+        btn.onclick = async () => {
+            const s = await api('GET', `/api/rezonator/zrodla/${z.zrodlo_id}/sygnatura`);
+            div.querySelector('.sygnatura').textContent =
+                `Sync = ${s.sync_s.toFixed(1)} s / ${s.T_s} s · faza cyklu: ${(s.faza_cyklu * 100).toFixed(1)}% · ${s.timestamp}`;
+        };
+        div.appendChild(btn);
+        el.appendChild(div);
+        $('em-zrodlo').insertAdjacentHTML('beforeend', `<option>${z.zrodlo_id}</option>`);
+    }
+    if (!el.innerHTML) el.innerHTML = '<em style="opacity:.6;font-size:.85rem">Brak Źródeł — utwórz pierwsze powyżej.</em>';
+    await odswiezSesje();
+}
+
+async function odswiezSesje() {
+    const dane = await api('GET', '/api/rezonator/sesje');
+    const el = $('lista-sesji');
+    el.innerHTML = '';
+    for (const s of (dane.sesje || [])) {
+        const div = document.createElement('div');
+        div.className = 'wpis';
+        div.innerHTML = `<b>${s.zrodlo_id}</b> — start: ${s.start_ts} (tryb: ${s.tryb}, ${s.plan.warstwy.length} generatorów)`;
+        const btn = document.createElement('button');
+        btn.className = 'odmowna'; btn.textContent = '■ Stop';
+        btn.onclick = async () => {
+            const wynik = await api('POST', `/api/rezonator/sesje/${s.id}/stop`);
+            if (wynik.status === 'zatrzymano' && audio && audio.sesja_id === s.id) {
+                zatrzymajAudio();
+                $('wizualizacja').innerHTML = '';
+            }
+            await odswiezSesje();
+        };
+        div.appendChild(document.createElement('br'));
+        div.appendChild(btn);
+        el.appendChild(div);
+    }
+    if (!el.innerHTML) el.innerHTML = '<em style="opacity:.6;font-size:.85rem">Brak aktywnych sesji.</em>';
+}
+
+$('zr-btn').onclick = async () => {
+    const dane = await api('POST', '/api/rezonator/zrodla', {
+        zrodlo_id: $('zr-id').value.trim(),
+        typ: $('zr-typ').value,
+        wibracja_f: Number($('zr-f').value),
+        rytm_bpm: Number($('zr-bpm').value),
+        misja: $('zr-misja').value.trim(),
+        T_s: Number($('zr-t').value),
+    });
+    pokazStatus('zr-status', dane, ['utworzono']);
+    if (dane.status === 'utworzono') await odswiez();
+};
+
+$('start-btn').onclick = async () => {
+    const skladniki = [];
+    if ($('sk-solf').checked) skladniki.push({ klasa: 'solfeggio', hz: Number($('sk-solf-hz').value) });
+    if ($('sk-plan').checked) skladniki.push({ klasa: 'planetarna', cialo: $('sk-plan-cialo').value });
+    if ($('sk-qac').checked) skladniki.push({ klasa: 'qac', avatar_id: ja });
+    const dane = await api('POST', '/api/rezonator/sesje', {
+        zrodlo_id: $('em-zrodlo').value,
+        skladniki,
+    });
+    pokazStatus('em-status', dane, ['wystartowano']);
+    if (dane.status === 'wystartowano') {
+        grajPlan(dane.sesja.plan, dane.sesja.id);
+        await odswiezSesje();
+    }
+};
+
+start();
+</script>
+</body>
+</html>

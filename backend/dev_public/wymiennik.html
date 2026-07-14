@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wymiennik — podgląd deweloperski</title>
+<style>
+    :root { --bg: #0a0a0a; --fg: #e0e0e0; --accent: #d4af37; --err: #ff5555; --ok: #6fdc8c; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    h1 { color: var(--accent); font-size: 1.4rem; margin-bottom: 4px; }
+    .uwaga { font-size: 0.8rem; opacity: 0.7; margin-bottom: 24px; }
+    fieldset { border: 1px solid rgba(212,175,55,0.4); border-radius: 8px; margin-bottom: 16px; }
+    legend { color: var(--accent); padding: 0 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    label { display: block; font-size: 0.8rem; margin: 10px 0 4px; opacity: 0.85; }
+    input, textarea, select { width: 100%; box-sizing: border-box; background: #1a1a1a; border: 1px solid #333; color: var(--fg); padding: 8px; border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
+    .rzad { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .rzad3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) { .rzad, .rzad3 { grid-template-columns: 1fr; } }
+    button { margin-top: 12px; padding: 9px 20px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    button.druga { background: #1a1a1a; border: 1px solid var(--accent); color: var(--accent); font-weight: normal; }
+    button.odmowna { background: #1a1a1a; border: 1px solid var(--err); color: var(--err); font-weight: normal; }
+    .status { font-size: 0.9rem; margin: 8px 0; min-height: 1.2em; }
+    .status.ok { color: var(--ok); }
+    .status.blad { color: var(--err); }
+    .sesja-pasek { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05);
+        border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+    .sesja-pasek b, .sesja-pasek a { color: var(--accent); }
+    pre { background: #111; border: 1px solid #333; border-radius: 6px; padding: 12px; overflow-x: auto; font-size: 0.78rem; white-space: pre-wrap; word-break: break-word; }
+    .wpis { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; padding: 10px 14px; margin-top: 10px; font-size: 0.85rem; }
+    .wpis b { color: var(--accent); }
+    .wpis .mala { opacity: 0.7; font-size: 0.78rem; }
+    .saldo-siatka { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .saldo { background: rgba(255,255,255,0.05); border-left: 3px solid var(--accent); padding: 8px 10px; border-radius: 4px; }
+    .saldo b { display: block; font-size: 0.72rem; opacity: 0.7; }
+    .saldo span { font-size: 1.2rem; color: var(--accent); }
+    .ukryte { display: none; }
+</style>
+<script src="/menu.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+    <nav id="menu-moduly"></nav>
+
+    <h1>Wymiennik (Gebo) — podgląd deweloperski</h1>
+    <p class="uwaga">Wymiana jako równowaga, zero długu systemowego. Każda transakcja wymaga akceptacji obu tokenów w PS (Moduł 3) obu stron; vouchery avatar↔avatar sztywno 1:1.</p>
+
+    <div class="sesja-pasek">
+        <span id="sesja-opis">Sprawdzam sesję…</span>
+        <a href="/auth.html" id="link-logowania" class="ukryte">Zaloguj w module Auth →</a>
+    </div>
+
+    <div id="panel" class="ukryte">
+    <fieldset>
+        <legend>Moje salda</legend>
+        <div class="saldo-siatka" id="salda"><em style="opacity:.6;font-size:.85rem">—</em></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Mój token (fabryka — tworzenie swobodne)</legend>
+        <div class="rzad3">
+            <div><label for="tok-id">token_id (snake_case)</label><input id="tok-id" placeholder="voucher_moj"></div>
+            <div><label for="tok-klasa">Klasa</label>
+                <select id="tok-klasa"><option>avatar</option><option>wewnetrzny</option><option>zewnetrzny</option></select></div>
+            <div><label for="tok-podzielnosc">Podzielność</label><input id="tok-podzielnosc" type="number" value="0" min="0" max="8"></div>
+        </div>
+        <label for="tok-nazwa">Nazwa (co obiecuje voucher — produkt/usługa)</label><input id="tok-nazwa">
+        <div class="rzad">
+            <div><label for="tok-podaz">Podaż</label>
+                <select id="tok-podaz"><option value="nieograniczona">nieograniczona (emisje)</option><option value="stala">stała (całość od razu)</option></select></div>
+            <div><label for="tok-wielkosc">Wielkość (dla stałej)</label><input id="tok-wielkosc" type="number"></div>
+        </div>
+        <button id="tok-btn">Stwórz token</button>
+        <div class="status" id="tok-status"></div>
+        <div class="rzad">
+            <div><label for="em-token">Emisja: token_id</label><input id="em-token"></div>
+            <div><label for="em-ilosc">Ilość (wytworzone produkty/usługi)</label><input id="em-ilosc" type="number" value="1"></div>
+        </div>
+        <button id="em-btn" class="druga">Emituj vouchery</button>
+        <div class="status" id="em-status"></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Tokeny w środowisku</legend>
+        <div id="lista-tokenow">—</div>
+        <p class="uwaga" style="margin:8px 0 0">Pamiętaj: token uczestniczy w wymianie z Tobą dopiero po Twojej akceptacji w <a href="/ps.html" style="color:var(--accent)">PS → Moduł 3</a>.</p>
+    </fieldset>
+
+    <fieldset>
+        <legend>Oferta publiczna</legend>
+        <div class="rzad">
+            <div><label>Oddaję: token_id</label><input id="of-oddaje-token"></div>
+            <div><label>Ilość</label><input id="of-oddaje-ilosc" type="number" value="1"></div>
+        </div>
+        <div class="rzad">
+            <div><label>Oczekuję: token_id</label><input id="of-oczekuje-token"></div>
+            <div><label>Ilość</label><input id="of-oczekuje-ilosc" type="number" value="1"></div>
+        </div>
+        <div class="rzad">
+            <div><label>Tryb rozliczenia</label>
+                <select id="of-tryb"><option value="system">system (transfer od razu)</option><option value="poza_systemem">poza systemem (3D, oba potwierdzenia)</option><option value="zewnetrzny">zewnętrzny (adapter)</option></select></div>
+            <div><label>Opis</label><input id="of-opis"></div>
+        </div>
+        <button id="of-btn">Wystaw ofertę</button>
+        <div class="status" id="of-status"></div>
+        <div id="lista-ofert">—</div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Transakcja bezpośrednia</legend>
+        <label>Druga strona (avatar_id)</label><input id="tr-do">
+        <div class="rzad">
+            <div><label>Oddaję: token_id</label><input id="tr-oddaje-token"></div>
+            <div><label>Ilość</label><input id="tr-oddaje-ilosc" type="number" value="1"></div>
+        </div>
+        <div class="rzad">
+            <div><label>Oczekuję: token_id</label><input id="tr-oczekuje-token"></div>
+            <div><label>Ilość</label><input id="tr-oczekuje-ilosc" type="number" value="1"></div>
+        </div>
+        <label>Tryb</label>
+        <select id="tr-tryb"><option value="system">system</option><option value="poza_systemem">poza systemem</option><option value="zewnetrzny">zewnętrzny</option></select>
+        <button id="tr-btn">Zaproponuj wymianę</button>
+        <div class="status" id="tr-status"></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Moje transakcje</legend>
+        <div id="lista-transakcji">—</div>
+    </fieldset>
+    </div>
+
+    <fieldset>
+        <legend>Surowa odpowiedź API (ostatnie wywołanie)</legend>
+        <pre id="surowe">—</pre>
+    </fieldset>
+</div>
+
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+
+async function api(metoda, sciezka, cialo) {
+    const odp = await fetch(sciezka, {
+        method: metoda,
+        headers: cialo ? { 'Content-Type': 'application/json' } : undefined,
+        body: cialo ? JSON.stringify(cialo) : undefined,
+        credentials: 'same-origin',
+    });
+    const dane = await odp.json();
+    $('surowe').textContent = JSON.stringify(dane, null, 2);
+    return dane;
+}
+
+function pokazStatus(id, dane, dobre) {
+    const el = $(id);
+    const ok = dobre.includes(dane.status);
+    el.className = 'status ' + (ok ? 'ok' : 'blad');
+    el.textContent = dane.status + (dane.powod ? ': ' + dane.powod : '');
+}
+
+let ja = null;
+
+async function start() {
+    const sesja = await api('GET', '/api/auth/sesja');
+    const zalogowany = sesja.status === 'aktywna';
+    ja = zalogowany ? sesja.avatar_id : null;
+    $('sesja-opis').innerHTML = zalogowany
+        ? `Zalogowany: <b>${sesja.avatar_id}</b>`
+        : 'Wymiennik wymaga zalogowania (tożsamość stron transakcji)';
+    $('link-logowania').classList.toggle('ukryte', zalogowany);
+    $('panel').classList.toggle('ukryte', !zalogowany);
+    if (zalogowany) await odswiez();
+}
+
+async function odswiez() {
+    await Promise.all([odswiezSalda(), odswiezTokeny(), odswiezOferty(), odswiezTransakcje()]);
+}
+
+async function odswiezSalda() {
+    const dane = await api('GET', '/api/wymiennik/moje/salda');
+    const wpisy = Object.entries(dane.salda || {});
+    $('salda').innerHTML = wpisy.length
+        ? wpisy.map(([t, i]) => `<div class="saldo"><b>${t}</b><span>${i}</span></div>`).join('')
+        : '<em style="opacity:.6;font-size:.85rem">Brak sald — stwórz token i wyemituj vouchery.</em>';
+}
+
+async function odswiezTokeny() {
+    const dane = await api('GET', '/api/wymiennik/tokeny');
+    $('lista-tokenow').innerHTML = (dane.tokeny || []).map((t) =>
+        `<div class="wpis"><b>${t.token_id}</b> (${t.klasa}) — ${t.nazwa}
+         <div class="mala">emitent: ${t.emitent} · podaż: ${t.podaz.typ}${t.podaz.wielkosc ? ' ' + t.podaz.wielkosc : ''} · podzielność: ${t.podzielnosc}</div></div>`
+    ).join('') || '<em style="opacity:.6;font-size:.85rem">Brak tokenów.</em>';
+}
+
+async function odswiezOferty() {
+    const dane = await api('GET', '/api/wymiennik/oferty');
+    const el = $('lista-ofert');
+    el.innerHTML = '';
+    for (const o of (dane.oferty || [])) {
+        const div = document.createElement('div');
+        div.className = 'wpis';
+        div.innerHTML = `<b>${o.wystawca}</b> oddaje ${o.oddaje.ilosc} × ${o.oddaje.token_id}
+            za ${o.oczekuje.ilosc} × ${o.oczekuje.token_id} <span class="mala">(${o.tryb})</span>
+            ${o.opis ? `<div class="mala">${o.opis}</div>` : ''}`;
+        const btn = document.createElement('button');
+        if (o.wystawca === ja) {
+            btn.className = 'odmowna'; btn.textContent = 'Wycofaj';
+            btn.onclick = async () => {
+                pokazStatus('of-status', await api('POST', `/api/wymiennik/oferty/${o.id}/wycofaj`), ['wycofana']);
+                odswiez();
+            };
+        } else {
+            btn.className = 'druga'; btn.textContent = 'Przyjmij';
+            btn.onclick = async () => {
+                pokazStatus('of-status', await api('POST', `/api/wymiennik/oferty/${o.id}/przyjmij`),
+                    ['rozliczona', 'oczekuje_potwierdzen', 'umowa_zewnetrzna']);
+                odswiez();
+            };
+        }
+        div.appendChild(document.createElement('br'));
+        div.appendChild(btn);
+        el.appendChild(div);
+    }
+    if (!el.innerHTML) el.innerHTML = '<em style="opacity:.6;font-size:.85rem">Brak aktywnych ofert.</em>';
+}
+
+async function odswiezTransakcje() {
+    const dane = await api('GET', '/api/wymiennik/moje/transakcje');
+    const el = $('lista-transakcji');
+    el.innerHTML = '';
+    for (const t of (dane.transakcje || []).reverse()) {
+        const div = document.createElement('div');
+        div.className = 'wpis';
+        div.innerHTML = `<b>${t.status}</b> · ${t.od} → ${t.do}: ${t.oddaje.ilosc} × ${t.oddaje.token_id}
+            za ${t.oczekuje.ilosc} × ${t.oczekuje.token_id} <span class="mala">(${t.tryb})</span>`;
+        const akcje = [];
+        if (t.status === 'proponowana' && t.do === ja) {
+            akcje.push(['Akceptuję', 'druga', `/transakcje/${t.id}/odpowiedz`, { decyzja: 'akceptuje' }]);
+            akcje.push(['Odrzucam', 'odmowna', `/transakcje/${t.id}/odpowiedz`, { decyzja: 'odrzuca' }]);
+        }
+        if (t.status === 'proponowana' && t.od === ja) {
+            akcje.push(['Wycofuję', 'odmowna', `/transakcje/${t.id}/wycofaj`, {}]);
+        }
+        if (t.status === 'oczekuje_potwierdzen') {
+            akcje.push(['Potwierdzam wykonanie', 'druga', `/transakcje/${t.id}/potwierdz`, {}]);
+            akcje.push(['Anuluję', 'odmowna', `/transakcje/${t.id}/anuluj`, {}]);
+        }
+        if (akcje.length) div.appendChild(document.createElement('br'));
+        for (const [napis, klasa, sciezka, cialo] of akcje) {
+            const b = document.createElement('button');
+            b.className = klasa; b.textContent = napis; b.style.marginRight = '8px';
+            b.onclick = async () => {
+                pokazStatus('tr-status', await api('POST', `/api/wymiennik${sciezka}`, cialo),
+                    ['rozliczona', 'oczekuje_potwierdzen', 'odrzucona', 'wycofana', 'anulowana', 'umowa_zewnetrzna']);
+                odswiez();
+            };
+            div.appendChild(b);
+        }
+        el.appendChild(div);
+    }
+    if (!el.innerHTML) el.innerHTML = '<em style="opacity:.6;font-size:.85rem">Brak transakcji.</em>';
+}
+
+$('tok-btn').onclick = async () => {
+    const typ = $('tok-podaz').value;
+    const dane = await api('POST', '/api/wymiennik/tokeny', {
+        token_id: $('tok-id').value.trim(),
+        nazwa: $('tok-nazwa').value.trim(),
+        opis: '',
+        klasa: $('tok-klasa').value,
+        podaz: { typ, wielkosc: typ === 'stala' ? Number($('tok-wielkosc').value) : null },
+        podzielnosc: Number($('tok-podzielnosc').value),
+        mapowanie_369: null,
+        ...($('tok-klasa').value === 'zewnetrzny' ? { adapter: 'atrapa' } : {}),
+    });
+    pokazStatus('tok-status', dane, ['utworzono']);
+    if (dane.status === 'utworzono') { $('em-token').value = dane.token.token_id; odswiez(); }
+};
+$('em-btn').onclick = async () => {
+    const dane = await api('POST', `/api/wymiennik/tokeny/${$('em-token').value.trim()}/emisja`,
+        { ilosc: Number($('em-ilosc').value) });
+    pokazStatus('em-status', dane, ['wyemitowano']);
+    odswiezSalda();
+};
+$('of-btn').onclick = async () => {
+    const dane = await api('POST', '/api/wymiennik/oferty', {
+        oddaje: { token_id: $('of-oddaje-token').value.trim(), ilosc: Number($('of-oddaje-ilosc').value) },
+        oczekuje: { token_id: $('of-oczekuje-token').value.trim(), ilosc: Number($('of-oczekuje-ilosc').value) },
+        opis: $('of-opis').value.trim(), tryb: $('of-tryb').value,
+    });
+    pokazStatus('of-status', dane, ['zapisano']);
+    odswiezOferty();
+};
+$('tr-btn').onclick = async () => {
+    const dane = await api('POST', '/api/wymiennik/transakcje', {
+        do: $('tr-do').value.trim(),
+        oddaje: { token_id: $('tr-oddaje-token').value.trim(), ilosc: Number($('tr-oddaje-ilosc').value) },
+        oczekuje: { token_id: $('tr-oczekuje-token').value.trim(), ilosc: Number($('tr-oczekuje-ilosc').value) },
+        tryb: $('tr-tryb').value,
+    });
+    pokazStatus('tr-status', dane, ['zapisano']);
+    odswiezTransakcje();
+};
+
+start();
+</script>
+</body>
+</html>

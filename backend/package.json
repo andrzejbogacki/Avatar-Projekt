@@ -5,7 +5,7 @@
   "private": true,
   "main": "modules/qac/index.js",
   "scripts": {
-    "test": "node --test 'modules/qac/test/*.test.js'",
+    "test": "node --test 'modules/*/test/*.test.js'",
     "dev": "node dev_server.js"
   },
   "engines": {

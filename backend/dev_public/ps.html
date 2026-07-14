@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PS — podgląd deweloperski</title>
+<style>
+    :root { --bg: #0a0a0a; --fg: #e0e0e0; --accent: #d4af37; --err: #ff5555; --ok: #6fdc8c; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    h1 { color: var(--accent); font-size: 1.4rem; margin-bottom: 4px; }
+    .uwaga { font-size: 0.8rem; opacity: 0.7; margin-bottom: 24px; }
+    fieldset { border: 1px solid rgba(212,175,55,0.4); border-radius: 8px; margin-bottom: 16px; }
+    legend { color: var(--accent); padding: 0 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    label { display: block; font-size: 0.8rem; margin: 10px 0 4px; opacity: 0.85; }
+    input, textarea, select { width: 100%; box-sizing: border-box; background: #1a1a1a; border: 1px solid #333; color: var(--fg); padding: 8px; border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
+    .rzad { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) { .rzad { grid-template-columns: 1fr; } }
+    button { margin-top: 12px; padding: 9px 20px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    button.druga { background: #1a1a1a; border: 1px solid var(--accent); color: var(--accent); font-weight: normal; }
+    button.odmowna { background: #1a1a1a; border: 1px solid var(--err); color: var(--err); font-weight: normal; }
+    .status { font-size: 0.9rem; margin: 8px 0; min-height: 1.2em; }
+    .status.ok { color: var(--ok); }
+    .status.blad { color: var(--err); }
+    .sesja-pasek { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05);
+        border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+    .sesja-pasek b { color: var(--accent); }
+    .sesja-pasek a { color: var(--accent); }
+    pre { background: #111; border: 1px solid #333; border-radius: 6px; padding: 12px; overflow-x: auto; font-size: 0.78rem; white-space: pre-wrap; word-break: break-word; }
+    .wpis { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; padding: 10px 14px; margin-top: 10px; font-size: 0.85rem; }
+    .wpis b { color: var(--accent); }
+    .checkbox-rzad { display: flex; align-items: flex-start; gap: 10px; margin: 12px 0; }
+    .checkbox-rzad input { width: auto; margin-top: 3px; }
+    .checkbox-rzad span { font-size: 0.85rem; }
+    .ukryte { display: none; }
+</style>
+<script src="/menu.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+    <nav id="menu-moduly"></nav>
+
+    <h1>PS — Protokół Suwerenności (podgląd deweloperski)</h1>
+    <p class="uwaga">Narzędzie robocze (nie jest częścią kontraktu PS). Dostęp do profili wg Strumienia 2; bramka wstępna dla osób niezalogowanych.</p>
+
+    <div class="sesja-pasek">
+        <span id="sesja-opis">Sprawdzam sesję…</span>
+        <a href="/auth.html" id="link-logowania" class="ukryte">Zaloguj w module Auth →</a>
+    </div>
+
+    <fieldset>
+        <legend>Podgląd profilu (Strumień 2)</legend>
+        <div class="rzad">
+            <div>
+                <label for="prof-avatar">avatar_id profilu</label>
+                <input id="prof-avatar" value="andrzej_bogacki">
+            </div>
+            <div style="align-self:end"><button id="prof-btn" style="margin-top:0">Pokaż profil</button></div>
+        </div>
+        <div class="status" id="prof-status"></div>
+        <div id="bramka-blok" class="ukryte">
+            <p class="uwaga" style="margin-bottom:6px">Profil Suwerena wymaga zatwierdzenia bramki wstępnej (osoby niezalogowane):</p>
+            <div class="checkbox-rzad"><input type="checkbox" id="br-uznanie"><span>Uznaję status Profilu Suwerena</span></div>
+            <div class="checkbox-rzad"><input type="checkbox" id="br-klauzula"><span>Zobowiązuję się nie używać udostępnionych danych przeciw Suwerenowi</span></div>
+            <button id="bramka-btn" class="druga" style="margin-top:0">Zatwierdzam zobowiązanie</button>
+        </div>
+        <div id="prof-wynik"></div>
+        <button id="kontakt-btn" class="druga ukryte">Proś o kontakt</button>
+    </fieldset>
+
+    <div id="panel-wlasciciela" class="ukryte">
+        <fieldset id="blok-utworz" class="ukryte">
+            <legend>Mój profil PS — nie istnieje</legend>
+            <label for="moje-imie">Imię (dane podstawowe)</label>
+            <input id="moje-imie">
+            <button id="utworz-btn">Utwórz mój profil</button>
+        </fieldset>
+
+        <div id="blok-edycje" class="ukryte">
+        <fieldset>
+            <legend>Moduł 1 — autocertyfikacja Jakości</legend>
+            <div class="rzad">
+                <div><label for="jk-os">Oś</label>
+                    <select id="jk-os">
+                        <option value="wolnosc_akceptacja">Wolność / Akceptacja</option>
+                        <option value="madrosc_piekno">Mądrość / Piękno</option>
+                        <option value="sprawiedliwosc_dobro">Sprawiedliwość / Dobro</option>
+                        <option value="odpowiedzialnosc_prawda">Odpowiedzialność / Prawda</option>
+                    </select></div>
+                <div><label for="jk-poziom">Poziom</label>
+                    <select id="jk-poziom"><option value="poziom_3">3</option><option value="poziom_6">6</option></select></div>
+            </div>
+            <label for="jk-oswiadczenie">Oświadczenie</label>
+            <textarea id="jk-oswiadczenie" rows="2"></textarea>
+            <button id="jk-btn">Zapisz autocertyfikat</button>
+            <div class="status" id="jk-status"></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Moduł 2 — symulacje</legend>
+            <div class="rzad">
+                <div><label for="sym-nazwa">Symulacja</label><input id="sym-nazwa"></div>
+                <div><label for="sym-akceptacja">Akceptacja</label>
+                    <select id="sym-akceptacja"><option>pelna</option><option>warunkowa</option><option>brak</option></select></div>
+            </div>
+            <label for="sym-warunek">Warunek (dla warunkowej)</label><input id="sym-warunek">
+            <label for="sym-opis">Opis</label><input id="sym-opis">
+            <button id="sym-btn">Zapisz wpis</button>
+            <div class="status" id="sym-status"></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Moduł 3 — tokeny + alokacja Volt</legend>
+            <div class="rzad">
+                <div><label for="tok-nazwa">Token</label><input id="tok-nazwa"></div>
+                <div><label for="tok-akceptacja">Akceptacja</label>
+                    <select id="tok-akceptacja"><option>pelna</option><option>warunkowa</option><option>brak</option></select></div>
+            </div>
+            <div class="rzad">
+                <div><label for="tok-warunek">Warunek</label><input id="tok-warunek"></div>
+                <div><label for="tok-369">mapowanie_369</label><input id="tok-369" placeholder="3 / 6 / 9"></div>
+            </div>
+            <label for="tok-opis">Opis</label><input id="tok-opis">
+            <button id="tok-btn">Zapisz token</button>
+            <div class="status" id="tok-status"></div>
+            <label for="volt-alokacja">Alokacja Volt — JSON, suma ≤ 100% (redystrybucja w dowolnym momencie)</label>
+            <textarea id="volt-alokacja" rows="2">[{"cel":"misja_przyklad","procent":100}]</textarea>
+            <button id="volt-btn" class="druga">Redystrybuuj Volt</button>
+            <div class="status" id="volt-status"></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Moduł 4 — dostęp obserwatorów</legend>
+            <div class="rzad">
+                <div><label for="s2-obserwator">Obserwator (avatar_id)</label><input id="s2-obserwator"></div>
+                <div><label for="s2-poziom">Poziom (Strumień 2)</label>
+                    <select id="s2-poziom"><option>niesklasyfikowany</option><option>uczen</option><option>adept</option><option>mistrz</option></select></div>
+            </div>
+            <button id="s2-btn">Nadaj poziom</button>
+            <div class="status" id="s2-status"></div>
+            <div class="rzad">
+                <div><label for="s1-obserwator">Obserwator</label><input id="s1-obserwator"></div>
+                <div><label for="s1-os">Oś</label>
+                    <select id="s1-os">
+                        <option value="wolnosc_akceptacja">Wolność / Akceptacja</option>
+                        <option value="madrosc_piekno">Mądrość / Piękno</option>
+                        <option value="sprawiedliwosc_dobro">Sprawiedliwość / Dobro</option>
+                        <option value="odpowiedzialnosc_prawda">Odpowiedzialność / Prawda</option>
+                    </select></div>
+            </div>
+            <label for="s1-stan">Stan dostępu (Strumień 1 — nadpisanie macierzy „wszystko brak")</label>
+            <select id="s1-stan"><option>brak</option><option>warunkowy</option><option>akceptacja</option><option>dozwolony</option></select>
+            <button id="s1-btn">Zapisz nadpisanie</button>
+            <div class="status" id="s1-status"></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Prośby o kontakt</legend>
+            <div id="lista-kontaktow"><em style="opacity:.6;font-size:.85rem">Brak.</em></div>
+        </fieldset>
+        </div>
+    </div>
+
+    <fieldset>
+        <legend>Surowa odpowiedź API (ostatnie wywołanie)</legend>
+        <pre id="surowe">—</pre>
+    </fieldset>
+</div>
+
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+
+async function api(metoda, sciezka, cialo) {
+    const odp = await fetch(sciezka, {
+        method: metoda,
+        headers: cialo ? { 'Content-Type': 'application/json' } : undefined,
+        body: cialo ? JSON.stringify(cialo) : undefined,
+        credentials: 'same-origin',
+    });
+    const dane = await odp.json();
+    $('surowe').textContent = JSON.stringify(dane, null, 2);
+    return dane;
+}
+
+function pokazStatus(id, dane, dobryStatus) {
+    const el = $(id);
+    el.className = 'status ' + (dane.status === dobryStatus ? 'ok' : 'blad');
+    el.textContent = dane.status + (dane.powod ? ': ' + dane.powod : '');
+}
+
+let mojaSesja = { status: 'brak_sesji' };
+
+async function start() {
+    mojaSesja = await api('GET', '/api/auth/sesja');
+    const zalogowany = mojaSesja.status === 'aktywna';
+    $('sesja-opis').innerHTML = zalogowany
+        ? `Zalogowany: <b>${mojaSesja.avatar_id}</b>`
+        : 'Nie zalogowano — profile oglądasz jako gość (po bramce wstępnej)';
+    $('link-logowania').classList.toggle('ukryte', zalogowany);
+    $('panel-wlasciciela').classList.toggle('ukryte', !zalogowany);
+    if (zalogowany) await odswiezMojProfil();
+}
+
+async function odswiezMojProfil() {
+    const dane = await api('GET', '/api/ps/moj');
+    const istnieje = dane.avatar_id !== undefined;
+    $('blok-utworz').classList.toggle('ukryte', istnieje);
+    $('blok-edycje').classList.toggle('ukryte', !istnieje);
+    if (istnieje) await odswiezKontakty();
+}
+
+async function odswiezKontakty() {
+    const dane = await api('GET', '/api/ps/moj/kontakty');
+    const el = $('lista-kontaktow');
+    const prosby = dane.prosby || [];
+    if (prosby.length === 0) {
+        el.innerHTML = '<em style="opacity:.6;font-size:.85rem">Brak próśb.</em>';
+        return;
+    }
+    el.innerHTML = '';
+    for (const p of prosby) {
+        const div = document.createElement('div');
+        div.className = 'wpis';
+        div.innerHTML = `<b>${p.od}</b> — ${p.status} (${p.ts})`;
+        if (p.status === 'oczekujaca') {
+            const akceptuj = document.createElement('button');
+            akceptuj.className = 'druga'; akceptuj.textContent = 'Akceptuję';
+            const odmow = document.createElement('button');
+            odmow.className = 'odmowna'; odmow.textContent = 'Odmawiam'; odmow.style.marginLeft = '10px';
+            akceptuj.onclick = async () => {
+                await api('POST', `/api/ps/moj/kontakty/${p.id}/decyzja`, { decyzja: 'zaakceptowana' });
+                odswiezKontakty();
+            };
+            odmow.onclick = async () => {
+                await api('POST', `/api/ps/moj/kontakty/${p.id}/decyzja`, { decyzja: 'odrzucona' });
+                odswiezKontakty();
+            };
+            div.appendChild(document.createElement('br'));
+            div.appendChild(akceptuj); div.appendChild(odmow);
+        }
+        el.appendChild(div);
+    }
+}
+
+let ogladanyProfil = null;
+
+async function pokazProfil() {
+    const avatar = $('prof-avatar').value.trim();
+    const dane = await api('GET', `/api/ps/profil/${avatar}`);
+    $('bramka-blok').classList.add('ukryte');
+    $('kontakt-btn').classList.add('ukryte');
+    $('prof-wynik').innerHTML = '';
+    if (dane.status === 'wymagana_bramka') {
+        $('prof-status').className = 'status blad';
+        $('prof-status').textContent = 'Dostęp wymaga zatwierdzenia bramki wstępnej (poniżej)';
+        $('bramka-blok').classList.remove('ukryte');
+        return;
+    }
+    if (dane.status) { pokazStatus('prof-status', dane, '—'); return; }
+    ogladanyProfil = avatar;
+    $('prof-status').className = 'status ok';
+    $('prof-status').textContent = `Widok na poziomie: ${dane.poziom_obserwatora}`;
+    $('prof-wynik').innerHTML = `<pre>${JSON.stringify(dane, null, 2)}</pre>`;
+    if (dane.poziom_obserwatora !== 'wlasciciel') $('kontakt-btn').classList.remove('ukryte');
+}
+
+$('prof-btn').onclick = pokazProfil;
+$('bramka-btn').onclick = async () => {
+    const dane = await api('POST', `/api/ps/bramka/${$('prof-avatar').value.trim()}`, {
+        uznanie_statusu: $('br-uznanie').checked,
+        klauzula_nieuzycia: $('br-klauzula').checked,
+    });
+    if (dane.status === 'zapisano') await pokazProfil();
+    else pokazStatus('prof-status', dane, 'zapisano');
+};
+$('kontakt-btn').onclick = async () => {
+    const dane = await api('POST', `/api/ps/kontakt/${ogladanyProfil}`);
+    pokazStatus('prof-status', dane, 'zapisano');
+    if (dane.status === 'zapisano') $('prof-status').textContent = 'Prośba o kontakt wysłana — czeka na decyzję właściciela';
+};
+
+$('utworz-btn').onclick = async () => {
+    await api('POST', '/api/ps/moj', { imie: $('moje-imie').value.trim() });
+    await odswiezMojProfil();
+};
+$('jk-btn').onclick = async () => pokazStatus('jk-status', await api('PUT', '/api/ps/moj/jakosci', {
+    os: $('jk-os').value, poziom: $('jk-poziom').value, oswiadczenie: $('jk-oswiadczenie').value.trim(),
+}), 'zapisano');
+$('sym-btn').onclick = async () => pokazStatus('sym-status', await api('PUT', '/api/ps/moj/symulacje', {
+    symulacja: $('sym-nazwa').value.trim(), akceptacja: $('sym-akceptacja').value,
+    warunek: $('sym-warunek').value.trim() || null, opis: $('sym-opis').value.trim(),
+}), 'zapisano');
+$('tok-btn').onclick = async () => pokazStatus('tok-status', await api('PUT', '/api/ps/moj/tokeny', {
+    token: $('tok-nazwa').value.trim(), akceptacja: $('tok-akceptacja').value,
+    warunek: $('tok-warunek').value.trim() || null,
+    mapowanie_369: $('tok-369').value.trim() ? Number($('tok-369').value.trim()) : null,
+    opis: $('tok-opis').value.trim(),
+}), 'zapisano');
+$('volt-btn').onclick = async () => {
+    let alokacja;
+    try { alokacja = JSON.parse($('volt-alokacja').value); }
+    catch (b) { pokazStatus('volt-status', { status: 'odmowa', powod: 'Nieprawidłowy JSON' }, 'zapisano'); return; }
+    pokazStatus('volt-status', await api('PUT', '/api/ps/moj/tokeny/volt', { alokacja }), 'zapisano');
+};
+$('s2-btn').onclick = async () => pokazStatus('s2-status', await api('PUT', '/api/ps/moj/strumien2', {
+    obserwator: $('s2-obserwator').value.trim(), poziom: $('s2-poziom').value,
+}), 'zapisano');
+$('s1-btn').onclick = async () => pokazStatus('s1-status', await api('PUT', '/api/ps/moj/strumien1', {
+    obserwator: $('s1-obserwator').value.trim(), os: $('s1-os').value, stan: $('s1-stan').value,
+}), 'zapisano');
+
+start();
+</script>
+</body>
+</html>

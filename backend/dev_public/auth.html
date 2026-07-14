@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auth — podgląd deweloperski</title>
+<style>
+    :root { --bg: #0a0a0a; --fg: #e0e0e0; --accent: #d4af37; --err: #ff5555; --ok: #6fdc8c; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    h1 { color: var(--accent); font-size: 1.4rem; margin-bottom: 4px; }
+    .uwaga { font-size: 0.8rem; opacity: 0.7; margin-bottom: 24px; }
+    fieldset { border: 1px solid rgba(212,175,55,0.4); border-radius: 8px; margin-bottom: 16px; }
+    legend { color: var(--accent); padding: 0 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    label { display: block; font-size: 0.8rem; margin: 10px 0 4px; opacity: 0.85; }
+    input, textarea { width: 100%; box-sizing: border-box; background: #1a1a1a; border: 1px solid #333; color: var(--fg); padding: 8px; border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
+    button { margin-top: 12px; padding: 9px 20px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: wait; }
+    button.druga { background: #1a1a1a; border: 1px solid var(--accent); color: var(--accent); font-weight: normal; }
+    button.odmowna { background: #1a1a1a; border: 1px solid var(--err); color: var(--err); font-weight: normal; }
+    .status { font-size: 0.9rem; margin: 8px 0; min-height: 1.2em; }
+    .status.ok { color: var(--ok); }
+    .status.blad { color: var(--err); }
+    .sesja-pasek { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05);
+        border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+    .sesja-pasek b { color: var(--accent); }
+    pre { background: #111; border: 1px solid #333; border-radius: 6px; padding: 12px; overflow-x: auto; font-size: 0.8rem; white-space: pre-wrap; word-break: break-word; }
+    .propozycja { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; padding: 10px 14px; margin-top: 10px; }
+    .propozycja .kto { font-size: 0.85rem; }
+    .propozycja .kto b { color: var(--accent); }
+    .propozycja .uzasadnienie { font-size: 0.8rem; opacity: 0.75; margin: 6px 0; }
+    .propozycja .akcje { display: flex; gap: 10px; }
+    .token-box { border: 1px dashed var(--ok); border-radius: 6px; padding: 10px 14px; margin-top: 10px; font-size: 0.85rem; }
+    .token-box code { color: var(--ok); word-break: break-all; display: block; margin-top: 6px; }
+    .ukryte { display: none; }
+</style>
+<script src="/menu.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+    <nav id="menu-moduly"></nav>
+
+    <h1>Auth — podgląd deweloperski</h1>
+    <p class="uwaga">Narzędzie robocze do sprawdzenia działania modułu (nie jest częścią kontraktu Auth). Rejestracja wyłącznie przez zaproszenie zatwierdzone przez Suwerena.</p>
+
+    <div class="sesja-pasek">
+        <span id="sesja-opis">Sprawdzam sesję…</span>
+        <button id="wyloguj-btn" class="druga ukryte" style="margin-top:0">Wyloguj</button>
+    </div>
+
+    <fieldset id="blok-logowanie">
+        <legend>Logowanie</legend>
+        <form id="form-logowanie" autocomplete="on">
+            <label for="log-avatar">avatar_id</label>
+            <input id="log-avatar" name="username" autocomplete="username">
+            <label for="log-haslo">Hasło</label>
+            <input id="log-haslo" name="password" type="password" autocomplete="current-password">
+            <button id="zaloguj-btn" type="submit">Zaloguj</button>
+            <div class="status" id="log-status"></div>
+        </form>
+    </fieldset>
+
+    <fieldset id="blok-aktywacja">
+        <legend>Aktywacja konta (jednorazowy token z zaproszenia)</legend>
+        <form id="form-aktywacja" autocomplete="on">
+            <label for="akt-avatar">avatar_id</label>
+            <input id="akt-avatar" name="username" autocomplete="username">
+            <label for="akt-token">Token aktywacyjny</label>
+            <input id="akt-token" name="one-time-code" autocomplete="off">
+            <label for="akt-haslo">Nowe hasło (min. 12 znaków — ustawiasz je tylko Ty)</label>
+            <input id="akt-haslo" name="new-password" type="password" autocomplete="new-password">
+            <button id="aktywuj-btn" type="submit">Aktywuj konto</button>
+            <div class="status" id="akt-status"></div>
+        </form>
+    </fieldset>
+
+    <fieldset id="blok-propozycja" class="ukryte">
+        <legend>Zaproś nowego Avatara (propozycja do decyzji Suwerena)</legend>
+        <label for="prop-kandydat">avatar_id kandydata (snake_case)</label>
+        <input id="prop-kandydat" autocomplete="off">
+        <label for="prop-uzasadnienie">Uzasadnienie</label>
+        <textarea id="prop-uzasadnienie" rows="2"></textarea>
+        <button id="proponuj-btn">Złóż propozycję</button>
+        <div class="status" id="prop-status"></div>
+    </fieldset>
+
+    <fieldset id="blok-decyzje" class="ukryte">
+        <legend>Oczekujące zaproszenia (decyduje wyłącznie Suweren)</legend>
+        <div id="lista-propozycji"><em style="opacity:.6;font-size:.85rem">Ładowanie…</em></div>
+        <div id="wynik-decyzji"></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Surowa odpowiedź API (ostatnie wywołanie)</legend>
+        <pre id="surowe">—</pre>
+    </fieldset>
+</div>
+
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+const surowe = (dane) => { $('surowe').textContent = JSON.stringify(dane, null, 2); };
+
+async function api(metoda, sciezka, cialo) {
+    const odp = await fetch(sciezka, {
+        method: metoda,
+        headers: cialo ? { 'Content-Type': 'application/json' } : undefined,
+        body: cialo ? JSON.stringify(cialo) : undefined,
+        credentials: 'same-origin',
+    });
+    const dane = await odp.json();
+    surowe(dane);
+    return dane;
+}
+
+let mojaSesja = { status: 'brak_sesji' };
+
+async function odswiezSesje() {
+    mojaSesja = await api('GET', '/api/auth/sesja');
+    const zalogowany = mojaSesja.status === 'aktywna';
+    $('sesja-opis').innerHTML = zalogowany
+        ? `Zalogowany: <b>${mojaSesja.avatar_id}</b>`
+        : `Nie zalogowano (status: ${mojaSesja.status})`;
+    $('wyloguj-btn').classList.toggle('ukryte', !zalogowany);
+    $('blok-logowanie').classList.toggle('ukryte', zalogowany);
+    $('blok-propozycja').classList.toggle('ukryte', !zalogowany);
+    $('blok-decyzje').classList.add('ukryte');
+    if (zalogowany) await odswiezPropozycje();
+}
+
+async function odswiezPropozycje() {
+    const dane = await api('GET', '/api/auth/zaproszenia');
+    if (!dane.propozycje) return; // nie-Suweren: 403 — blok pozostaje ukryty
+    $('blok-decyzje').classList.remove('ukryte');
+    const el = $('lista-propozycji');
+    if (dane.propozycje.length === 0) {
+        el.innerHTML = '<em style="opacity:.6;font-size:.85rem">Brak oczekujących propozycji.</em>';
+        return;
+    }
+    el.innerHTML = '';
+    for (const p of dane.propozycje) {
+        const div = document.createElement('div');
+        div.className = 'propozycja';
+        div.innerHTML = `
+            <div class="kto"><b>${p.kandydat_avatar_id}</b> — zaprasza: ${p.zapraszajacy} (${p.propozycja_ts})</div>
+            <div class="uzasadnienie">${p.uzasadnienie}</div>
+            <div class="akcje">
+                <button class="druga" data-id="${p.id}" data-decyzja="zatwierdzona" style="margin-top:0">Zatwierdź</button>
+                <button class="odmowna" data-id="${p.id}" data-decyzja="odrzucona" style="margin-top:0">Odrzuć</button>
+            </div>`;
+        el.appendChild(div);
+    }
+    el.querySelectorAll('button').forEach((b) => b.addEventListener('click', async () => {
+        const dane = await api('POST', `/api/auth/zaproszenia/${b.dataset.id}/decyzja`,
+            { decyzja: b.dataset.decyzja });
+        const w = $('wynik-decyzji');
+        if (dane.status === 'zatwierdzono') {
+            w.innerHTML = `<div class="token-box">Konto <b>${dane.avatar_id}</b> utworzone.
+                Przekaż zapraszanemu token aktywacyjny (jednorazowy, ważny 7 dni — wyświetlany tylko teraz):
+                <code>${dane.token_aktywacji}</code></div>`;
+        } else {
+            w.innerHTML = `<div class="status ${dane.status === 'odrzucono' ? 'ok' : 'blad'}">${dane.status}${dane.powod ? ': ' + dane.powod : ''}</div>`;
+        }
+        await odswiezPropozycje();
+    }));
+}
+
+$('form-logowanie').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const dane = await api('POST', '/api/auth/logowanie',
+        { avatar_id: $('log-avatar').value.trim(), haslo: $('log-haslo').value });
+    const s = $('log-status');
+    s.className = 'status ' + (dane.status === 'zalogowano' ? 'ok' : 'blad');
+    s.textContent = dane.status;
+    if (dane.status === 'zalogowano') { $('log-haslo').value = ''; await odswiezSesje(); }
+});
+
+$('wyloguj-btn').addEventListener('click', async () => {
+    await api('POST', '/api/auth/wylogowanie');
+    await odswiezSesje();
+});
+
+$('form-aktywacja').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const dane = await api('POST', '/api/auth/aktywacja', {
+        avatar_id: $('akt-avatar').value.trim(),
+        token: $('akt-token').value.trim(),
+        nowe_haslo: $('akt-haslo').value,
+    });
+    const s = $('akt-status');
+    s.className = 'status ' + (dane.status === 'aktywowano' ? 'ok' : 'blad');
+    s.textContent = dane.status + (dane.powod ? ': ' + dane.powod : '')
+        + (dane.status === 'aktywowano' ? ' — możesz się zalogować' : '');
+    if (dane.status === 'aktywowano') { $('akt-token').value = ''; $('akt-haslo').value = ''; }
+});
+
+$('proponuj-btn').addEventListener('click', async () => {
+    const dane = await api('POST', '/api/auth/zaproszenia', {
+        kandydat_avatar_id: $('prop-kandydat').value.trim(),
+        uzasadnienie: $('prop-uzasadnienie').value.trim(),
+    });
+    const s = $('prop-status');
+    s.className = 'status ' + (dane.status === 'zapisano' ? 'ok' : 'blad');
+    s.textContent = dane.status === 'zapisano'
+        ? 'Propozycja zapisana — czeka na decyzję Suwerena'
+        : dane.status + (dane.powod ? ': ' + dane.powod : '');
+    if (dane.status === 'zapisano') { $('prop-kandydat').value = ''; $('prop-uzasadnienie').value = ''; }
+    if (mojaSesja.avatar_id) await odswiezPropozycje();
+});
+
+odswiezSesje();
+</script>
+</body>
+</html>

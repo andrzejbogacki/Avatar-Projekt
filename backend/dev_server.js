@@ -9,6 +9,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const qac = require('./modules/qac');
 const { BuforSrodowiskowy } = require('./modules/qac/cache');
+const { utworzAuth } = require('./modules/auth');
+const { utworzPS } = require('./modules/ps');
+const { utworzWymiennik } = require('./modules/wymiennik');
+const { utworzRezonator } = require('./modules/rezonator');
+const { utworzGlosariusz } = require('./modules/glosariusz');
+const { utworzDokumentacje } = require('./modules/dokumentacja');
 
 const PORT = Number(process.env.QAC_DEV_PORT) || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'dev_public');
@@ -20,6 +26,19 @@ const MIN_ODSTEP_NOMINATIM_MS = 1_000; // limit polityki Nominatim: maks. 1 zapy
 let ostatnieZapytanieNominatim = 0;
 
 let bufor = null;
+const ps = utworzPS();
+const auth = utworzAuth({ hookPS: ps.przyjmijAktCertyfikacji });
+ps.podepnijAuth(auth);
+const wymiennik = utworzWymiennik();
+wymiennik.podepnijAuth(auth);
+wymiennik.podepnijPS(ps);
+const rezonator = utworzRezonator();
+rezonator.podepnijAuth(auth);
+const glosariusz = utworzGlosariusz();
+glosariusz.podepnijAuth(auth);
+const dokumentacja = utworzDokumentacje();
+dokumentacja.podepnijAuth(auth);
+dokumentacja.podepnijGlosariusz(glosariusz);
 
 async function poczekajNaLimitNominatim() {
     const odstep = Date.now() - ostatnieZapytanieNominatim;
@@ -73,8 +92,51 @@ function wyslijStatyczny(res, sciezka, typ) {
 }
 
 const serwer = http.createServer(async (req, res) => {
+    // Moduły Auth i PS obsługują własne prefiksy /api/* przez kontrakty modułów.
+    if (await auth.obsluzZadanie(req, res)) return;
+    if (await ps.obsluzZadanie(req, res)) return;
+    if (await wymiennik.obsluzZadanie(req, res)) return;
+    if (await rezonator.obsluzZadanie(req, res)) return;
+    if (await glosariusz.obsluzZadanie(req, res)) return;
+    if (await dokumentacja.obsluzZadanie(req, res)) return;
+
     if (req.method === 'GET' && (req.url === '/' || req.url === '/podglad.html')) {
         wyslijStatyczny(res, path.join(PUBLIC_DIR, 'podglad.html'), 'text/html; charset=utf-8');
+        return;
+    }
+
+    if (req.method === 'GET' && req.url === '/auth.html') {
+        wyslijStatyczny(res, path.join(PUBLIC_DIR, 'auth.html'), 'text/html; charset=utf-8');
+        return;
+    }
+
+    if (req.method === 'GET' && req.url === '/ps.html') {
+        wyslijStatyczny(res, path.join(PUBLIC_DIR, 'ps.html'), 'text/html; charset=utf-8');
+        return;
+    }
+
+    if (req.method === 'GET' && req.url === '/wymiennik.html') {
+        wyslijStatyczny(res, path.join(PUBLIC_DIR, 'wymiennik.html'), 'text/html; charset=utf-8');
+        return;
+    }
+
+    if (req.method === 'GET' && req.url === '/rezonator.html') {
+        wyslijStatyczny(res, path.join(PUBLIC_DIR, 'rezonator.html'), 'text/html; charset=utf-8');
+        return;
+    }
+
+    if (req.method === 'GET' && req.url === '/glosariusz.html') {
+        wyslijStatyczny(res, path.join(PUBLIC_DIR, 'glosariusz.html'), 'text/html; charset=utf-8');
+        return;
+    }
+
+    if (req.method === 'GET' && req.url === '/dokumenty.html') {
+        wyslijStatyczny(res, path.join(PUBLIC_DIR, 'dokumenty.html'), 'text/html; charset=utf-8');
+        return;
+    }
+
+    if (req.method === 'GET' && req.url === '/menu.js') {
+        wyslijStatyczny(res, path.join(PUBLIC_DIR, 'menu.js'), 'application/javascript; charset=utf-8');
         return;
     }
 

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dokumentacja — podgląd deweloperski</title>
+<style>
+    :root { --bg: #0a0a0a; --fg: #e0e0e0; --accent: #d4af37; --err: #ff5555; --ok: #6fdc8c; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+    .wrap { max-width: 860px; margin: 0 auto; }
+    h1 { color: var(--accent); font-size: 1.4rem; margin-bottom: 4px; }
+    .uwaga { font-size: 0.8rem; opacity: 0.7; margin-bottom: 24px; }
+    fieldset { border: 1px solid rgba(212,175,55,0.4); border-radius: 8px; margin-bottom: 16px; }
+    legend { color: var(--accent); padding: 0 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    button { margin-top: 12px; padding: 9px 20px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    button.druga { background: #1a1a1a; border: 1px solid var(--accent); color: var(--accent); font-weight: normal; }
+    .status { font-size: 0.9rem; margin: 8px 0; min-height: 1.2em; }
+    .status.ok { color: var(--ok); }
+    .status.blad { color: var(--err); }
+    .sesja-pasek { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05);
+        border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 4px; margin-bottom: 20px; flex-wrap: wrap; font-size: 0.85rem; }
+    .sesja-pasek b, .sesja-pasek a { color: var(--accent); }
+    .wpis { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; padding: 10px 14px; margin-top: 10px; font-size: 0.85rem; cursor: pointer; }
+    .wpis:hover { border-color: var(--accent); }
+    .wpis b { color: var(--accent); }
+    .wpis .mala { opacity: 0.7; font-size: 0.78rem; }
+    .znacznik { font-size: 0.65rem; border: 1px solid currentColor; border-radius: 10px; padding: 1px 7px; margin-left: 6px; }
+    .znacznik.ok { color: var(--ok); }
+    .znacznik.blad { color: var(--err); }
+    #tresc-dokumentu { background: #111; border: 1px solid #333; border-radius: 6px; padding: 18px;
+        line-height: 1.7; font-size: 0.92rem; min-height: 3em; white-space: pre-wrap; word-break: break-word;
+        font-family: 'SF Mono', 'Menlo', monospace; max-height: 70vh; overflow-y: auto; }
+    .termin-link { color: var(--accent); text-decoration: underline dotted; cursor: pointer; position: relative; }
+    .termin-link:hover::after { content: attr(data-wprowadzenie); position: absolute; left: 0; top: 1.5em;
+        z-index: 10; background: #1a1a1a; border: 1px solid var(--accent); border-radius: 6px;
+        padding: 8px 12px; width: 280px; font-size: 0.78rem; color: var(--fg); line-height: 1.4;
+        white-space: normal; font-family: 'Segoe UI', sans-serif; }
+    #panel-terminu { position: fixed; top: 0; right: -420px; width: 380px; max-width: 90vw; height: 100vh;
+        background: #141414; border-left: 2px solid var(--accent); padding: 20px; box-sizing: border-box;
+        transition: right 0.25s ease; overflow-y: auto; z-index: 100; }
+    #panel-terminu.otwarty { right: 0; }
+    #panel-terminu h2 { color: var(--accent); margin-top: 0; }
+    #panel-terminu .zamknij { float: right; cursor: pointer; color: var(--err); font-size: 1.2rem; background: none; border: none; margin: 0; padding: 0; }
+</style>
+<script src="/menu.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+    <nav id="menu-moduly"></nav>
+
+    <h1>Dokumentacja — artefakty treściowe projektu</h1>
+    <p class="uwaga">Manifest dokumentów rejestruje strategie i źródła prawdy z hash-em treści. Kliknij dokument, aby wczytać treść — terminy glosariusza są oznaczane automatycznie (hover = wprowadzenie, klik = pełna definicja).</p>
+
+    <div class="sesja-pasek">
+        <span id="manifest-opis">Sprawdzam manifest…</span>
+        <span id="sesja-opis"></span>
+    </div>
+
+    <fieldset>
+        <legend>Manifest dokumentów</legend>
+        <div id="lista-dokumentow">—</div>
+        <button class="druga" id="przebuduj-btn" style="display:none">Przebuduj manifest (hash + rozmiar)</button>
+        <div class="status" id="manifest-status"></div>
+    </fieldset>
+
+    <fieldset>
+        <legend id="naglowek-tresci">Treść dokumentu</legend>
+        <div class="status" id="tresc-status"></div>
+        <div id="tresc-dokumentu"><em style="opacity:.5">Wybierz dokument z manifestu…</em></div>
+    </fieldset>
+</div>
+
+<div id="panel-terminu">
+    <button class="zamknij" id="panel-zamknij">✕</button>
+    <h2 id="panel-nazwa"></h2>
+    <p id="panel-wprowadzenie" style="opacity:.85"></p>
+    <p id="panel-rozszerzenie"></p>
+</div>
+
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+
+async function api(metoda, sciezka) {
+    const odp = await fetch(sciezka, { method: metoda, credentials: 'same-origin' });
+    return { kod: odp.status, dane: await odp.json() };
+}
+
+async function otworzTermin(nazwa) {
+    const { dane: t } = await api('GET', `/api/glosariusz/terminy/${encodeURIComponent(nazwa)}`);
+    if (t.status === 'brak_terminu') return;
+    $('panel-nazwa').textContent = t.nazwa;
+    $('panel-wprowadzenie').textContent = t.wprowadzenie || '';
+    $('panel-rozszerzenie').textContent = t.rozszerzenie || '(brak rozszerzenia — tylko wprowadzenie)';
+    $('panel-terminu').classList.add('otwarty');
+}
+$('panel-zamknij').onclick = () => $('panel-terminu').classList.remove('otwarty');
+
+function rysujSegmenty(cel, segmenty) {
+    cel.innerHTML = '';
+    let trafien = 0;
+    for (const s of segmenty) {
+        if (s.termin) {
+            trafien += 1;
+            const a = document.createElement('span');
+            a.className = 'termin-link';
+            a.textContent = s.tekst; // pisownia oryginalna, bez zmiany treści
+            a.dataset.wprowadzenie = s.wprowadzenie || s.termin;
+            a.onclick = () => otworzTermin(s.termin);
+            cel.appendChild(a);
+        } else {
+            cel.appendChild(document.createTextNode(s.tekst));
+        }
+    }
+    return trafien;
+}
+
+async function otworzDokument(d) {
+    $('naglowek-tresci').textContent = `Treść: ${d.tytul}`;
+    $('tresc-dokumentu').innerHTML = '<em style="opacity:.5">Wczytuję…</em>';
+
+    const oznaczony = await api('GET', `/api/dokumentacja/dokumenty/${d.id}/oznaczony`);
+    if (oznaczony.kod === 200) {
+        const trafien = rysujSegmenty($('tresc-dokumentu'), oznaczony.dane.segmenty);
+        $('tresc-status').className = 'status ok';
+        $('tresc-status').textContent = `${d.sciezka} · ${d.bajty} B · oznaczono ${trafien} wystąpień terminów`
+            + (oznaczony.dane.aktualny ? '' : ' · UWAGA: treść zmieniona od przebudowy manifestu');
+        return;
+    }
+
+    // glosariusz niepodpięty — surowa treść (rdzeń działa bez glosariusza)
+    const { kod, dane } = await api('GET', `/api/dokumentacja/dokumenty/${d.id}`);
+    if (kod !== 200) {
+        $('tresc-status').className = 'status blad';
+        $('tresc-status').textContent = dane.status + (dane.powod ? ': ' + dane.powod : '');
+        return;
+    }
+    $('tresc-dokumentu').textContent = dane.tresc;
+    $('tresc-status').className = 'status ok';
+    $('tresc-status').textContent = `${d.sciezka} · ${d.bajty} B · bez oznaczania (${oznaczony.dane.status})`;
+}
+
+async function odswiezManifest() {
+    const { dane } = await api('GET', '/api/dokumentacja/manifest');
+    $('manifest-opis').innerHTML = `Manifest: <b>${dane.dokumenty.length}</b> dokumentów, `
+        + `przebudowa ${dane.zbudowano_ts || '—'} · `
+        + (dane.aktualny ? '<span style="color:var(--ok)">aktualny</span>'
+            : '<span style="color:var(--err)">NIEAKTUALNY (treść zmieniona poza przebudową)</span>');
+    const el = $('lista-dokumentow');
+    el.innerHTML = '';
+    for (const d of dane.dokumenty) {
+        const div = document.createElement('div');
+        div.className = 'wpis';
+        div.innerHTML = `<b>${d.tytul}</b>
+            <span class="znacznik ${d.aktualny ? 'ok' : 'blad'}">${d.aktualny ? 'hash zgodny' : (d.dostepny ? 'hash NIEZGODNY' : 'PLIK NIEDOSTĘPNY')}</span>
+            <div class="mala">${d.id} · ${d.typ} · ${d.status} · ${d.wersja_dokumentu} · ${d.sciezka}</div>`;
+        div.onclick = () => otworzDokument(d);
+        el.appendChild(div);
+    }
+}
+
+$('przebuduj-btn').onclick = async () => {
+    const { kod, dane } = await api('POST', '/api/dokumentacja/manifest/przebuduj');
+    $('manifest-status').className = 'status ' + (kod === 200 ? 'ok' : 'blad');
+    $('manifest-status').textContent = dane.status + (dane.powod ? ': ' + dane.powod : '');
+    await odswiezManifest();
+};
+
+async function start() {
+    await odswiezManifest();
+    const { dane: sesja } = await api('GET', '/api/auth/sesja');
+    if (sesja.status === 'aktywna') {
+        $('sesja-opis').innerHTML = `· zalogowany: <b>${sesja.avatar_id}</b>`;
+        $('przebuduj-btn').style.display = '';
+    } else {
+        $('sesja-opis').innerHTML = '· przebudowa manifestu wymaga <a href="/auth.html">zalogowania</a>';
+    }
+}
+
+start();
+</script>
+</body>
+</html>

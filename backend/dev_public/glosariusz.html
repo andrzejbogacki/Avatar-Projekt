@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glosariusz — podgląd deweloperski</title>
+<style>
+    :root { --bg: #0a0a0a; --fg: #e0e0e0; --accent: #d4af37; --err: #ff5555; --ok: #6fdc8c; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    h1 { color: var(--accent); font-size: 1.4rem; margin-bottom: 4px; }
+    .uwaga { font-size: 0.8rem; opacity: 0.7; margin-bottom: 24px; }
+    fieldset { border: 1px solid rgba(212,175,55,0.4); border-radius: 8px; margin-bottom: 16px; }
+    legend { color: var(--accent); padding: 0 8px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+    label { display: block; font-size: 0.8rem; margin: 10px 0 4px; opacity: 0.85; }
+    input, textarea { width: 100%; box-sizing: border-box; background: #1a1a1a; border: 1px solid #333; color: var(--fg); padding: 8px; border-radius: 6px; font-size: 0.95rem; font-family: inherit; }
+    button { margin-top: 12px; padding: 9px 20px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    button.druga { background: #1a1a1a; border: 1px solid var(--accent); color: var(--accent); font-weight: normal; }
+    button.odmowna { background: #1a1a1a; border: 1px solid var(--err); color: var(--err); font-weight: normal; }
+    .status { font-size: 0.9rem; margin: 8px 0; min-height: 1.2em; }
+    .status.ok { color: var(--ok); }
+    .status.blad { color: var(--err); }
+    .sesja-pasek { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05);
+        border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 4px; margin-bottom: 20px; flex-wrap: wrap; font-size: 0.85rem; }
+    .sesja-pasek b, .sesja-pasek a { color: var(--accent); }
+    pre { background: #111; border: 1px solid #333; border-radius: 6px; padding: 12px; overflow-x: auto; font-size: 0.78rem; white-space: pre-wrap; word-break: break-word; }
+    .wpis { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; padding: 10px 14px; margin-top: 10px; font-size: 0.85rem; }
+    .wpis b { color: var(--accent); }
+    .wpis .mala { opacity: 0.7; font-size: 0.78rem; }
+    #wynik-skanu { background: #111; border: 1px solid #333; border-radius: 6px; padding: 14px; line-height: 1.7; font-size: 0.95rem; min-height: 3em; }
+    .termin-link { color: var(--accent); text-decoration: underline dotted; cursor: pointer; position: relative; }
+    .termin-link:hover::after { content: attr(data-wprowadzenie); position: absolute; left: 0; top: 1.5em;
+        z-index: 10; background: #1a1a1a; border: 1px solid var(--accent); border-radius: 6px;
+        padding: 8px 12px; width: 280px; font-size: 0.78rem; color: var(--fg); line-height: 1.4; }
+    #panel-terminu { position: fixed; top: 0; right: -420px; width: 380px; max-width: 90vw; height: 100vh;
+        background: #141414; border-left: 2px solid var(--accent); padding: 20px; box-sizing: border-box;
+        transition: right 0.25s ease; overflow-y: auto; z-index: 100; }
+    #panel-terminu.otwarty { right: 0; }
+    #panel-terminu h2 { color: var(--accent); margin-top: 0; }
+    #panel-terminu .zamknij { float: right; cursor: pointer; color: var(--err); font-size: 1.2rem; background: none; border: none; margin: 0; padding: 0; }
+    .ukryte { display: none; }
+</style>
+<script src="/menu.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+    <nav id="menu-moduly"></nav>
+
+    <h1>Glosariusz — Inteligentny System Uspójniania Zrozumienia</h1>
+    <p class="uwaga">Wklej dowolny tekst — terminy glosariusza (także odmienione) zostaną oznaczone bez zmiany treści. Najedź = podgląd („wprowadzenie"), kliknij = pełna definicja („rozszerzenie").</p>
+
+    <div class="sesja-pasek">
+        <span id="indeks-opis">Sprawdzam indeks…</span>
+        <span id="sesja-opis"></span>
+    </div>
+
+    <fieldset>
+        <legend>Skanuj treść (auto-linking)</legend>
+        <textarea id="tekst" rows="5">Każdy Avatar prowadzi Autocertyfikację swoich Jakości Kwantowych w matrycy 3 6 9. Wymianę Avatar Tokena rejestruje system, a stabilizację Źródła prowadzi Rezonator Kwantowy zgodnie z zasadą Brahmandy.</textarea>
+        <button id="skanuj-btn">Skanuj i oznacz</button>
+        <div class="status" id="skan-status"></div>
+        <div id="wynik-skanu"><em style="opacity:.5">Tu pojawi się oznaczony tekst…</em></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Terminy w glosariuszu</legend>
+        <input id="filtr" placeholder="filtruj…">
+        <div id="lista-terminow">—</div>
+    </fieldset>
+
+    <fieldset id="blok-propozycja" class="ukryte">
+        <legend>Zaproponuj termin (dwufazowo — decyduje Suweren)</legend>
+        <label for="prop-nazwa">Nazwa</label><input id="prop-nazwa">
+        <label for="prop-wprowadzenie">Wprowadzenie (podgląd hover)</label>
+        <textarea id="prop-wprowadzenie" rows="2"></textarea>
+        <label for="prop-rozszerzenie">Rozszerzenie (pełna definicja — opcjonalne)</label>
+        <textarea id="prop-rozszerzenie" rows="3"></textarea>
+        <button id="prop-btn">Złóż propozycję</button>
+        <div class="status" id="prop-status"></div>
+    </fieldset>
+
+    <fieldset id="blok-decyzje" class="ukryte">
+        <legend>Oczekujące propozycje (decyduje wyłącznie Suweren)</legend>
+        <div id="lista-propozycji">—</div>
+        <div class="status" id="dec-status"></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Surowa odpowiedź API (ostatnie wywołanie)</legend>
+        <pre id="surowe">—</pre>
+    </fieldset>
+</div>
+
+<div id="panel-terminu">
+    <button class="zamknij" id="panel-zamknij">✕</button>
+    <h2 id="panel-nazwa"></h2>
+    <p id="panel-wprowadzenie" style="opacity:.85"></p>
+    <p id="panel-rozszerzenie"></p>
+</div>
+
+<script>
+'use strict';
+const $ = (id) => document.getElementById(id);
+
+async function api(metoda, sciezka, cialo) {
+    const odp = await fetch(sciezka, {
+        method: metoda,
+        headers: cialo ? { 'Content-Type': 'application/json' } : undefined,
+        body: cialo ? JSON.stringify(cialo) : undefined,
+        credentials: 'same-origin',
+    });
+    const dane = await odp.json();
+    $('surowe').textContent = JSON.stringify(dane, null, 2).slice(0, 4000);
+    return dane;
+}
+
+function pokazStatus(id, dane, dobre) {
+    const el = $(id);
+    const ok = dobre.includes(dane.status);
+    el.className = 'status ' + (ok ? 'ok' : 'blad');
+    el.textContent = dane.status + (dane.powod ? ': ' + dane.powod : '');
+}
+
+async function otworzTermin(nazwa) {
+    const t = await api('GET', `/api/glosariusz/terminy/${encodeURIComponent(nazwa)}`);
+    if (t.status === 'brak_terminu') return;
+    $('panel-nazwa').textContent = t.nazwa;
+    $('panel-wprowadzenie').textContent = t.wprowadzenie || '';
+    $('panel-rozszerzenie').textContent = t.rozszerzenie || '(brak rozszerzenia — tylko wprowadzenie)';
+    $('panel-terminu').classList.add('otwarty');
+}
+$('panel-zamknij').onclick = () => $('panel-terminu').classList.remove('otwarty');
+
+$('skanuj-btn').onclick = async () => {
+    const dane = await api('POST', '/api/glosariusz/oznacz', { tekst: $('tekst').value });
+    if (!dane.segmenty) { pokazStatus('skan-status', dane, []); return; }
+    const cel = $('wynik-skanu');
+    cel.innerHTML = '';
+    let trafien = 0;
+    for (const s of dane.segmenty) {
+        if (s.termin) {
+            trafien += 1;
+            const a = document.createElement('span');
+            a.className = 'termin-link';
+            a.textContent = s.tekst;               // pisownia oryginalna, bez zmiany treści
+            a.dataset.wprowadzenie = s.wprowadzenie || s.termin;
+            a.onclick = () => otworzTermin(s.termin);
+            cel.appendChild(a);
+        } else {
+            cel.appendChild(document.createTextNode(s.tekst));
+        }
+    }
+    $('skan-status').className = 'status ok';
+    $('skan-status').textContent = `Oznaczono ${trafien} wystąpień (silnik: ${dane.indeks.silnik}, indeks ${dane.indeks.aktualny ? 'aktualny' : 'NIEAKTUALNY'})`;
+};
+
+let terminy = [];
+function rysujTerminy() {
+    const f = $('filtr').value.toLowerCase();
+    $('lista-terminow').innerHTML = terminy
+        .filter((t) => t.nazwa.toLowerCase().includes(f))
+        .map((t) => `<div class="wpis"><b style="cursor:pointer" onclick="otworzTermin('${t.nazwa.replace(/'/g, "\\'")}')">${t.nazwa}</b>
+            <span class="mala">(${t.status})</span><div class="mala">${t.wprowadzenie || ''}</div></div>`)
+        .join('') || '<em style="opacity:.6;font-size:.85rem">Brak terminów.</em>';
+}
+$('filtr').oninput = rysujTerminy;
+
+async function odswiezPropozycje() {
+    const dane = await api('GET', '/api/glosariusz/propozycje');
+    if (!dane.propozycje) return;
+    $('blok-decyzje').classList.remove('ukryte');
+    const el = $('lista-propozycji');
+    el.innerHTML = '';
+    for (const p of dane.propozycje) {
+        const div = document.createElement('div');
+        div.className = 'wpis';
+        div.innerHTML = `<b>${p.nazwa}</b> <span class="mala">(${p.typ}, od: ${p.od})</span>
+            <div class="mala">${p.wprowadzenie}</div>`;
+        for (const [napis, klasa, decyzja] of [['Zatwierdź', 'druga', 'zatwierdzona'], ['Odrzuć', 'odmowna', 'odrzucona']]) {
+            const b = document.createElement('button');
+            b.className = klasa; b.textContent = napis; b.style.marginRight = '8px';
+            b.onclick = async () => {
+                pokazStatus('dec-status', await api('POST',
+                    `/api/glosariusz/propozycje/${p.id}/decyzja`, { decyzja }), ['zatwierdzono', 'odrzucono']);
+                await Promise.all([odswiezPropozycje(), start()]);
+            };
+            div.appendChild(b);
+        }
+        el.appendChild(div);
+    }
+    if (!el.innerHTML) el.innerHTML = '<em style="opacity:.6;font-size:.85rem">Brak oczekujących.</em>';
+}
+
+$('prop-btn').onclick = async () => {
+    const dane = await api('POST', '/api/glosariusz/propozycje', {
+        nazwa: $('prop-nazwa').value.trim(),
+        wprowadzenie: $('prop-wprowadzenie').value.trim(),
+        rozszerzenie: $('prop-rozszerzenie').value.trim() || null,
+    });
+    pokazStatus('prop-status', dane, ['zapisano']);
+    if (dane.status === 'zapisano') odswiezPropozycje();
+};
+
+async function start() {
+    const indeks = await api('GET', '/api/glosariusz/indeks');
+    $('indeks-opis').innerHTML = `Indeks: <b>${indeks.liczba_form}</b> form (silnik: ${indeks.silnik}, ${indeks.aktualny ? 'aktualny' : '<span style="color:var(--err)">NIEAKTUALNY</span>'})`;
+    terminy = (await api('GET', '/api/glosariusz/terminy')).terminy || [];
+    rysujTerminy();
+
+    const sesja = await api('GET', '/api/auth/sesja');
+    if (sesja.status === 'aktywna') {
+        $('sesja-opis').innerHTML = `· zalogowany: <b>${sesja.avatar_id}</b>`;
+        $('blok-propozycja').classList.remove('ukryte');
+        await odswiezPropozycje();
+    } else {
+        $('sesja-opis').innerHTML = '· propozycje terminów wymagają <a href="/auth.html">zalogowania</a>';
+    }
+}
+
+start();
+</script>
+</body>
+</html>
