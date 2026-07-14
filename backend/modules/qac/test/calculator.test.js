@@ -261,3 +261,117 @@ test('kwantyzacja E2E: Słońce natalne (tropikalne) → brama 61 koła rave (wy
     // Kluczowa asercja: Słońce 291,21° tropikalne → brama 61.
     assert.equal(wynik.forma_swiadoma.aktywacje.slonce.bramka, 61);
 });
+
+// --- Konwersja czasu lokalnego na UTC (strefy IANA, reguły DST) ---
+
+const { lokalnyNaUtc, znanaStrefa } = require('../src/calculator/czas');
+
+test('czas lokalny→UTC: czas zimowy w Warszawie (CET, +1 h)', () => {
+    const wynik = lokalnyNaUtc(
+        { rok: 1982, miesiac: 11, dzien: 15, godzina: 1, minuta: 10, sekunda: 0 },
+        'Europe/Warsaw'
+    );
+    assert.deepEqual(wynik.czas_utc, {
+        rok: 1982, miesiac: 11, dzien: 15, godzina: 0, minuta: 10, sekunda: 0,
+    });
+    assert.equal(wynik.offset_minuty, 60);
+});
+
+test('czas lokalny→UTC: czas letni w Warszawie (CEST, +2 h)', () => {
+    const wynik = lokalnyNaUtc(
+        { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+        'Europe/Warsaw'
+    );
+    assert.deepEqual(wynik.czas_utc, {
+        rok: 1990, miesiac: 6, dzien: 15, godzina: 6, minuta: 30, sekunda: 0,
+    });
+    assert.equal(wynik.offset_minuty, 120);
+});
+
+test('czas lokalny→UTC: historyczna reguła sprzed reformy (1977)', () => {
+    const wynik = lokalnyNaUtc(
+        { rok: 1977, miesiac: 1, dzien: 11, godzina: 14, minuta: 12, sekunda: 0 },
+        'Europe/Warsaw'
+    );
+    assert.deepEqual(wynik.czas_utc, {
+        rok: 1977, miesiac: 1, dzien: 11, godzina: 13, minuta: 12, sekunda: 0,
+    });
+    assert.equal(wynik.offset_minuty, 60);
+});
+
+test('czas lokalny→UTC: przejście przez północ cofa datę', () => {
+    const wynik = lokalnyNaUtc(
+        { rok: 1982, miesiac: 11, dzien: 15, godzina: 0, minuta: 30, sekunda: 0 },
+        'Europe/Warsaw'
+    );
+    assert.deepEqual(wynik.czas_utc, {
+        rok: 1982, miesiac: 11, dzien: 14, godzina: 23, minuta: 30, sekunda: 0,
+    });
+});
+
+test('czas lokalny→UTC: godzina nieistniejąca (przeskok na czas letni) odrzucona', () => {
+    assert.throws(
+        () => lokalnyNaUtc(
+            { rok: 2026, miesiac: 3, dzien: 29, godzina: 2, minuta: 30, sekunda: 0 },
+            'Europe/Warsaw'
+        ),
+        /nie istnieje/
+    );
+});
+
+test('czas lokalny→UTC: godzina dwuznaczna (powrót na czas zimowy) odrzucona', () => {
+    assert.throws(
+        () => lokalnyNaUtc(
+            { rok: 2026, miesiac: 10, dzien: 25, godzina: 2, minuta: 30, sekunda: 0 },
+            'Europe/Warsaw'
+        ),
+        /dwuznaczny/
+    );
+});
+
+test('czas lokalny→UTC: nieznana strefa odrzucona', () => {
+    assert.throws(
+        () => lokalnyNaUtc(
+            { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+            'Europe/Gdansk'
+        ),
+        /Nieznana strefa/
+    );
+});
+
+test('czas lokalny→UTC: brakująca składowa odrzucona', () => {
+    assert.throws(
+        () => lokalnyNaUtc({ rok: 1990, miesiac: 6, dzien: 15, godzina: 8 }, 'Europe/Warsaw'),
+        /składowa czasu lokalnego/
+    );
+});
+
+test('czas lokalny→UTC: strefa UTC jest akceptowana (brak w supportedValuesOf)', () => {
+    const wynik = lokalnyNaUtc(
+        { rok: 2000, miesiac: 1, dzien: 1, godzina: 12, minuta: 0, sekunda: 0 },
+        'UTC'
+    );
+    assert.equal(wynik.offset_minuty, 0);
+    assert.deepEqual(wynik.czas_utc, {
+        rok: 2000, miesiac: 1, dzien: 1, godzina: 12, minuta: 0, sekunda: 0,
+    });
+});
+
+test('czas: round-trip lokalny→UTC→skale czasowe zgodny z bezpośrednim UTC', () => {
+    const { czas_utc } = lokalnyNaUtc(
+        { rok: 1982, miesiac: 11, dzien: 15, godzina: 1, minuta: 10, sekunda: 0 },
+        'Europe/Warsaw'
+    );
+    const przez = utcNaSkaleCzasowe(czas_utc);
+    const wprost = utcNaSkaleCzasowe({
+        rok: 1982, miesiac: 11, dzien: 15, godzina: 0, minuta: 10, sekunda: 0,
+    });
+    assert.equal(przez.jd_ut, wprost.jd_ut);
+});
+
+test('znanaStrefa: rozpoznaje poprawne i odrzuca błędne identyfikatory', () => {
+    assert.equal(znanaStrefa('Europe/Warsaw'), true);
+    assert.equal(znanaStrefa('UTC'), true);
+    assert.equal(znanaStrefa('Europe/Gdansk'), false);
+    assert.equal(znanaStrefa(''), false);
+});

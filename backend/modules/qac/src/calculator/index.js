@@ -1,7 +1,7 @@
 'use strict';
 
 // Fasada silnika astronomiczno-matematycznego (pozycja 3 — impuls, mikro=makro).
-const { utcNaSkaleCzasowe } = require('./czas');
+const { utcNaSkaleCzasowe, lokalnyNaUtc } = require('./czas');
 const { pozycjeTopocentryczne } = require('./pozycje');
 const { kwantyzuj } = require('./kwantyzacja');
 const { momentFormyNieswiadomej } = require('./luk_sloneczny');
@@ -76,6 +76,7 @@ function obliczDaneSurowe(daneUrodzeniowe) {
 module.exports = {
     obliczDaneSurowe,
     utcNaSkaleCzasowe,
+    lokalnyNaUtc,
     pozycjeTopocentryczne,
     kwantyzuj,
     momentFormyNieswiadomej,
