@@ -45,7 +45,7 @@
     <nav id="menu-moduly"></nav>
 
     <h1>QAC — podgląd deweloperski</h1>
-    <p class="uwaga">Narzędzie robocze do sprawdzenia działania modułu (nie jest częścią kontraktu QAC). Czas urodzenia podawany w UTC.</p>
+    <p class="uwaga">Narzędzie robocze do sprawdzenia działania modułu (nie jest częścią kontraktu QAC). Czas urodzenia podawaj jako lokalny czas miejsca urodzenia — UTC wylicza moduł na podstawie strefy.</p>
 
     <form id="formularz">
         <fieldset>
@@ -55,9 +55,14 @@
         </fieldset>
 
         <fieldset>
-            <legend>Czas urodzenia (UTC)</legend>
-            <label for="czas">Data i godzina urodzenia (UTC)</label>
+            <legend>Czas urodzenia (czas lokalny miejsca urodzenia)</legend>
+            <label for="czas">Data i godzina — tak jak w akcie urodzenia</label>
             <input id="czas" name="czas" type="datetime-local" step="1" value="1990-06-15T08:30:00" required>
+
+            <label for="strefa">Strefa czasowa miejsca urodzenia</label>
+            <select id="strefa" name="strefa" required></select>
+
+            <div id="podglad-utc" class="uwaga"></div>
         </fieldset>
 
         <fieldset>
@@ -106,6 +111,64 @@ const poleMiasto = document.getElementById('miasto');
 const listaWynikow = document.getElementById('wyniki-miasta');
 const miejsceRozpoznane = document.getElementById('miejsce-rozpoznane');
 const szukajBtn = document.getElementById('szukaj-btn');
+const poleStrefa = document.getElementById('strefa');
+const podgladUtc = document.getElementById('podglad-utc');
+const poleCzas = document.getElementById('czas');
+
+// Lista stref z Intl — bez zewnętrznych zależności. UTC nie występuje
+// w supportedValuesOf, więc dokładamy je ręcznie.
+for (const strefa of ['Europe/Warsaw', 'UTC', ...Intl.supportedValuesOf('timeZone')]) {
+    if (poleStrefa.querySelector(`option[value="${strefa}"]`)) continue;
+    const opcja = document.createElement('option');
+    opcja.value = strefa;
+    opcja.textContent = strefa;
+    poleStrefa.append(opcja);
+}
+poleStrefa.value = 'Europe/Warsaw';
+
+// Podgląd wyliczonego UTC — pyta moduł, nie liczy sam. Dzięki temu algorytm
+// reguł DST istnieje w jednym miejscu, a użytkownik widzi dokładnie ten wynik
+// i ten komunikat błędu, które zwróci regulator przy zapisie (ADR-009).
+let licznikPodgladu = 0;
+
+async function odswiezPodgladUtc() {
+    const strefa = poleStrefa.value;
+    if (!poleCzas.value || !strefa) {
+        podgladUtc.textContent = '';
+        return;
+    }
+    const moj = ++licznikPodgladu;
+    try {
+        const odp = await fetch(
+            `/api/qac/czas/utc?czas=${encodeURIComponent(poleCzas.value)}&strefa=${encodeURIComponent(strefa)}`
+        );
+        const dane = await odp.json();
+        // Odpowiedź na nieaktualne zapytanie (użytkownik zdążył zmienić pole) — pomijamy.
+        if (moj !== licznikPodgladu) return;
+        if (!odp.ok) {
+            podgladUtc.textContent = dane.blad;
+            return;
+        }
+        const u = dane.czas_utc;
+        const dwa = (n) => String(n).padStart(2, '0');
+        podgladUtc.textContent =
+            `Wyliczony czas UTC: ${u.rok}-${dwa(u.miesiac)}-${dwa(u.dzien)} ` +
+            `${dwa(u.godzina)}:${dwa(u.minuta)}:${dwa(u.sekunda)} (przesunięcie ${dane.offset_minuty} min)`;
+    } catch {
+        if (moj !== licznikPodgladu) return;
+        podgladUtc.textContent = 'Nie udało się wyliczyć czasu UTC (brak połączenia z serwerem).';
+    }
+}
+
+let czasomierzPodgladu = null;
+function zaplanujPodglad() {
+    clearTimeout(czasomierzPodgladu);
+    czasomierzPodgladu = setTimeout(odswiezPodgladUtc, 300);
+}
+
+poleCzas.addEventListener('input', zaplanujPodglad);
+poleStrefa.addEventListener('change', odswiezPodgladUtc);
+odswiezPodgladUtc();
 
 // Mapa: domyślny widok — Warszawa; znacznik przeciągalny do precyzyjnego wskazania punktu.
 const mapa = L.map('mapa').setView([Number(poleSzerokosc.value), Number(poleDlugosc.value)], 6);
@@ -211,13 +274,18 @@ formularz.addEventListener('submit', async (e) => {
 
     const dane = {
         avatar_id: document.getElementById('avatar_id').value,
-        czas_utc: rozbijCzas(document.getElementById('czas').value),
+        czas_lokalny: rozbijCzas(poleCzas.value),
+        strefa: poleStrefa.value,
         obserwator: {
             dlugosc_geo: Number(poleDlugosc.value),
             szerokosc_geo: Number(poleSzerokosc.value),
             wysokosc_npm_m: Number(poleWysokosc.value),
         },
     };
+    const miejsce = poleMiasto.value.trim() || miejsceRozpoznane.textContent.replace(/^Wybrano:\s*/, '').trim();
+    if (miejsce && !miejsce.startsWith('Nie udało się') && !miejsce.startsWith('Rozpoznaję')) {
+        dane.miejsce = miejsce;
+    }
 
     try {
         const odpowiedz = await fetch('/api/qac/profil', {
