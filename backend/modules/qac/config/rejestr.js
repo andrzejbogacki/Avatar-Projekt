@@ -6,7 +6,7 @@ const ADRES_MODULU = 'modul.qac';          // kandydat // TERMIN-KANDYDAT: Quant
 const ADRES_QRT = 'modul.qac.qrt';         // kandydat // TERMIN-KANDYDAT: Quantum Rectification Tool
 const STATUS_ADRESU = 'kandydat';
 
-const WERSJA_SCHEMATU_PROFILU = '1.0.0';
+const WERSJA_SCHEMATU_PROFILU = '1.1.0';
 const STATUS_ARTEFAKTU = 'piaskownica';
 
 // Wzorzec avatar_id wg Protokołu Suwerenności (przykład kanoniczny: andrzej_bogacki).

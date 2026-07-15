@@ -1,10 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "avatar_profile.schema.json",
-  "title": "Profil Awatara — QAC (wersja schematu 1.0.0)",
+  "title": "Profil Awatara — QAC (wersja schematu 1.1.0)",
   "description": "Czysty JSON — kategoryczny zakaz opisów tekstowych generowanych. Klucz główny: avatar_id (wzorzec Protokołu Suwerenności).",
   "type": "object",
-  "required": ["naglowek", "dane_surowe", "aktywacje", "mapa_369", "macierz_relacyjna"],
+  "required": ["naglowek", "dane_wejsciowe", "dane_surowe", "aktywacje", "mapa_369", "macierz_relacyjna"],
   "properties": {
     "naglowek": {
       "type": "object",
@@ -18,18 +18,67 @@
         "wygenerowano": { "type": "string", "format": "date-time" }
       }
     },
+    "dane_wejsciowe": {
+      "type": "object",
+      "description": "Dane wprowadzone przez człowieka — źródło prawdy. Podane ponownie do generujProfil dają identyczny profil.",
+      "required": ["avatar_id", "czas_lokalny", "strefa", "obserwator", "miejsce"],
+      "properties": {
+        "avatar_id": { "type": "string" },
+        "czas_lokalny": {
+          "type": "object",
+          "description": "Czas ścienny miejsca urodzenia — to, co widnieje w akcie urodzenia.",
+          "required": ["rok", "miesiac", "dzien", "godzina", "minuta", "sekunda"],
+          "properties": {
+            "rok": { "type": "integer" },
+            "miesiac": { "type": "integer", "minimum": 1, "maximum": 12 },
+            "dzien": { "type": "integer", "minimum": 1, "maximum": 31 },
+            "godzina": { "type": "integer", "minimum": 0, "maximum": 23 },
+            "minuta": { "type": "integer", "minimum": 0, "maximum": 59 },
+            "sekunda": { "type": "integer", "minimum": 0, "maximum": 59 }
+          }
+        },
+        "strefa": { "type": "string", "description": "Identyfikator strefy IANA, np. Europe/Warsaw." },
+        "obserwator": {
+          "type": "object",
+          "required": ["dlugosc_geo", "szerokosc_geo", "wysokosc_npm_m"],
+          "properties": {
+            "dlugosc_geo": { "type": "number" },
+            "szerokosc_geo": { "type": "number" },
+            "wysokosc_npm_m": { "type": "number" }
+          }
+        },
+        "miejsce": { "type": ["string", "null"], "description": "Nazwa miejsca z geokodera; null gdy nieustalona." }
+      }
+    },
     "dane_surowe": {
       "type": "object",
       "required": ["czas", "obserwator", "forma_swiadoma", "forma_nieswiadoma"],
       "properties": {
         "czas": {
           "type": "object",
-          "required": ["jd_et", "jd_ut", "delta_t_s", "skala"],
+          "required": ["jd_et", "jd_ut", "delta_t_s", "skala", "czas_utc", "offset_minuty"],
           "properties": {
             "jd_et": { "type": "number", "description": "Dzień juliański w TT (≈TDB)" },
             "jd_ut": { "type": "number" },
             "delta_t_s": { "type": "number", "description": "Poprawka ΔT [s]" },
-            "skala": { "type": "string" }
+            "skala": { "type": "string" },
+            "czas_utc": {
+              "type": "object",
+              "description": "Wynik konwersji czas_lokalny + strefa. Nie jest daną wejściową.",
+              "required": ["rok", "miesiac", "dzien", "godzina", "minuta", "sekunda"],
+              "properties": {
+                "rok": { "type": "integer" },
+                "miesiac": { "type": "integer" },
+                "dzien": { "type": "integer" },
+                "godzina": { "type": "integer" },
+                "minuta": { "type": "integer" },
+                "sekunda": { "type": "integer" }
+              }
+            },
+            "offset_minuty": {
+              "type": "integer",
+              "description": "Przesunięcie strefy względem UTC w momencie urodzenia [min]."
+            }
           }
         },
         "obserwator": {

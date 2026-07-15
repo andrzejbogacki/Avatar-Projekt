@@ -8,7 +8,7 @@ const { rejestr } = require('../../config');
 // do profiles/ — zapis poza bramką jest niezgodny z kanonem pozycji 9.
 
 const KATALOG_PROFILI = path.join(__dirname, '..', '..', 'profiles');
-const WYMAGANE_SEKCJE = ['naglowek', 'dane_surowe', 'aktywacje', 'mapa_369', 'macierz_relacyjna'];
+const WYMAGANE_SEKCJE = ['naglowek', 'dane_wejsciowe', 'dane_surowe', 'aktywacje', 'mapa_369', 'macierz_relacyjna'];
 const WYMAGANE_POLA_NAGLOWKA = ['avatar_id', 'adres_rejestru', 'wersja_schematu', 'status', 'wygenerowano'];
 
 function walidujProfil(profil) {

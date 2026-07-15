@@ -11,6 +11,7 @@ const { normalizuj } = require('./src/normalizer');
 const regulator9 = require('./src/regulator9');
 const qrt = require('./src/rectification');
 const { BuforSrodowiskowy } = require('./cache');
+const { lokalnyNaUtc } = require('./src/calculator/czas');
 
 /** Inicjalizuje bufor środowiskowy (Redis lub jawny fallback in-memory). */
 async function inicjalizujBufor(opcje = {}) {
@@ -36,8 +37,11 @@ async function generujProfil(daneWejsciowe, zaleznosci = {}) {
 
     regulator9.walidujDaneWejsciowe(daneWejsciowe);
 
+    // Źródłem prawdy jest czas lokalny ze strefą; UTC to wynik (ADR-009).
+    const { czas_utc, offset_minuty } = lokalnyNaUtc(daneWejsciowe.czas_lokalny, daneWejsciowe.strefa);
+
     const daneSurowe = silnik.obliczDaneSurowe({
-        czas_utc: daneWejsciowe.czas_utc,
+        czas_utc,
         obserwator: daneWejsciowe.obserwator,
     });
 
@@ -65,8 +69,15 @@ async function generujProfil(daneWejsciowe, zaleznosci = {}) {
             status: konfiguracja.rejestr.STATUS_ARTEFAKTU,
             wygenerowano: new Date().toISOString(),
         },
+        dane_wejsciowe: {
+            avatar_id: daneWejsciowe.avatar_id,
+            czas_lokalny: daneWejsciowe.czas_lokalny,
+            strefa: daneWejsciowe.strefa,
+            obserwator: daneWejsciowe.obserwator,
+            miejsce: daneWejsciowe.miejsce ?? null,
+        },
         dane_surowe: {
-            czas: daneSurowe.czas,
+            czas: { czas_utc, offset_minuty, ...daneSurowe.czas },
             obserwator: daneSurowe.obserwator,
             forma_swiadoma: {
                 jd_et: daneSurowe.forma_swiadoma.jd_et,

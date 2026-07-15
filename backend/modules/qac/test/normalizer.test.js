@@ -116,10 +116,10 @@ test('normalizuj: pełna mapa 369 ze stemplami per parametr', () => {
 
 test('regulator9: walidacja wejścia zgłasza wszystkie braki naraz', () => {
     assert.throws(
-        () => walidujDaneWejsciowe({ avatar_id: 'ZlyFormat', czas_utc: { rok: 1990 }, obserwator: {} }),
+        () => walidujDaneWejsciowe({ avatar_id: 'ZlyFormat', czas_lokalny: { rok: 1990 }, obserwator: {} }),
         (blad) => {
             assert.match(blad.message, /avatar_id/);
-            assert.match(blad.message, /czas_utc\.miesiac/);
+            assert.match(blad.message, /czas_lokalny\.miesiac/);
             assert.match(blad.message, /obserwator\.dlugosc_geo/);
             return true;
         }
@@ -127,7 +127,8 @@ test('regulator9: walidacja wejścia zgłasza wszystkie braki naraz', () => {
     assert.deepEqual(
         walidujDaneWejsciowe({
             avatar_id: 'andrzej_bogacki',
-            czas_utc: { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+            czas_lokalny: { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+            strefa: 'Europe/Warsaw',
             obserwator: { dlugosc_geo: 21.0, szerokosc_geo: 52.2, wysokosc_npm_m: 113 },
         }),
         { poprawne: true }
@@ -156,6 +157,13 @@ test('regulator9: bramka zapisu odmawia przy niekompletnym profilu i zapisuje ko
             wersja_schematu: konfig.rejestr.WERSJA_SCHEMATU_PROFILU,
             status: konfig.rejestr.STATUS_ARTEFAKTU,
             wygenerowano: new Date().toISOString(),
+        },
+        dane_wejsciowe: {
+            avatar_id: 'andrzej_bogacki',
+            czas_lokalny: { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+            strefa: 'Europe/Warsaw',
+            obserwator: { dlugosc_geo: 21.0122, szerokosc_geo: 52.2297, wysokosc_npm_m: 113 },
+            miejsce: null,
         },
         dane_surowe: { x: 1 },
         aktywacje: { y: 2 },

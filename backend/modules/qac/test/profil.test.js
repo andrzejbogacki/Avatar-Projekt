@@ -49,8 +49,10 @@ const silnikSyntetyczny = {
 
 const daneWejsciowe = {
     avatar_id: 'andrzej_bogacki',
-    czas_utc: { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+    czas_lokalny: { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+    strefa: 'Europe/Warsaw',
     obserwator: { dlugosc_geo: 21.0122, szerokosc_geo: 52.2297, wysokosc_npm_m: 113 },
+    miejsce: 'Warszawa, Polska',
 };
 
 test('profil: pełny przebieg z buforem — schemat, stemple, zapis przez bramkę 9b', async () => {
@@ -75,7 +77,7 @@ test('profil: pełny przebieg z buforem — schemat, stemple, zapis przez bramk�
     // nagłówek rozszerzony
     assert.equal(profil.naglowek.avatar_id, 'andrzej_bogacki');
     assert.equal(profil.naglowek.adres_rejestru, 'modul.qac');
-    assert.equal(profil.naglowek.wersja_schematu, '1.0.0');
+    assert.equal(profil.naglowek.wersja_schematu, '1.1.0');
     assert.equal(profil.naglowek.status, 'piaskownica');
     assert.ok(profil.naglowek.wygenerowano);
 
@@ -188,4 +190,72 @@ test('regulator 9b: zwraca wszystkie braki naraz', () => {
             /strefa/.test(blad.message) &&
             /obserwator/.test(blad.message)
     );
+});
+
+// --- Profil 1.1.0: sekcja dane_wejsciowe (ADR-009) ---
+
+test('profil 1.1.0: sekcja dane_wejsciowe odwzorowuje wejście, UTC wyliczony ze strefy', async () => {
+    const katalog = fs.mkdtempSync(path.join(os.tmpdir(), 'qac-we-'));
+    const { profil } = await qac.generujProfil(daneWejsciowe, {
+        silnik: silnikSyntetyczny,
+        katalogProfili: katalog,
+    });
+
+    assert.deepEqual(profil.dane_wejsciowe, {
+        avatar_id: 'andrzej_bogacki',
+        czas_lokalny: { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+        strefa: 'Europe/Warsaw',
+        obserwator: { dlugosc_geo: 21.0122, szerokosc_geo: 52.2297, wysokosc_npm_m: 113 },
+        miejsce: 'Warszawa, Polska',
+    });
+    // 15 czerwca = czas letni (CEST, +2 h)
+    assert.equal(profil.dane_surowe.czas.offset_minuty, 120);
+    assert.deepEqual(profil.dane_surowe.czas.czas_utc, {
+        rok: 1990, miesiac: 6, dzien: 15, godzina: 6, minuta: 30, sekunda: 0,
+    });
+    fs.rmSync(katalog, { recursive: true, force: true });
+});
+
+test('profil 1.1.0: brak miejsca zapisany jako null, nie pominięty', async () => {
+    const katalog = fs.mkdtempSync(path.join(os.tmpdir(), 'qac-we-'));
+    const dane = { ...daneWejsciowe };
+    delete dane.miejsce;
+    const { profil } = await qac.generujProfil(dane, {
+        silnik: silnikSyntetyczny,
+        katalogProfili: katalog,
+    });
+    assert.equal(profil.dane_wejsciowe.miejsce, null);
+    fs.rmSync(katalog, { recursive: true, force: true });
+});
+
+test('profil 1.1.0: reprodukowalność — dane_wejsciowe dają identyczny profil', async () => {
+    const katalog = fs.mkdtempSync(path.join(os.tmpdir(), 'qac-we-'));
+    const pierwszy = (await qac.generujProfil(daneWejsciowe, {
+        silnik: silnikSyntetyczny, katalogProfili: katalog,
+    })).profil;
+
+    const drugi = (await qac.generujProfil(pierwszy.dane_wejsciowe, {
+        silnik: silnikSyntetyczny, katalogProfili: katalog,
+    })).profil;
+
+    // Pomijamy znacznik generacji — zmienia się z definicji.
+    const bezZnacznika = (p) => {
+        const kopia = JSON.parse(JSON.stringify(p));
+        delete kopia.naglowek.wygenerowano;
+        return kopia;
+    };
+    assert.deepEqual(bezZnacznika(drugi), bezZnacznika(pierwszy));
+    fs.rmSync(katalog, { recursive: true, force: true });
+});
+
+test('profil 1.1.0: bramka 9b odrzuca profil bez sekcji dane_wejsciowe', () => {
+    const profil = {
+        naglowek: {
+            avatar_id: 'jan_kowalski', adres_rejestru: 'modul.qac',
+            wersja_schematu: '1.1.0', status: 'piaskownica', wygenerowano: '2026-07-15T00:00:00.000Z',
+        },
+        dane_surowe: {}, aktywacje: {},
+        mapa_369: { stemple_srodowiskowe: {} }, macierz_relacyjna: {},
+    };
+    assert.throws(() => qac.regulator9.walidujProfil(profil), /dane_wejsciowe/);
 });
