@@ -52,8 +52,10 @@ backend/modules/qac/ephemeris/*
 # decyzja o docelowym miejscu przechowywania (repo/LFS/chmura) w toku
 media/
 
-# Profile wygenerowane przez serwer podglądu — dane robocze, nie treść repo
+# Profile wygenerowane przez serwer podglądu — dane robocze, nie treść repo.
+# Kosz musi mieć własną regułę: glob * nie przechodzi przez ukośnik.
 backend/modules/qac/profiles/*.json
+backend/modules/qac/profiles/.kosz/
 
 # Paczki backupu udostępniane do pobrania przez dev_server.js — nie treść repo
 backend/dev_public/pobierz/

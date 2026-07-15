@@ -124,11 +124,37 @@ async function wczytajProfil(avatar_id, katalog = regulator9.KATALOG_PROFILI) {
     }
 }
 
+/**
+ * Lista identyfikatorów awatarów w katalogu profili. Podkatalog kosza odpada
+ * naturalnie — nie kończy się na .json.
+ */
+async function listujAvatary(katalog = regulator9.KATALOG_PROFILI) {
+    const fs = require('node:fs/promises');
+    try {
+        const wpisy = await fs.readdir(katalog);
+        return wpisy
+            .filter((nazwa) => nazwa.endsWith('.json'))
+            .map((nazwa) => nazwa.slice(0, -'.json'.length))
+            .filter((id) => konfiguracja.rejestr.WZORZEC_AVATAR_ID.test(id))
+            .sort();
+    } catch (blad) {
+        if (blad.code === 'ENOENT') return [];
+        throw blad;
+    }
+}
+
+/** Usunięcie profilu — wyłącznie przez bramkę 9b (kanon pozycji 9). */
+function usunProfil(avatar_id, katalog = regulator9.KATALOG_PROFILI) {
+    return regulator9.autoryzujIUsun(avatar_id, katalog);
+}
+
 module.exports = {
     konfiguracja,
     inicjalizujBufor,
     generujProfil,
     wczytajProfil,
+    listujAvatary,
+    usunProfil,
     kalkulator,
     regulator9,
     qrt: {

@@ -42,4 +42,35 @@ function autoryzujIZapisz(profil, katalog = KATALOG_PROFILI) {
     return sciezka;
 }
 
-module.exports = { autoryzujIZapisz, walidujProfil, KATALOG_PROFILI };
+const KATALOG_KOSZA = '.kosz';
+
+/** Znacznik RRRRMMDD-GGMMSS (UTC) — bez dwukropków, te są kłopotliwe w nazwach plików. */
+function znacznikCzasu(teraz = new Date()) {
+    const iso = teraz.toISOString().replace(/[-:]/g, '').replace(/\..+$/, '');
+    return `${iso.slice(0, 8)}-${iso.slice(9, 15)}`;
+}
+
+/**
+ * Autoryzuje i usuwa profil — przeniesienie do profiles/.kosz/ zamiast kasowania.
+ * Katalog profili jest poza gitem, więc trwałe usunięcie byłoby nieodwracalne.
+ * Walidacja avatar_id PRZED złożeniem ścieżki jest zabezpieczeniem przed
+ * wyjściem poza katalog profili — wzorzec PS odrzuca kropki i ukośniki.
+ * Zwraca ścieżkę w koszu albo null, gdy profilu nie było.
+ */
+function autoryzujIUsun(avatar_id, katalog = KATALOG_PROFILI) {
+    if (typeof avatar_id !== 'string' || !rejestr.WZORZEC_AVATAR_ID.test(avatar_id)) {
+        throw new Error(
+            `Bramka 9b odmówiła usunięcia: avatar_id niezgodny z wzorcem PS: ${avatar_id}`
+        );
+    }
+    const zrodlo = path.join(katalog, `${avatar_id}.json`);
+    if (!fs.existsSync(zrodlo)) return null;
+
+    const kosz = path.join(katalog, KATALOG_KOSZA);
+    fs.mkdirSync(kosz, { recursive: true });
+    const cel = path.join(kosz, `${avatar_id}-${znacznikCzasu()}.json`);
+    fs.renameSync(zrodlo, cel);
+    return cel;
+}
+
+module.exports = { autoryzujIZapisz, autoryzujIUsun, walidujProfil, KATALOG_PROFILI, KATALOG_KOSZA };

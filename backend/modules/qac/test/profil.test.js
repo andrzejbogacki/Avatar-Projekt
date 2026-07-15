@@ -129,10 +129,16 @@ test('kontrakt modułu: eksportowane wyłącznie jawne kanały', () => {
     assert.deepEqual(
         Object.keys(qac).sort(),
         // wczytajProfil: odczyt zapisanego profilu dla klientów QAC (Rezonator) — ADR-005
-        ['generujProfil', 'inicjalizujBufor', 'kalkulator', 'konfiguracja', 'qrt', 'regulator9', 'wczytajProfil'].sort()
+        // listujAvatary/usunProfil: kontrakty listowania i usuwania (kosz) — zadanie 4
+        [
+            'generujProfil', 'inicjalizujBufor', 'kalkulator', 'konfiguracja', 'qrt',
+            'regulator9', 'wczytajProfil', 'listujAvatary', 'usunProfil',
+        ].sort()
     );
     assert.equal(typeof qac.qrt.zlecRektyfikacje, 'function');
     assert.equal(typeof qac.wczytajProfil, 'function');
+    assert.equal(typeof qac.listujAvatary, 'function');
+    assert.equal(typeof qac.usunProfil, 'function');
 });
 
 // --- Regulator 9b: walidacja wejścia po przejściu na czas lokalny ---
@@ -258,4 +264,68 @@ test('profil 1.1.0: bramka 9b odrzuca profil bez sekcji dane_wejsciowe', () => {
         mapa_369: { stemple_srodowiskowe: {} }, macierz_relacyjna: {},
     };
     assert.throws(() => qac.regulator9.walidujProfil(profil), /dane_wejsciowe/);
+});
+
+// --- Listowanie i usuwanie profili (kontrakty modułu) ---
+
+function zapiszProfilProbny(katalog, avatar_id) {
+    fs.mkdirSync(katalog, { recursive: true });
+    fs.writeFileSync(
+        path.join(katalog, `${avatar_id}.json`),
+        JSON.stringify({ naglowek: { avatar_id } }),
+        'utf8'
+    );
+}
+
+test('listujAvatary: zwraca posortowane identyfikatory z plików json', async () => {
+    const katalog = fs.mkdtempSync(path.join(os.tmpdir(), 'qac-lista-'));
+    zapiszProfilProbny(katalog, 'zofia_nowak');
+    zapiszProfilProbny(katalog, 'jan_kowalski');
+    assert.deepEqual(await qac.listujAvatary(katalog), ['jan_kowalski', 'zofia_nowak']);
+    fs.rmSync(katalog, { recursive: true, force: true });
+});
+
+test('listujAvatary: pomija kosz i pliki spoza wzorca', async () => {
+    const katalog = fs.mkdtempSync(path.join(os.tmpdir(), 'qac-lista-'));
+    zapiszProfilProbny(katalog, 'jan_kowalski');
+    fs.mkdirSync(path.join(katalog, '.kosz'), { recursive: true });
+    fs.writeFileSync(path.join(katalog, '.kosz', 'stary_profil-20260101-000000.json'), '{}', 'utf8');
+    fs.writeFileSync(path.join(katalog, 'notatka.txt'), 'x', 'utf8');
+    fs.writeFileSync(path.join(katalog, 'ZleID.json'), '{}', 'utf8');
+    assert.deepEqual(await qac.listujAvatary(katalog), ['jan_kowalski']);
+    fs.rmSync(katalog, { recursive: true, force: true });
+});
+
+test('listujAvatary: nieistniejący katalog daje pustą listę', async () => {
+    assert.deepEqual(await qac.listujAvatary(path.join(os.tmpdir(), 'qac-brak-' + Date.now())), []);
+});
+
+test('usunProfil: przenosi plik do kosza ze znacznikiem czasu', async () => {
+    const katalog = fs.mkdtempSync(path.join(os.tmpdir(), 'qac-kosz-'));
+    zapiszProfilProbny(katalog, 'jan_kowalski');
+    const cel = await qac.usunProfil('jan_kowalski', katalog);
+
+    assert.equal(fs.existsSync(path.join(katalog, 'jan_kowalski.json')), false);
+    assert.equal(fs.existsSync(cel), true);
+    assert.match(path.basename(cel), /^jan_kowalski-\d{8}-\d{6}\.json$/);
+    assert.equal(path.basename(path.dirname(cel)), '.kosz');
+    fs.rmSync(katalog, { recursive: true, force: true });
+});
+
+test('usunProfil: nieistniejący profil daje null, nie wyjątek', async () => {
+    const katalog = fs.mkdtempSync(path.join(os.tmpdir(), 'qac-kosz-'));
+    assert.equal(await qac.usunProfil('jan_kowalski', katalog), null);
+    fs.rmSync(katalog, { recursive: true, force: true });
+});
+
+test('usunProfil: odrzuca avatar_id z próbą wyjścia poza katalog profili', async () => {
+    const katalog = fs.mkdtempSync(path.join(os.tmpdir(), 'qac-kosz-'));
+    for (const zleId of ['../../etc/passwd', 'jan/../../x', '.', 'ZleID', 'jan kowalski']) {
+        await assert.rejects(
+            async () => qac.usunProfil(zleId, katalog),
+            /wzorcem/,
+            `powinno odrzucić: ${zleId}`
+        );
+    }
+    fs.rmSync(katalog, { recursive: true, force: true });
 });

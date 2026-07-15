@@ -6,12 +6,14 @@
 // bramka zapisu profilu.
 const { walidujDaneWejsciowe } = require('./walidacja_wejscia');
 const { kontrolujSwiezosc } = require('./kontrola_swiezosci');
-const { autoryzujIZapisz, walidujProfil, KATALOG_PROFILI } = require('./bramka_zapisu');
+const { autoryzujIZapisz, autoryzujIUsun, walidujProfil, KATALOG_PROFILI, KATALOG_KOSZA } = require('./bramka_zapisu');
 
 module.exports = {
     walidujDaneWejsciowe,
     kontrolujSwiezosc,
     autoryzujIZapisz,
+    autoryzujIUsun,
     walidujProfil,
     KATALOG_PROFILI,
+    KATALOG_KOSZA,
 };
