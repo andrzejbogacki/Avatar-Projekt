@@ -34,8 +34,25 @@ function utcNaSkaleCzasowe({ rok, miesiac, dzien, godzina, minuta, sekunda }) {
 const DOBA_MS = 86_400_000;
 const SKLADOWE_CZASU = ['rok', 'miesiac', 'dzien', 'godzina', 'minuta', 'sekunda'];
 
-/** Czy identyfikator strefy jest znany silnikowi Intl (akceptuje też UTC i aliasy). */
+/** Dopuszczalne zakresy [min, max] składowych czasu ściennego; 'rok' bez ograniczenia. */
+const ZAKRES_SKLADOWEJ = {
+    miesiac: [1, 12],
+    dzien: [1, 31],
+    godzina: [0, 23],
+    minuta: [0, 59],
+    sekunda: [0, 59],
+};
+
+/**
+ * Czy identyfikator strefy jest znany silnikowi Intl (akceptuje też UTC i aliasy).
+ * `Intl.DateTimeFormat` z `timeZone: undefined` po cichu używa strefy systemowej hosta
+ * zamiast rzucić — dlatego wartość niebędącą niepustym stringiem odrzucamy jawnie,
+ * zanim w ogóle trafi do Intl.
+ */
 function znanaStrefa(strefa) {
+    if (typeof strefa !== 'string' || strefa === '') {
+        return false;
+    }
     try {
         new Intl.DateTimeFormat('en-US', { timeZone: strefa });
         return true;
@@ -44,13 +61,15 @@ function znanaStrefa(strefa) {
     }
 }
 
-/** Przesunięcie strefy [min] w danym momencie; 'GMT' bez cyfr = strefa zerowa. */
+/** Przesunięcie strefy [min] w danym momencie, odczytane z formatu longOffset (np. "GMT+02:00", "GMT+00:00"). */
 function offsetMinut(strefa, ms) {
     const czesc = new Intl.DateTimeFormat('en-US', { timeZone: strefa, timeZoneName: 'longOffset' })
         .formatToParts(new Date(ms))
         .find((p) => p.type === 'timeZoneName').value;
     const m = czesc.match(/^GMT([+-])(\d{2}):(\d{2})$/);
-    if (!m) return 0;
+    if (!m) {
+        throw new Error(`Nierozpoznany format przesunięcia strefy zwrócony przez Intl: ${czesc}`);
+    }
     return (m[1] === '-' ? -1 : 1) * (Number(m[2]) * 60 + Number(m[3]));
 }
 
@@ -88,8 +107,18 @@ function skladoweWStrefie(strefa, ms) {
  */
 function lokalnyNaUtc(czas_lokalny, strefa) {
     for (const s of SKLADOWE_CZASU) {
-        if (!Number.isFinite(czas_lokalny?.[s])) {
-            throw new Error(`Nieprawidłowa składowa czasu lokalnego: ${s}=${czas_lokalny?.[s]}`);
+        const wartosc = czas_lokalny?.[s];
+        if (!Number.isFinite(wartosc)) {
+            throw new Error(`Nieprawidłowa składowa czasu lokalnego: ${s}=${wartosc}`);
+        }
+        if (!Number.isInteger(wartosc)) {
+            throw new Error(`Składowa czasu lokalnego musi być liczbą całkowitą: ${s}=${wartosc}`);
+        }
+        const zakres = ZAKRES_SKLADOWEJ[s];
+        if (zakres && (wartosc < zakres[0] || wartosc > zakres[1])) {
+            throw new Error(
+                `Składowa czasu lokalnego poza zakresem: ${s}=${wartosc} (dozwolone ${zakres[0]}-${zakres[1]})`
+            );
         }
     }
     if (!znanaStrefa(strefa)) {

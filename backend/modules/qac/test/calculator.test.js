@@ -375,3 +375,74 @@ test('znanaStrefa: rozpoznaje poprawne i odrzuca błędne identyfikatory', () =>
     assert.equal(znanaStrefa('Europe/Gdansk'), false);
     assert.equal(znanaStrefa(''), false);
 });
+
+// --- Regresja: recenzja zadania 1 — trzy wady cichych wartości domyślnych ---
+
+test('znanaStrefa: undefined NIE jest po cichu traktowane jako strefa hosta', () => {
+    // Intl.DateTimeFormat({ timeZone: undefined }) nie rzuca — używa strefy systemowej.
+    // znanaStrefa musi odrzucić undefined jawnie, zanim trafi do Intl.
+    assert.equal(znanaStrefa(undefined), false);
+});
+
+test('czas lokalny→UTC: undefined jako strefa odrzucone (nie liczy wg strefy hosta)', () => {
+    // Bez poprawki wady 1 ta konwersja przeszłaby po cichu, licząc wg strefy serwera
+    // (np. offset_minuty: 120 na hoście Europe/Warsaw) zamiast rzucić.
+    assert.throws(
+        () => lokalnyNaUtc(
+            { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+            undefined
+        ),
+        /Nieznana strefa/
+    );
+});
+
+test('czas lokalny→UTC: strefa UTC — offset_minuty: 0 bez fallbacku offsetMinut (wada 2)', () => {
+    // Dowód, że ścieżka rozpoznawania formatu "GMT+00:00" działa poprawnie
+    // (offsetMinut nie jest eksportowany, więc nie da się przetestować bezpośrednio;
+    // to samo pokrywa też test 'strefa UTC jest akceptowana' powyżej).
+    const wynik = lokalnyNaUtc(
+        { rok: 2000, miesiac: 1, dzien: 1, godzina: 12, minuta: 0, sekunda: 0 },
+        'UTC'
+    );
+    assert.equal(wynik.offset_minuty, 0);
+});
+
+test('czas lokalny→UTC: przepełnienie miesiąca (13) odrzucone (wada 3 — Date.UTC ciche normalizowanie)', () => {
+    assert.throws(
+        () => lokalnyNaUtc(
+            { rok: 1990, miesiac: 13, dzien: 1, godzina: 12, minuta: 0, sekunda: 0 },
+            'UTC'
+        ),
+        /poza zakresem: miesiac=13/
+    );
+});
+
+test('czas lokalny→UTC: przepełnienie godziny (25) odrzucone (wada 3)', () => {
+    assert.throws(
+        () => lokalnyNaUtc(
+            { rok: 1990, miesiac: 6, dzien: 15, godzina: 25, minuta: 0, sekunda: 0 },
+            'UTC'
+        ),
+        /poza zakresem: godzina=25/
+    );
+});
+
+test('czas lokalny→UTC: przepełnienie dnia (32) odrzucone (wada 3)', () => {
+    assert.throws(
+        () => lokalnyNaUtc(
+            { rok: 1990, miesiac: 6, dzien: 32, godzina: 12, minuta: 0, sekunda: 0 },
+            'UTC'
+        ),
+        /poza zakresem: dzien=32/
+    );
+});
+
+test('czas lokalny→UTC: minuta niecałkowita (30.5) odrzucona (wada 3)', () => {
+    assert.throws(
+        () => lokalnyNaUtc(
+            { rok: 1990, miesiac: 6, dzien: 15, godzina: 12, minuta: 30.5, sekunda: 0 },
+            'UTC'
+        ),
+        /liczbą całkowitą: minuta=30\.5/
+    );
+});
