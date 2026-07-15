@@ -6,7 +6,8 @@
   "main": "modules/qac/index.js",
   "scripts": {
     "test": "node --test 'modules/*/test/*.test.js'",
-    "dev": "node dev_server.js"
+    "dev": "node dev_server.js",
+    "dev:tools": "QAC_DEV_TOOLS=1 node dev_server.js"
   },
   "engines": {
     "node": ">=20"

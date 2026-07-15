@@ -151,6 +151,72 @@ const serwer = http.createServer(async (req, res) => {
         return;
     }
 
+    // Podgląd wyliczonego UTC dla formularza. Konwersja żyje wyłącznie w module —
+    // przeglądarka nie powiela algorytmu reguł DST (ADR-009).
+    if (req.method === 'GET' && req.url.startsWith('/api/qac/czas/utc')) {
+        try {
+            const { czas, strefa } = odczytajParametry(req.url);
+            if (!czas || !strefa) throw new Error('Wymagane parametry: czas, strefa');
+            const [data, godz] = String(czas).split('T');
+            if (!data || !godz) throw new Error('Parametr czas: oczekiwano RRRR-MM-DDTGG:MM:SS');
+            const [rok, miesiac, dzien] = data.split('-').map(Number);
+            const [godzina, minuta, sekunda = '0'] = godz.split(':');
+            const wynik = qac.kalkulator.lokalnyNaUtc(
+                { rok, miesiac, dzien, godzina: Number(godzina), minuta: Number(minuta), sekunda: Number(sekunda) },
+                strefa
+            );
+            wyslijJson(res, 200, wynik);
+        } catch (blad) {
+            // Komunikat pochodzi z modułu — użytkownik widzi to samo zdanie,
+            // które zobaczyłby przy odrzuceniu zapisu.
+            wyslijJson(res, 400, { blad: blad.message });
+        }
+        return;
+    }
+
+    // --- Narzędzia deweloperskie (QAC_DEV_TOOLS=1) ---
+    // Wystawiają daty i miejsca urodzenia realnych osób. Bez flagi trasy nie
+    // istnieją — w wersji publicznej nie ma czego usuwać (ADR-008, ADR-009).
+    if (process.env.QAC_DEV_TOOLS === '1') {
+        if (req.method === 'GET' && req.url === '/api/qac/dev/profile') {
+            try {
+                const identyfikatory = await qac.listujAvatary();
+                const profile = [];
+                for (const avatar_id of identyfikatory) {
+                    const profil = await qac.wczytajProfil(avatar_id);
+                    // Profile 1.0.0 nie mają danych wejściowych — pomijamy zamiast
+                    // zgadywać; wpis, z którego nie da się wypełnić formularza,
+                    // byłby pułapką.
+                    if (!profil?.dane_wejsciowe) continue;
+                    profile.push({ avatar_id, dane_wejsciowe: profil.dane_wejsciowe });
+                }
+                wyslijJson(res, 200, { profile });
+            } catch (blad) {
+                wyslijJson(res, 500, { blad: blad.message });
+            }
+            return;
+        }
+
+        if (req.method === 'DELETE' && req.url.startsWith('/api/qac/dev/profil/')) {
+            try {
+                const avatar_id = decodeURIComponent(
+                    req.url.slice('/api/qac/dev/profil/'.length).split('?')[0]
+                );
+                // Walidacja avatar_id żyje w bramce 9b — tu tylko rozróżniamy
+                // odmowę autoryzacji (400) od braku profilu (404).
+                const kosz = await qac.usunProfil(avatar_id);
+                if (!kosz) {
+                    wyslijJson(res, 404, { blad: `Brak profilu: ${avatar_id}` });
+                    return;
+                }
+                wyslijJson(res, 200, { usuniety: avatar_id, kosz });
+            } catch (blad) {
+                wyslijJson(res, 400, { blad: blad.message });
+            }
+            return;
+        }
+    }
+
     if (req.method === 'GET' && req.url.startsWith('/api/geokodowanie/odwrotne')) {
         try {
             const { dlugosc, szerokosc } = odczytajParametry(req.url);
