@@ -132,3 +132,60 @@ test('kontrakt modułu: eksportowane wyłącznie jawne kanały', () => {
     assert.equal(typeof qac.qrt.zlecRektyfikacje, 'function');
     assert.equal(typeof qac.wczytajProfil, 'function');
 });
+
+// --- Regulator 9b: walidacja wejścia po przejściu na czas lokalny ---
+
+const wejscieMinimalne = () => ({
+    avatar_id: 'jan_kowalski',
+    czas_lokalny: { rok: 1990, miesiac: 6, dzien: 15, godzina: 8, minuta: 30, sekunda: 0 },
+    strefa: 'Europe/Warsaw',
+    obserwator: { dlugosc_geo: 21.0122, szerokosc_geo: 52.2297, wysokosc_npm_m: 113 },
+});
+
+test('regulator 9b: poprawne wejście z czasem lokalnym przechodzi', () => {
+    assert.deepEqual(qac.regulator9.walidujDaneWejsciowe(wejscieMinimalne()), { poprawne: true });
+});
+
+test('regulator 9b: miejsce jest opcjonalne', () => {
+    const dane = { ...wejscieMinimalne(), miejsce: 'Warszawa, Polska' };
+    assert.deepEqual(qac.regulator9.walidujDaneWejsciowe(dane), { poprawne: true });
+});
+
+test('regulator 9b: brak strefy odrzucony', () => {
+    const dane = wejscieMinimalne();
+    delete dane.strefa;
+    assert.throws(() => qac.regulator9.walidujDaneWejsciowe(dane), /strefa/);
+});
+
+test('regulator 9b: nieznana strefa odrzucona — bez cichego Europe/Warsaw', () => {
+    const dane = { ...wejscieMinimalne(), strefa: 'Europe/Gdansk' };
+    assert.throws(() => qac.regulator9.walidujDaneWejsciowe(dane), /Europe\/Gdansk/);
+});
+
+test('regulator 9b: brak czas_lokalny odrzucony', () => {
+    const dane = wejscieMinimalne();
+    delete dane.czas_lokalny;
+    assert.throws(() => qac.regulator9.walidujDaneWejsciowe(dane), /czas_lokalny/);
+});
+
+test('regulator 9b: niepełny czas_lokalny odrzucony', () => {
+    const dane = wejscieMinimalne();
+    delete dane.czas_lokalny.minuta;
+    assert.throws(() => qac.regulator9.walidujDaneWejsciowe(dane), /czas_lokalny\.minuta/);
+});
+
+test('regulator 9b: puste miejsce odrzucone', () => {
+    const dane = { ...wejscieMinimalne(), miejsce: '   ' };
+    assert.throws(() => qac.regulator9.walidujDaneWejsciowe(dane), /miejsce/);
+});
+
+test('regulator 9b: zwraca wszystkie braki naraz', () => {
+    assert.throws(
+        () => qac.regulator9.walidujDaneWejsciowe({ avatar_id: 'zle id!' }),
+        (blad) =>
+            /avatar_id/.test(blad.message) &&
+            /czas_lokalny/.test(blad.message) &&
+            /strefa/.test(blad.message) &&
+            /obserwator/.test(blad.message)
+    );
+});
