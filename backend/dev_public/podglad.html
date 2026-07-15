@@ -52,6 +52,18 @@
             <legend>Awatar</legend>
             <label for="avatar_id">avatar_id (wzorzec: snake_case, min. dwa człony)</label>
             <input id="avatar_id" name="avatar_id" value="test_test" required>
+
+            <div id="dev-profile" hidden>
+                <label for="lista-profili">Wczytaj wprowadzony profil (narzędzie deweloperskie)</label>
+                <div class="szukaj-rzad">
+                    <div>
+                        <select id="lista-profili">
+                            <option value="">— wybierz profil —</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-mala" id="usun-profil" disabled>Usuń</button>
+                </div>
+            </div>
         </fieldset>
 
         <fieldset>
@@ -132,12 +144,14 @@ poleStrefa.value = 'Europe/Warsaw';
 let licznikPodgladu = 0;
 
 async function odswiezPodgladUtc() {
+    // Licznik podbijamy przed każdym wyjściem — także przy pustym polu. Inaczej
+    // spóźniona odpowiedź na wcześniejsze zapytanie nadpisałaby wyczyszczony podgląd.
+    const moj = ++licznikPodgladu;
     const strefa = poleStrefa.value;
     if (!poleCzas.value || !strefa) {
         podgladUtc.textContent = '';
         return;
     }
-    const moj = ++licznikPodgladu;
     try {
         const odp = await fetch(
             `/api/qac/czas/utc?czas=${encodeURIComponent(poleCzas.value)}&strefa=${encodeURIComponent(strefa)}`
@@ -305,12 +319,91 @@ formularz.addEventListener('submit', async (e) => {
             ${renderujSkrot(tresc.profil)}
             <pre>${JSON.stringify(tresc.profil, null, 2)}</pre>
         `;
+        await wczytajListeProfili();
     } catch (blad) {
         wynikDiv.innerHTML = `<p class="status blad">Błąd połączenia: ${blad.message}</p>`;
     } finally {
         przycisk.disabled = false;
     }
 });
+
+// --- Narzędzie deweloperskie: lista wprowadzonych profili ---
+// Renderuje się wyłącznie gdy endpoint odpowie (QAC_DEV_TOOLS=1). Bez flagi
+// dostajemy 404 i formularz działa jak dawniej.
+const devProfile = document.getElementById('dev-profile');
+const listaProfili = document.getElementById('lista-profili');
+const usunBtn = document.getElementById('usun-profil');
+let profileDev = [];
+
+function dwaZnaki(n) {
+    return String(n).padStart(2, '0');
+}
+
+async function wczytajListeProfili() {
+    try {
+        const odp = await fetch('/api/qac/dev/profile');
+        if (!odp.ok) return;
+        const dane = await odp.json();
+        profileDev = dane.profile || [];
+        listaProfili.innerHTML = '<option value="">— wybierz profil —</option>';
+        for (const p of profileDev) {
+            const opcja = document.createElement('option');
+            opcja.value = p.avatar_id;
+            const cl = p.dane_wejsciowe.czas_lokalny;
+            const data = `${cl.rok}-${dwaZnaki(cl.miesiac)}-${dwaZnaki(cl.dzien)}`;
+            opcja.textContent = `${p.avatar_id} (${data}${p.dane_wejsciowe.miejsce ? ', ' + p.dane_wejsciowe.miejsce : ''})`;
+            listaProfili.append(opcja);
+        }
+        usunBtn.disabled = !listaProfili.value;
+        devProfile.hidden = false;
+    } catch {
+        // Brak endpointu = brak narzędzi deweloperskich. Cisza jest tu poprawna.
+    }
+}
+
+listaProfili.addEventListener('change', () => {
+    const wpis = profileDev.find((p) => p.avatar_id === listaProfili.value);
+    usunBtn.disabled = !wpis;
+    if (!wpis) return;
+    const we = wpis.dane_wejsciowe;
+
+    document.getElementById('avatar_id').value = we.avatar_id;
+    const cl = we.czas_lokalny;
+    poleCzas.value = `${cl.rok}-${dwaZnaki(cl.miesiac)}-${dwaZnaki(cl.dzien)}` +
+        `T${dwaZnaki(cl.godzina)}:${dwaZnaki(cl.minuta)}:${dwaZnaki(cl.sekunda)}`;
+    poleStrefa.value = we.strefa;
+    poleMiasto.value = we.miejsce || '';
+    miejsceRozpoznane.textContent = we.miejsce ? `Wybrano: ${we.miejsce}` : '';
+
+    // UWAGA: celowo NIE wołamy ustawWspolrzedne() — ta funkcja nadpisuje pole
+    // wysokości wartością z open-elevation. Wysokość ma pochodzić z profilu.
+    poleDlugosc.value = we.obserwator.dlugosc_geo;
+    poleSzerokosc.value = we.obserwator.szerokosc_geo;
+    poleWysokosc.value = we.obserwator.wysokosc_npm_m;
+    znacznik.setLatLng([we.obserwator.szerokosc_geo, we.obserwator.dlugosc_geo]);
+    mapa.setView([we.obserwator.szerokosc_geo, we.obserwator.dlugosc_geo], Math.max(mapa.getZoom(), 10));
+
+    odswiezPodgladUtc();
+});
+
+usunBtn.addEventListener('click', async () => {
+    const avatar_id = listaProfili.value;
+    if (!avatar_id) return;
+    if (!confirm(`Usunąć profil ${avatar_id}? Trafi do kosza (profiles/.kosz/).`)) return;
+    usunBtn.disabled = true;
+    try {
+        const odp = await fetch(`/api/qac/dev/profil/${encodeURIComponent(avatar_id)}`, { method: 'DELETE' });
+        const tresc = await odp.json();
+        if (!odp.ok) throw new Error(tresc.blad || 'Nie udało się usunąć profilu');
+        wynikDiv.innerHTML = `<p class="status ok">Profil ${avatar_id} przeniesiony do kosza.</p>`;
+        await wczytajListeProfili();
+    } catch (blad) {
+        wynikDiv.innerHTML = `<p class="status blad">${blad.message}</p>`;
+        usunBtn.disabled = false;
+    }
+});
+
+wczytajListeProfili();
 </script>
 <script src="/menu.js"></script>
 </body>
