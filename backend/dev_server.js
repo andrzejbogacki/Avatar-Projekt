@@ -241,7 +241,10 @@ const serwer = http.createServer(async (req, res) => {
             const { miasto } = odczytajParametry(req.url);
             if (!miasto || !miasto.trim()) throw new Error('Wymagany parametr: miasto');
             await poczekajNaLimitNominatim();
-            const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(miasto)}&format=json&limit=5&addressdetails=1`;
+            // extratags=1 dołącza admin_level — potrzebny do POPRAWNEJ etykiety.
+            // Nominatim myli addresstype dla miast na prawach powiatu (Gdańsk poziom 8
+            // nazywa 'city_district'); admin_level rozstrzyga to jednoznacznie.
+            const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(miasto)}&format=json&limit=5&addressdetails=1&extratags=1`;
             const odp = await fetch(url, {
                 headers: { 'User-Agent': USER_AGENT_GEO },
                 signal: AbortSignal.timeout(8000),
@@ -249,15 +252,19 @@ const serwer = http.createServer(async (req, res) => {
             if (!odp.ok) throw new Error(`Nominatim: HTTP ${odp.status}`);
             const wyniki = await odp.json();
             wyslijJson(res, 200, {
-                wyniki: wyniki.map((w) => ({
-                    nazwa: w.display_name,
-                    // typ (addresstype) rozróżnia wyniki o identycznej nazwie:
-                    // Nominatim zwraca to samo miasto na kilku poziomach (Gdańsk:
-                    // miasto/gmina/dzielnica) oraz miejscowości-imienniki 500 km dalej.
-                    typ: w.addresstype || w.type || null,
-                    dlugosc_geo: Number(w.lon),
-                    szerokosc_geo: Number(w.lat),
-                })),
+                wyniki: wyniki.map((w) => {
+                    const al = w.extratags && w.extratags.admin_level;
+                    return {
+                        nazwa: w.display_name,
+                        // Surowe dane do etykietowania po stronie klienta: addresstype
+                        // (wiarygodny dla osad) + admin_level (rozstrzyga obiekty
+                        // administracyjne, które addresstype myli).
+                        addresstype: w.addresstype || w.type || null,
+                        admin_level: al ? Number(al) : null,
+                        dlugosc_geo: Number(w.lon),
+                        szerokosc_geo: Number(w.lat),
+                    };
+                }),
             });
         } catch (blad) {
             wyslijJson(res, 502, { blad: blad.message });

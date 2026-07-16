@@ -28,6 +28,10 @@
     #wyniki-miasta li:first-child { border-top: 1px solid #333; border-radius: 6px 6px 0 0; }
     #wyniki-miasta li:last-child { border-radius: 0 0 6px 6px; }
     #wyniki-miasta li:hover { background: #2a2a2a; }
+    #wyniki-miasta li .typ { opacity: 0.6; font-size: 0.92em; }
+    /* Osada (miasto/wieś) uwydatniona — to realne miejsce urodzenia, nie obrys administracyjny. */
+    #wyniki-miasta li.wynik-osada { font-weight: bold; border-left: 3px solid var(--accent); }
+    #wyniki-miasta li.wynik-osada .typ { opacity: 0.85; color: var(--accent); font-weight: normal; }
     button[type=submit] { margin-top: 16px; padding: 10px 24px; background: var(--accent); color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
     button[type=submit]:disabled { opacity: 0.5; cursor: wait; }
     #wynik { margin-top: 20px; }
@@ -229,6 +233,26 @@ znacznik.on('dragend', () => {
 });
 mapa.on('click', (e) => ustawWspolrzedne(e.latlng.lat, e.latlng.lng, false));
 
+// Etykieta wyniku wyszukiwania. addresstype jest wiarygodny dla osad
+// (wieś/miasto/...), ale MYLI obiekty administracyjne miast na prawach powiatu
+// (Gdańsk poziom 8 → 'city_district'). Dlatego dla obiektów administracyjnych
+// etykietę bierzemy z admin_level, nie z addresstype (źródło: wiki OSM Pl).
+// `osada` = realne miejsce urodzenia (uwydatniane), nie obrys administracyjny.
+function opiszWynik(w) {
+    const OSADY = { city: 'miasto', town: 'miasteczko', village: 'wieś', hamlet: 'przysiółek' };
+    const POZIOMY = { 4: 'województwo', 6: 'miasto', 7: 'gmina', 8: 'miejscowość', 9: 'dzielnica', 10: 'osiedle' };
+    const INNE = {
+        suburb: 'dzielnica', quarter: 'część miasta', neighbourhood: 'część miasta',
+        island: 'wyspa', islet: 'wysepka', beach: 'plaża', locality: 'miejsce',
+        municipality: 'gmina', county: 'powiat', state: 'województwo',
+    };
+    const at = w.addresstype;
+    if (OSADY[at]) return { etykieta: OSADY[at], osada: true };
+    if (w.admin_level && POZIOMY[w.admin_level]) return { etykieta: POZIOMY[w.admin_level], osada: false };
+    if (INNE[at]) return { etykieta: INNE[at], osada: false };
+    return { etykieta: at || null, osada: false };
+}
+
 async function szukajMiasta() {
     const zapytanie = poleMiasto.value.trim();
     if (!zapytanie) return;
@@ -245,15 +269,18 @@ async function szukajMiasta() {
         listaWynikow.innerHTML = '';
         dane.wyniki.forEach((w) => {
             const li = document.createElement('li');
-            // Typ obok nazwy rozróżnia wyniki o identycznej nazwie (Gdańsk jako
-            // miasto vs gmina vs dzielnica) i demaskuje imienniki (wieś Kraków).
-            const etykiety = {
-                city: 'miasto', town: 'miasto', village: 'wieś', hamlet: 'przysiółek',
-                city_district: 'dzielnica', suburb: 'dzielnica', administrative: 'jednostka administracyjna',
-                municipality: 'gmina', county: 'powiat', state: 'województwo',
-            };
-            const typ = w.typ ? (etykiety[w.typ] || w.typ) : null;
-            li.textContent = typ ? `${w.nazwa} — ${typ}` : w.nazwa;
+            const { etykieta, osada } = opiszWynik(w);
+            // Nazwa + typ w osobnym spanie (przygaszony, chyba że osada — wtedy akcent).
+            li.textContent = w.nazwa + ' ';
+            if (etykieta) {
+                const span = document.createElement('span');
+                span.className = 'typ';
+                span.textContent = '— ' + etykieta;
+                li.appendChild(span);
+            }
+            // Uwydatnienie osad (miasto/wieś): realne miejsce urodzenia, nie obrys
+            // administracyjny. Dla Gdańska świeci 'miasto', gmina/miejscowość gasną.
+            if (osada) li.classList.add('wynik-osada');
             li.onclick = () => {
                 ustawWspolrzedne(w.szerokosc_geo, w.dlugosc_geo, true);
                 listaWynikow.innerHTML = '';
