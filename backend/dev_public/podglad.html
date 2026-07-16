@@ -93,15 +93,15 @@
             <div class="rzad">
                 <div>
                     <label for="dlugosc">Długość geo [°]</label>
-                    <input id="dlugosc" name="dlugosc" type="number" step="any" value="21.0122" required>
+                    <input id="dlugosc" name="dlugosc" type="number" step="any" placeholder="z mapy" required>
                 </div>
                 <div>
                     <label for="szerokosc">Szerokość geo [°]</label>
-                    <input id="szerokosc" name="szerokosc" type="number" step="any" value="52.2297" required>
+                    <input id="szerokosc" name="szerokosc" type="number" step="any" placeholder="z mapy" required>
                 </div>
                 <div>
                     <label for="wysokosc">Wysokość n.p.m. [m]</label>
-                    <input id="wysokosc" name="wysokosc" type="number" step="any" value="113" required>
+                    <input id="wysokosc" name="wysokosc" type="number" step="any" placeholder="auto" required>
                 </div>
             </div>
         </fieldset>
@@ -185,13 +185,18 @@ poleCzas.addEventListener('input', zaplanujPodglad);
 poleStrefa.addEventListener('change', odswiezPodgladUtc);
 odswiezPodgladUtc();
 
-// Mapa: domyślny widok — Warszawa; znacznik przeciągalny do precyzyjnego wskazania punktu.
-const mapa = L.map('mapa').setView([Number(poleSzerokosc.value), Number(poleDlugosc.value)], 6);
+// Mapa: startowy widok na środek Polski — NIE czytamy pól współrzędnych, bo są
+// puste (Number('') = 0 wyśrodkowałoby mapę na [0,0] u wybrzeży Afryki). Znacznik
+// to przeciągalny uchwyt; pola wypełniają się dopiero przy wyszukaniu miasta,
+// kliknięciu mapy lub przeciągnięciu znacznika. Do tego czasu required blokuje zapis.
+const WIDOK_STARTOWY = [52.0, 19.2];
+const ZOOM_STARTOWY = 6;
+const mapa = L.map('mapa').setView(WIDOK_STARTOWY, ZOOM_STARTOWY);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap',
     maxZoom: 18,
 }).addTo(mapa);
-const znacznik = L.marker([Number(poleSzerokosc.value), Number(poleDlugosc.value)], { draggable: true }).addTo(mapa);
+const znacznik = L.marker(WIDOK_STARTOWY, { draggable: true }).addTo(mapa);
 
 async function ustawWspolrzedne(lat, lon, przesunMape = true) {
     poleSzerokosc.value = lat.toFixed(6);
