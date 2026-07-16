@@ -135,11 +135,17 @@ const poleCzas = document.getElementById('czas');
 
 // Lista stref z Intl — bez zewnętrznych zależności. UTC nie występuje
 // w supportedValuesOf, więc dokładamy je ręcznie.
+// Polskie etykiety tylko dla stref przypiętych (najczęstszych); wartość pozostaje
+// identyfikatorem IANA. Pełna lokalizacja listy — przy wielojęzyczności interfejsu.
+const ETYKIETY_STREF = {
+    'Europe/Warsaw': 'Polska (Europe/Warsaw)',
+    'UTC': 'UTC — czas uniwersalny',
+};
 for (const strefa of ['Europe/Warsaw', 'UTC', ...Intl.supportedValuesOf('timeZone')]) {
     if (poleStrefa.querySelector(`option[value="${strefa}"]`)) continue;
     const opcja = document.createElement('option');
     opcja.value = strefa;
-    opcja.textContent = strefa;
+    opcja.textContent = ETYKIETY_STREF[strefa] || strefa;
     poleStrefa.append(opcja);
 }
 poleStrefa.value = 'Europe/Warsaw';
