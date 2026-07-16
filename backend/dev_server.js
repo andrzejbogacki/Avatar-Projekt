@@ -251,6 +251,10 @@ const serwer = http.createServer(async (req, res) => {
             wyslijJson(res, 200, {
                 wyniki: wyniki.map((w) => ({
                     nazwa: w.display_name,
+                    // typ (addresstype) rozróżnia wyniki o identycznej nazwie:
+                    // Nominatim zwraca to samo miasto na kilku poziomach (Gdańsk:
+                    // miasto/gmina/dzielnica) oraz miejscowości-imienniki 500 km dalej.
+                    typ: w.addresstype || w.type || null,
                     dlugosc_geo: Number(w.lon),
                     szerokosc_geo: Number(w.lat),
                 })),

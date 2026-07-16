@@ -85,6 +85,7 @@
                 <div><input id="miasto" name="miasto" placeholder="np. Warszawa"></div>
                 <button type="button" class="btn-mala" id="szukaj-btn">Szukaj</button>
             </div>
+            <div class="uwaga">Nazwa miasta wskazuje tylko środek obszaru. Duże miasto rozciąga się na ~30 km, co przesuwa ascendent nawet o 25 minut — <b>klik w mapie w dokładne miejsce urodzenia (adres, szpital)</b> istotnie podnosi dokładność. Kierunek wschód–zachód liczy się bardziej niż północ–południe.</div>
             <ul id="wyniki-miasta"></ul>
 
             <div id="mapa"></div>
@@ -244,7 +245,15 @@ async function szukajMiasta() {
         listaWynikow.innerHTML = '';
         dane.wyniki.forEach((w) => {
             const li = document.createElement('li');
-            li.textContent = w.nazwa;
+            // Typ obok nazwy rozróżnia wyniki o identycznej nazwie (Gdańsk jako
+            // miasto vs gmina vs dzielnica) i demaskuje imienniki (wieś Kraków).
+            const etykiety = {
+                city: 'miasto', town: 'miasto', village: 'wieś', hamlet: 'przysiółek',
+                city_district: 'dzielnica', suburb: 'dzielnica', administrative: 'jednostka administracyjna',
+                municipality: 'gmina', county: 'powiat', state: 'województwo',
+            };
+            const typ = w.typ ? (etykiety[w.typ] || w.typ) : null;
+            li.textContent = typ ? `${w.nazwa} — ${typ}` : w.nazwa;
             li.onclick = () => {
                 ustawWspolrzedne(w.szerokosc_geo, w.dlugosc_geo, true);
                 listaWynikow.innerHTML = '';
