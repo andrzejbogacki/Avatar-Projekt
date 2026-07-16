@@ -51,7 +51,7 @@
         <fieldset>
             <legend>Awatar</legend>
             <label for="avatar_id">avatar_id (wzorzec: snake_case, min. dwa człony)</label>
-            <input id="avatar_id" name="avatar_id" value="test_test" required>
+            <input id="avatar_id" name="avatar_id" placeholder="imie_nazwisko" required>
 
             <div id="dev-profile" hidden>
                 <label for="lista-profili">Wczytaj wprowadzony profil (narzędzie deweloperskie)</label>
@@ -69,7 +69,8 @@
         <fieldset>
             <legend>Czas urodzenia (czas lokalny miejsca urodzenia)</legend>
             <label for="czas">Data i godzina — tak jak w akcie urodzenia</label>
-            <input id="czas" name="czas" type="datetime-local" step="1" value="1990-06-15T08:30:00" required>
+            <input id="czas" name="czas" type="datetime-local" step="1" required>
+            <div class="uwaga">Format: dd.mm.rrrr, gg:mm:ss · np. 15.06.1990, 08:30:00</div>
 
             <label for="strefa">Strefa czasowa miejsca urodzenia</label>
             <select id="strefa" name="strefa" required></select>
